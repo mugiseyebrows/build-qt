@@ -139,17 +139,6 @@ jobs:
         mingw32-make install
         popd
         pyfind Qt-5.15.2 -type f > qtactiveqt.txt
-    - name: build qtandroidextras
-      shell: cmd
-      run: |
-        curl -L -o qtandroidextras-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtandroidextras-everywhere-src-5.15.2.zip
-        7z x -y qtandroidextras-everywhere-src-5.15.2.zip
-        pushd qtandroidextras-everywhere-src-5.15.2
-        qmake
-        mingw32-make -j2
-        mingw32-make install
-        popd
-        pyfind Qt-5.15.2 -type f > qtandroidextras.txt
     - name: build qtcharts
       shell: cmd
       run: |
@@ -460,8 +449,7 @@ jobs:
         pycat qtquicktimeline.txt qtwebsockets.txt | pysort | pyuniq -u > qtwebsockets-diff.txt
         pycat qtwebsockets.txt qt3d.txt | pysort | pyuniq -u > qt3d-diff.txt
         pycat qt3d.txt qtactiveqt.txt | pysort | pyuniq -u > qtactiveqt-diff.txt
-        pycat qtactiveqt.txt qtandroidextras.txt | pysort | pyuniq -u > qtandroidextras-diff.txt
-        pycat qtandroidextras.txt qtcharts.txt | pysort | pyuniq -u > qtcharts-diff.txt
+        pycat qtactiveqt.txt qtcharts.txt | pysort | pyuniq -u > qtcharts-diff.txt
         pycat qtcharts.txt qtconnectivity.txt | pysort | pyuniq -u > qtconnectivity-diff.txt
         pycat qtconnectivity.txt qtdatavis3d.txt | pysort | pyuniq -u > qtdatavis3d-diff.txt
         pycat qtdatavis3d.txt qtgamepad.txt | pysort | pyuniq -u > qtgamepad-diff.txt
@@ -499,7 +487,6 @@ jobs:
         del /f Qt-5.15.2-qtwebsockets.zip
         del /f Qt-5.15.2-qt3d.zip
         del /f Qt-5.15.2-qtactiveqt.zip
-        del /f Qt-5.15.2-qtandroidextras.zip
         del /f Qt-5.15.2-qtcharts.zip
         del /f Qt-5.15.2-qtconnectivity.zip
         del /f Qt-5.15.2-qtdatavis3d.zip
@@ -538,7 +525,6 @@ jobs:
         pyzip a --list qtwebsockets-diff.txt Qt-5.15.2-qtwebsockets.zip
         pyzip a --list qt3d-diff.txt Qt-5.15.2-qt3d.zip
         pyzip a --list qtactiveqt-diff.txt Qt-5.15.2-qtactiveqt.zip
-        pyzip a --list qtandroidextras-diff.txt Qt-5.15.2-qtandroidextras.zip
         pyzip a --list qtcharts-diff.txt Qt-5.15.2-qtcharts.zip
         pyzip a --list qtconnectivity-diff.txt Qt-5.15.2-qtconnectivity.zip
         pyzip a --list qtdatavis3d-diff.txt Qt-5.15.2-qtdatavis3d.zip
@@ -572,14 +558,6 @@ jobs:
         pyzip a -v --dir Qt-5.15.2\bin --base OpenSSL\bin Qt-5.15.2-qtbase.zip OpenSSL\bin\*.dll
         mugideploy list --bin Qt-5.15.2\plugins\sqldrivers\qsqlmysql.dll | pygrep -v mingw64 | pygrep -v OpenSSL | pygrep -v Qt5Core | pygrep -v Qt5Sql | pygrep -v libssl | pygrep -v libcrypto | pygrep -v sqldrivers | pyxargs pyzip a -v --dir Qt-5.15.2\bin Qt-5.15.2-qsqlmysql.zip
         mugideploy list --bin Qt-5.15.2\plugins\sqldrivers\qsqlpsql.dll | pygrep -v mingw64 | pygrep -v OpenSSL | pygrep -v Qt5Core | pygrep -v Qt5Sql | pygrep -v libssl | pygrep -v libcrypto | pygrep -v sqldrivers | pyxargs pyzip a -v --dir Qt-5.15.2\bin Qt-5.15.2-qsqlpsql.zip
-        echo qsqlmysql list
-        mugideploy list --bin Qt-5.15.2\plugins\sqldrivers\qsqlmysql.dll
-        echo qsqlmysql list filtered
-        mugideploy list --bin Qt-5.15.2\plugins\sqldrivers\qsqlmysql.dll | pygrep -v mingw64 | pygrep -v OpenSSL | pygrep -v Qt5Core | pygrep -v Qt5Sql | pygrep -v libssl | pygrep -v libcrypto | pygrep -v sqldrivers
-        echo qsqlpsql list
-        mugideploy list --bin Qt-5.15.2\plugins\sqldrivers\qsqlpsql.dll
-        echo qsqlpsql list filtered
-        mugideploy list --bin Qt-5.15.2\plugins\sqldrivers\qsqlpsql.dll | pygrep -v mingw64 | pygrep -v OpenSSL | pygrep -v Qt5Core | pygrep -v Qt5Sql | pygrep -v libssl | pygrep -v libcrypto | pygrep -v sqldrivers
     - name: release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
@@ -596,7 +574,6 @@ jobs:
           Qt-5.15.2-qtwebsockets.zip
           Qt-5.15.2-qt3d.zip
           Qt-5.15.2-qtactiveqt.zip
-          Qt-5.15.2-qtandroidextras.zip
           Qt-5.15.2-qtcharts.zip
           Qt-5.15.2-qtconnectivity.zip
           Qt-5.15.2-qtdatavis3d.zip

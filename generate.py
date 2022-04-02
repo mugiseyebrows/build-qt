@@ -7,14 +7,9 @@ import textwrap
 from pbat import read_compile_write
 from io import StringIO
 import yaml
-#from yaml.resolver import Resolver
 
 class folded_str(str): pass
 class literal_str(str): pass
-class unquoted_str(str): pass
-
-#print("hey")
-#Resolver.add_implicit_resolver()
 
 def folded_str_representer(dumper, data):
     return dumper.represent_scalar('tag:yaml.org,2002:str', data, style='>')
@@ -90,15 +85,12 @@ def reorder(names):
     qtwayland = names.pop(names.index('qtwayland'))
     qtwebengine = names.pop(names.index('qtwebengine'))
     qtx11extras = names.pop(names.index('qtx11extras'))
+    qtandroidextras = names.pop(names.index('qtandroidextras'))
 
     if 0:
         return [qtbase, qsqlmysql, qsqlpsql]
 
     return [qtbase, qsqlmysql, qsqlpsql, qtdeclarative, qtquickcontrols, qtquickcontrols2, qtquick3d, qtquicktimeline, qtwebsockets] + names
-
-def suffix(name, suff):
-    n, e = os.path.splitext(name)
-    return n + suff + e
 
 def clean_exp(names):
     clean = []
@@ -151,7 +143,7 @@ def zip_cmds(names):
         cmds.append('del /f Qt-5.15.2-{}.zip\n'.format(name))
 
     for i, name in enumerate(names):
-        txtname = name + '-diff' if i > 0 else name #suffix(name + ".txt", '-diff' if i > 0 else '')
+        txtname = name + '-diff' if i > 0 else name
         cmds.append('pyzip a --list {}.txt Qt-5.15.2-{}.zip\n'.format(txtname, name))
     return cmds
 
@@ -159,11 +151,8 @@ def extra_cmds():
 
     excl = " | ".join(["pygrep -v {}".format(n) for n in ['mingw64', 'OpenSSL', 'Qt5Core', 'Qt5Sql', 'libssl', 'libcrypto', 'sqldrivers']])
     
-    return """
-pyzip a -v --dir Qt-5.15.2\\bin --base OpenSSL\\bin Qt-5.15.2-qtbase.zip OpenSSL\\bin\\*.dll
-mugideploy list --bin Qt-5.15.2\\plugins\\sqldrivers\\qsqlmysql.dll | {} | pyxargs pyzip a -v --dir Qt-5.15.2\\bin Qt-5.15.2-qsqlmysql.zip
-mugideploy list --bin Qt-5.15.2\\plugins\\sqldrivers\\qsqlpsql.dll | {} | pyxargs pyzip a -v --dir Qt-5.15.2\\bin Qt-5.15.2-qsqlpsql.zip
-echo qsqlmysql list
+    debug = """
+ echo qsqlmysql list
 mugideploy list --bin Qt-5.15.2\\plugins\\sqldrivers\\qsqlmysql.dll
 echo qsqlmysql list filtered
 mugideploy list --bin Qt-5.15.2\\plugins\\sqldrivers\\qsqlmysql.dll | {}
@@ -171,7 +160,13 @@ echo qsqlpsql list
 mugideploy list --bin Qt-5.15.2\\plugins\\sqldrivers\\qsqlpsql.dll
 echo qsqlpsql list filtered
 mugideploy list --bin Qt-5.15.2\\plugins\\sqldrivers\\qsqlpsql.dll | {}
-""".format(excl,excl,excl,excl).split("\n")
+""".format(excl,excl)
+
+    return """
+pyzip a -v --dir Qt-5.15.2\\bin --base OpenSSL\\bin Qt-5.15.2-qtbase.zip OpenSSL\\bin\\*.dll
+mugideploy list --bin Qt-5.15.2\\plugins\\sqldrivers\\qsqlmysql.dll | {} | pyxargs pyzip a -v --dir Qt-5.15.2\\bin Qt-5.15.2-qsqlmysql.zip
+mugideploy list --bin Qt-5.15.2\\plugins\\sqldrivers\\qsqlpsql.dll | {} | pyxargs pyzip a -v --dir Qt-5.15.2\\bin Qt-5.15.2-qsqlpsql.zip
+""".format(excl,excl).split("\n")
 
 def prepare_cmds():
     return """set MINGW_BIN_PATH=%CD%\\mingw64\\bin
@@ -223,9 +218,6 @@ class Step:
 if __name__ == "__main__":
     steps = []
     
-    #res = compile(prepare)
-    #print(res)
-
     names = read_names()
     names = reorder(names)
     
