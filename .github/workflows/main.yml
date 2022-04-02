@@ -1,0 +1,626 @@
+name: main
+on:
+  push:
+    tags: '*'
+jobs:
+  main:
+    runs-on: windows-2022
+    steps:
+    - name: prepare
+      shell: cmd
+      run: |
+        set MINGW_BIN_PATH=%CD%\mingw64\bin
+        echo PATH=%MINGW_BIN_PATH%;%CD%\Qt-5.15.2\bin;%CD%\OpenSSL\bin;C:\Strawberry\perl\bin;%CD%\postgresql-14\bin;C:\mysql\lib;C:\Program Files\7-Zip;C:\Miniconda;C:\Miniconda\Scripts;C:\Users\Stanislav\Miniconda3\Scripts;C:\Users\Stanislav\Miniconda3;C:\windows\system32;C:\windows;%PATH%>> %GITHUB_ENV%
+        python -m pip install mugicli mugideploy
+        rmdir /q /s Qt-5.15.2
+        curl -L -o x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z https://github.com/mugiseyebrows/mirror-mingw/releases/download/8.1.0/x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z
+        7z x -y x86_64-8.1.0-release-posix-seh-rt_v6-rev0.7z
+        curl -L -o OpenSSL.zip https://github.com/mugiseyebrows/build-openssl/releases/download/1.1.1n/OpenSSL.zip
+        7z x -y OpenSSL.zip
+        xcopy /s /q /y /i "C:\Program Files\PostgreSQL\14\bin" postgresql-14\bin
+        xcopy /s /q /y /i "C:\Program Files\PostgreSQL\14\include" postgresql-14\include
+    - name: build qtbase
+      shell: cmd
+      run: |
+        curl -L -o qtbase-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtbase-everywhere-src-5.15.2.zip
+        7z x -y qtbase-everywhere-src-5.15.2.zip
+        pushd qtbase-everywhere-src-5.15.2
+        del /f config.cache
+        call configure -prefix %CD%\..\Qt-5.15.2 -opensource -confirm-license -shared -platform win32-g++ -opengl desktop -release -nomake tests -nomake examples -openssl-linked OPENSSL_LIBS="-lcrypto-1_1-x64 -lssl-1_1-x64" -I %CD%\..\OpenSSL\include -L %CD%\..\OpenSSL\bin
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtbase.txt
+    - name: build qsqlmysql
+      shell: cmd
+      run: |
+        pushd qtbase-everywhere-src-5.15.2
+        del /f config.cache
+        call configure -prefix %CD%\..\Qt-5.15.2 -opensource -confirm-license -shared -platform win32-g++ -opengl desktop -release -nomake tests -nomake examples -openssl-linked OPENSSL_LIBS="-lcrypto-1_1-x64 -lssl-1_1-x64" -I %CD%\..\OpenSSL\include -L %CD%\..\OpenSSL\bin -plugin-sql-mysql MYSQL_PREFIX=C:\mysql MYSQL_INCDIR=C:\mysql\include MYSQL_LIBDIR=C:\mysql\lib
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qsqlmysql.txt
+    - name: build qsqlpsql
+      shell: cmd
+      run: |
+        pushd qtbase-everywhere-src-5.15.2
+        del /f config.cache
+        call configure -prefix %CD%\..\Qt-5.15.2 -opensource -confirm-license -shared -platform win32-g++ -opengl desktop -release -nomake tests -nomake examples -openssl-linked OPENSSL_LIBS="-lcrypto-1_1-x64 -lssl-1_1-x64" -I %CD%\..\OpenSSL\include -L %CD%\..\OpenSSL\bin -plugin-sql-psql PSQL_INCDIR=%CD%\..\postgresql-14\include PSQL_LIBDIR=%CD%\..\postgresql-14\bin
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qsqlpsql.txt
+    - name: build qtdeclarative
+      shell: cmd
+      run: |
+        curl -L -o qtdeclarative-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtdeclarative-everywhere-src-5.15.2.zip
+        7z x -y qtdeclarative-everywhere-src-5.15.2.zip
+        pushd qtdeclarative-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtdeclarative.txt
+    - name: build qtquickcontrols
+      shell: cmd
+      run: |
+        curl -L -o qtquickcontrols-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtquickcontrols-everywhere-src-5.15.2.zip
+        7z x -y qtquickcontrols-everywhere-src-5.15.2.zip
+        pushd qtquickcontrols-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtquickcontrols.txt
+    - name: build qtquickcontrols2
+      shell: cmd
+      run: |
+        curl -L -o qtquickcontrols2-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtquickcontrols2-everywhere-src-5.15.2.zip
+        7z x -y qtquickcontrols2-everywhere-src-5.15.2.zip
+        pushd qtquickcontrols2-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtquickcontrols2.txt
+    - name: build qtquick3d
+      shell: cmd
+      run: |
+        curl -L -o qtquick3d-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtquick3d-everywhere-src-5.15.2.zip
+        7z x -y qtquick3d-everywhere-src-5.15.2.zip
+        pushd qtquick3d-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtquick3d.txt
+    - name: build qtquicktimeline
+      shell: cmd
+      run: |
+        curl -L -o qtquicktimeline-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtquicktimeline-everywhere-src-5.15.2.zip
+        7z x -y qtquicktimeline-everywhere-src-5.15.2.zip
+        pushd qtquicktimeline-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtquicktimeline.txt
+    - name: build qtwebsockets
+      shell: cmd
+      run: |
+        curl -L -o qtwebsockets-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtwebsockets-everywhere-src-5.15.2.zip
+        7z x -y qtwebsockets-everywhere-src-5.15.2.zip
+        pushd qtwebsockets-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtwebsockets.txt
+    - name: build qt3d
+      shell: cmd
+      run: |
+        curl -L -o qt3d-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qt3d-everywhere-src-5.15.2.zip
+        7z x -y qt3d-everywhere-src-5.15.2.zip
+        pushd qt3d-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qt3d.txt
+    - name: build qtactiveqt
+      shell: cmd
+      run: |
+        curl -L -o qtactiveqt-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtactiveqt-everywhere-src-5.15.2.zip
+        7z x -y qtactiveqt-everywhere-src-5.15.2.zip
+        pushd qtactiveqt-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtactiveqt.txt
+    - name: build qtandroidextras
+      shell: cmd
+      run: |
+        curl -L -o qtandroidextras-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtandroidextras-everywhere-src-5.15.2.zip
+        7z x -y qtandroidextras-everywhere-src-5.15.2.zip
+        pushd qtandroidextras-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtandroidextras.txt
+    - name: build qtcharts
+      shell: cmd
+      run: |
+        curl -L -o qtcharts-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtcharts-everywhere-src-5.15.2.zip
+        7z x -y qtcharts-everywhere-src-5.15.2.zip
+        pushd qtcharts-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtcharts.txt
+    - name: build qtconnectivity
+      shell: cmd
+      run: |
+        curl -L -o qtconnectivity-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtconnectivity-everywhere-src-5.15.2.zip
+        7z x -y qtconnectivity-everywhere-src-5.15.2.zip
+        pushd qtconnectivity-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtconnectivity.txt
+    - name: build qtdatavis3d
+      shell: cmd
+      run: |
+        curl -L -o qtdatavis3d-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtdatavis3d-everywhere-src-5.15.2.zip
+        7z x -y qtdatavis3d-everywhere-src-5.15.2.zip
+        pushd qtdatavis3d-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtdatavis3d.txt
+    - name: build qtgamepad
+      shell: cmd
+      run: |
+        curl -L -o qtgamepad-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtgamepad-everywhere-src-5.15.2.zip
+        7z x -y qtgamepad-everywhere-src-5.15.2.zip
+        pushd qtgamepad-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtgamepad.txt
+    - name: build qtgraphicaleffects
+      shell: cmd
+      run: |
+        curl -L -o qtgraphicaleffects-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtgraphicaleffects-everywhere-src-5.15.2.zip
+        7z x -y qtgraphicaleffects-everywhere-src-5.15.2.zip
+        pushd qtgraphicaleffects-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtgraphicaleffects.txt
+    - name: build qtimageformats
+      shell: cmd
+      run: |
+        curl -L -o qtimageformats-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtimageformats-everywhere-src-5.15.2.zip
+        7z x -y qtimageformats-everywhere-src-5.15.2.zip
+        pushd qtimageformats-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtimageformats.txt
+    - name: build qtlocation
+      shell: cmd
+      run: |
+        curl -L -o qtlocation-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtlocation-everywhere-src-5.15.2.zip
+        7z x -y qtlocation-everywhere-src-5.15.2.zip
+        pushd qtlocation-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtlocation.txt
+    - name: build qtlottie
+      shell: cmd
+      run: |
+        curl -L -o qtlottie-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtlottie-everywhere-src-5.15.2.zip
+        7z x -y qtlottie-everywhere-src-5.15.2.zip
+        pushd qtlottie-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtlottie.txt
+    - name: build qtmultimedia
+      shell: cmd
+      run: |
+        curl -L -o qtmultimedia-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtmultimedia-everywhere-src-5.15.2.zip
+        7z x -y qtmultimedia-everywhere-src-5.15.2.zip
+        pushd qtmultimedia-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtmultimedia.txt
+    - name: build qtnetworkauth
+      shell: cmd
+      run: |
+        curl -L -o qtnetworkauth-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtnetworkauth-everywhere-src-5.15.2.zip
+        7z x -y qtnetworkauth-everywhere-src-5.15.2.zip
+        pushd qtnetworkauth-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtnetworkauth.txt
+    - name: build qtpurchasing
+      shell: cmd
+      run: |
+        curl -L -o qtpurchasing-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtpurchasing-everywhere-src-5.15.2.zip
+        7z x -y qtpurchasing-everywhere-src-5.15.2.zip
+        pushd qtpurchasing-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtpurchasing.txt
+    - name: build qtremoteobjects
+      shell: cmd
+      run: |
+        curl -L -o qtremoteobjects-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtremoteobjects-everywhere-src-5.15.2.zip
+        7z x -y qtremoteobjects-everywhere-src-5.15.2.zip
+        pushd qtremoteobjects-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtremoteobjects.txt
+    - name: build qtscript
+      shell: cmd
+      run: |
+        curl -L -o qtscript-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtscript-everywhere-src-5.15.2.zip
+        7z x -y qtscript-everywhere-src-5.15.2.zip
+        pushd qtscript-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtscript.txt
+    - name: build qtscxml
+      shell: cmd
+      run: |
+        curl -L -o qtscxml-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtscxml-everywhere-src-5.15.2.zip
+        7z x -y qtscxml-everywhere-src-5.15.2.zip
+        pushd qtscxml-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtscxml.txt
+    - name: build qtsensors
+      shell: cmd
+      run: |
+        curl -L -o qtsensors-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtsensors-everywhere-src-5.15.2.zip
+        7z x -y qtsensors-everywhere-src-5.15.2.zip
+        pushd qtsensors-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtsensors.txt
+    - name: build qtserialbus
+      shell: cmd
+      run: |
+        curl -L -o qtserialbus-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtserialbus-everywhere-src-5.15.2.zip
+        7z x -y qtserialbus-everywhere-src-5.15.2.zip
+        pushd qtserialbus-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtserialbus.txt
+    - name: build qtserialport
+      shell: cmd
+      run: |
+        curl -L -o qtserialport-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtserialport-everywhere-src-5.15.2.zip
+        7z x -y qtserialport-everywhere-src-5.15.2.zip
+        pushd qtserialport-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtserialport.txt
+    - name: build qtspeech
+      shell: cmd
+      run: |
+        curl -L -o qtspeech-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtspeech-everywhere-src-5.15.2.zip
+        7z x -y qtspeech-everywhere-src-5.15.2.zip
+        pushd qtspeech-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtspeech.txt
+    - name: build qtsvg
+      shell: cmd
+      run: |
+        curl -L -o qtsvg-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtsvg-everywhere-src-5.15.2.zip
+        7z x -y qtsvg-everywhere-src-5.15.2.zip
+        pushd qtsvg-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtsvg.txt
+    - name: build qttools
+      shell: cmd
+      run: |
+        curl -L -o qttools-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qttools-everywhere-src-5.15.2.zip
+        7z x -y qttools-everywhere-src-5.15.2.zip
+        pushd qttools-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qttools.txt
+    - name: build qttranslations
+      shell: cmd
+      run: |
+        curl -L -o qttranslations-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qttranslations-everywhere-src-5.15.2.zip
+        7z x -y qttranslations-everywhere-src-5.15.2.zip
+        pushd qttranslations-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qttranslations.txt
+    - name: build qtvirtualkeyboard
+      shell: cmd
+      run: |
+        curl -L -o qtvirtualkeyboard-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtvirtualkeyboard-everywhere-src-5.15.2.zip
+        7z x -y qtvirtualkeyboard-everywhere-src-5.15.2.zip
+        pushd qtvirtualkeyboard-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtvirtualkeyboard.txt
+    - name: build qtwebchannel
+      shell: cmd
+      run: |
+        curl -L -o qtwebchannel-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtwebchannel-everywhere-src-5.15.2.zip
+        7z x -y qtwebchannel-everywhere-src-5.15.2.zip
+        pushd qtwebchannel-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtwebchannel.txt
+    - name: build qtwebglplugin
+      shell: cmd
+      run: |
+        curl -L -o qtwebglplugin-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtwebglplugin-everywhere-src-5.15.2.zip
+        7z x -y qtwebglplugin-everywhere-src-5.15.2.zip
+        pushd qtwebglplugin-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtwebglplugin.txt
+    - name: build qtwebview
+      shell: cmd
+      run: |
+        curl -L -o qtwebview-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtwebview-everywhere-src-5.15.2.zip
+        7z x -y qtwebview-everywhere-src-5.15.2.zip
+        pushd qtwebview-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtwebview.txt
+    - name: build qtwinextras
+      shell: cmd
+      run: |
+        curl -L -o qtwinextras-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtwinextras-everywhere-src-5.15.2.zip
+        7z x -y qtwinextras-everywhere-src-5.15.2.zip
+        pushd qtwinextras-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtwinextras.txt
+    - name: build qtxmlpatterns
+      shell: cmd
+      run: |
+        curl -L -o qtxmlpatterns-everywhere-src-5.15.2.zip https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/qtxmlpatterns-everywhere-src-5.15.2.zip
+        7z x -y qtxmlpatterns-everywhere-src-5.15.2.zip
+        pushd qtxmlpatterns-everywhere-src-5.15.2
+        qmake
+        mingw32-make -j2
+        mingw32-make install
+        popd
+        pyfind Qt-5.15.2 -type f > qtxmlpatterns.txt
+    - name: zip
+      shell: cmd
+      run: |
+        pycat qtbase.txt qsqlmysql.txt | pysort | pyuniq -u > qsqlmysql-diff.txt
+        pycat qsqlmysql.txt qsqlpsql.txt | pysort | pyuniq -u > qsqlpsql-diff.txt
+        pycat qsqlpsql.txt qtdeclarative.txt | pysort | pyuniq -u > qtdeclarative-diff.txt
+        pycat qtdeclarative.txt qtquickcontrols.txt | pysort | pyuniq -u > qtquickcontrols-diff.txt
+        pycat qtquickcontrols.txt qtquickcontrols2.txt | pysort | pyuniq -u > qtquickcontrols2-diff.txt
+        pycat qtquickcontrols2.txt qtquick3d.txt | pysort | pyuniq -u > qtquick3d-diff.txt
+        pycat qtquick3d.txt qtquicktimeline.txt | pysort | pyuniq -u > qtquicktimeline-diff.txt
+        pycat qtquicktimeline.txt qtwebsockets.txt | pysort | pyuniq -u > qtwebsockets-diff.txt
+        pycat qtwebsockets.txt qt3d.txt | pysort | pyuniq -u > qt3d-diff.txt
+        pycat qt3d.txt qtactiveqt.txt | pysort | pyuniq -u > qtactiveqt-diff.txt
+        pycat qtactiveqt.txt qtandroidextras.txt | pysort | pyuniq -u > qtandroidextras-diff.txt
+        pycat qtandroidextras.txt qtcharts.txt | pysort | pyuniq -u > qtcharts-diff.txt
+        pycat qtcharts.txt qtconnectivity.txt | pysort | pyuniq -u > qtconnectivity-diff.txt
+        pycat qtconnectivity.txt qtdatavis3d.txt | pysort | pyuniq -u > qtdatavis3d-diff.txt
+        pycat qtdatavis3d.txt qtgamepad.txt | pysort | pyuniq -u > qtgamepad-diff.txt
+        pycat qtgamepad.txt qtgraphicaleffects.txt | pysort | pyuniq -u > qtgraphicaleffects-diff.txt
+        pycat qtgraphicaleffects.txt qtimageformats.txt | pysort | pyuniq -u > qtimageformats-diff.txt
+        pycat qtimageformats.txt qtlocation.txt | pysort | pyuniq -u > qtlocation-diff.txt
+        pycat qtlocation.txt qtlottie.txt | pysort | pyuniq -u > qtlottie-diff.txt
+        pycat qtlottie.txt qtmultimedia.txt | pysort | pyuniq -u > qtmultimedia-diff.txt
+        pycat qtmultimedia.txt qtnetworkauth.txt | pysort | pyuniq -u > qtnetworkauth-diff.txt
+        pycat qtnetworkauth.txt qtpurchasing.txt | pysort | pyuniq -u > qtpurchasing-diff.txt
+        pycat qtpurchasing.txt qtremoteobjects.txt | pysort | pyuniq -u > qtremoteobjects-diff.txt
+        pycat qtremoteobjects.txt qtscript.txt | pysort | pyuniq -u > qtscript-diff.txt
+        pycat qtscript.txt qtscxml.txt | pysort | pyuniq -u > qtscxml-diff.txt
+        pycat qtscxml.txt qtsensors.txt | pysort | pyuniq -u > qtsensors-diff.txt
+        pycat qtsensors.txt qtserialbus.txt | pysort | pyuniq -u > qtserialbus-diff.txt
+        pycat qtserialbus.txt qtserialport.txt | pysort | pyuniq -u > qtserialport-diff.txt
+        pycat qtserialport.txt qtspeech.txt | pysort | pyuniq -u > qtspeech-diff.txt
+        pycat qtspeech.txt qtsvg.txt | pysort | pyuniq -u > qtsvg-diff.txt
+        pycat qtsvg.txt qttools.txt | pysort | pyuniq -u > qttools-diff.txt
+        pycat qttools.txt qttranslations.txt | pysort | pyuniq -u > qttranslations-diff.txt
+        pycat qttranslations.txt qtvirtualkeyboard.txt | pysort | pyuniq -u > qtvirtualkeyboard-diff.txt
+        pycat qtvirtualkeyboard.txt qtwebchannel.txt | pysort | pyuniq -u > qtwebchannel-diff.txt
+        pycat qtwebchannel.txt qtwebglplugin.txt | pysort | pyuniq -u > qtwebglplugin-diff.txt
+        pycat qtwebglplugin.txt qtwebview.txt | pysort | pyuniq -u > qtwebview-diff.txt
+        pycat qtwebview.txt qtwinextras.txt | pysort | pyuniq -u > qtwinextras-diff.txt
+        pycat qtwinextras.txt qtxmlpatterns.txt | pysort | pyuniq -u > qtxmlpatterns-diff.txt
+        del /f Qt-5.15.2-qtbase.zip
+        del /f Qt-5.15.2-qsqlmysql.zip
+        del /f Qt-5.15.2-qsqlpsql.zip
+        del /f Qt-5.15.2-qtdeclarative.zip
+        del /f Qt-5.15.2-qtquickcontrols.zip
+        del /f Qt-5.15.2-qtquickcontrols2.zip
+        del /f Qt-5.15.2-qtquick3d.zip
+        del /f Qt-5.15.2-qtquicktimeline.zip
+        del /f Qt-5.15.2-qtwebsockets.zip
+        del /f Qt-5.15.2-qt3d.zip
+        del /f Qt-5.15.2-qtactiveqt.zip
+        del /f Qt-5.15.2-qtandroidextras.zip
+        del /f Qt-5.15.2-qtcharts.zip
+        del /f Qt-5.15.2-qtconnectivity.zip
+        del /f Qt-5.15.2-qtdatavis3d.zip
+        del /f Qt-5.15.2-qtgamepad.zip
+        del /f Qt-5.15.2-qtgraphicaleffects.zip
+        del /f Qt-5.15.2-qtimageformats.zip
+        del /f Qt-5.15.2-qtlocation.zip
+        del /f Qt-5.15.2-qtlottie.zip
+        del /f Qt-5.15.2-qtmultimedia.zip
+        del /f Qt-5.15.2-qtnetworkauth.zip
+        del /f Qt-5.15.2-qtpurchasing.zip
+        del /f Qt-5.15.2-qtremoteobjects.zip
+        del /f Qt-5.15.2-qtscript.zip
+        del /f Qt-5.15.2-qtscxml.zip
+        del /f Qt-5.15.2-qtsensors.zip
+        del /f Qt-5.15.2-qtserialbus.zip
+        del /f Qt-5.15.2-qtserialport.zip
+        del /f Qt-5.15.2-qtspeech.zip
+        del /f Qt-5.15.2-qtsvg.zip
+        del /f Qt-5.15.2-qttools.zip
+        del /f Qt-5.15.2-qttranslations.zip
+        del /f Qt-5.15.2-qtvirtualkeyboard.zip
+        del /f Qt-5.15.2-qtwebchannel.zip
+        del /f Qt-5.15.2-qtwebglplugin.zip
+        del /f Qt-5.15.2-qtwebview.zip
+        del /f Qt-5.15.2-qtwinextras.zip
+        del /f Qt-5.15.2-qtxmlpatterns.zip
+        pyzip a --list qtbase.txt Qt-5.15.2-qtbase.zip
+        pyzip a --list qsqlmysql-diff.txt Qt-5.15.2-qsqlmysql.zip
+        pyzip a --list qsqlpsql-diff.txt Qt-5.15.2-qsqlpsql.zip
+        pyzip a --list qtdeclarative-diff.txt Qt-5.15.2-qtdeclarative.zip
+        pyzip a --list qtquickcontrols-diff.txt Qt-5.15.2-qtquickcontrols.zip
+        pyzip a --list qtquickcontrols2-diff.txt Qt-5.15.2-qtquickcontrols2.zip
+        pyzip a --list qtquick3d-diff.txt Qt-5.15.2-qtquick3d.zip
+        pyzip a --list qtquicktimeline-diff.txt Qt-5.15.2-qtquicktimeline.zip
+        pyzip a --list qtwebsockets-diff.txt Qt-5.15.2-qtwebsockets.zip
+        pyzip a --list qt3d-diff.txt Qt-5.15.2-qt3d.zip
+        pyzip a --list qtactiveqt-diff.txt Qt-5.15.2-qtactiveqt.zip
+        pyzip a --list qtandroidextras-diff.txt Qt-5.15.2-qtandroidextras.zip
+        pyzip a --list qtcharts-diff.txt Qt-5.15.2-qtcharts.zip
+        pyzip a --list qtconnectivity-diff.txt Qt-5.15.2-qtconnectivity.zip
+        pyzip a --list qtdatavis3d-diff.txt Qt-5.15.2-qtdatavis3d.zip
+        pyzip a --list qtgamepad-diff.txt Qt-5.15.2-qtgamepad.zip
+        pyzip a --list qtgraphicaleffects-diff.txt Qt-5.15.2-qtgraphicaleffects.zip
+        pyzip a --list qtimageformats-diff.txt Qt-5.15.2-qtimageformats.zip
+        pyzip a --list qtlocation-diff.txt Qt-5.15.2-qtlocation.zip
+        pyzip a --list qtlottie-diff.txt Qt-5.15.2-qtlottie.zip
+        pyzip a --list qtmultimedia-diff.txt Qt-5.15.2-qtmultimedia.zip
+        pyzip a --list qtnetworkauth-diff.txt Qt-5.15.2-qtnetworkauth.zip
+        pyzip a --list qtpurchasing-diff.txt Qt-5.15.2-qtpurchasing.zip
+        pyzip a --list qtremoteobjects-diff.txt Qt-5.15.2-qtremoteobjects.zip
+        pyzip a --list qtscript-diff.txt Qt-5.15.2-qtscript.zip
+        pyzip a --list qtscxml-diff.txt Qt-5.15.2-qtscxml.zip
+        pyzip a --list qtsensors-diff.txt Qt-5.15.2-qtsensors.zip
+        pyzip a --list qtserialbus-diff.txt Qt-5.15.2-qtserialbus.zip
+        pyzip a --list qtserialport-diff.txt Qt-5.15.2-qtserialport.zip
+        pyzip a --list qtspeech-diff.txt Qt-5.15.2-qtspeech.zip
+        pyzip a --list qtsvg-diff.txt Qt-5.15.2-qtsvg.zip
+        pyzip a --list qttools-diff.txt Qt-5.15.2-qttools.zip
+        pyzip a --list qttranslations-diff.txt Qt-5.15.2-qttranslations.zip
+        pyzip a --list qtvirtualkeyboard-diff.txt Qt-5.15.2-qtvirtualkeyboard.zip
+        pyzip a --list qtwebchannel-diff.txt Qt-5.15.2-qtwebchannel.zip
+        pyzip a --list qtwebglplugin-diff.txt Qt-5.15.2-qtwebglplugin.zip
+        pyzip a --list qtwebview-diff.txt Qt-5.15.2-qtwebview.zip
+        pyzip a --list qtwinextras-diff.txt Qt-5.15.2-qtwinextras.zip
+        pyzip a --list qtxmlpatterns-diff.txt Qt-5.15.2-qtxmlpatterns.zip
+    - name: extra
+      shell: cmd
+      run: |
+        pyzip a -v --dir Qt-5.15.2\bin --base OpenSSL\bin Qt-5.15.2-qtbase.zip OpenSSL\bin\*.dll
+        mugideploy list --bin Qt-5.15.2\plugins\sqldrivers\qsqlmysql.dll | pygrep -v mingw64 | pygrep -v OpenSSL | pygrep -v Qt5Core | pygrep -v Qt5Sql | pygrep -v libssl | pygrep -v libcrypto | pygrep -v sqldrivers | pyxargs pyzip a -v --dir Qt-5.15.2\bin Qt-5.15.2-qsqlmysql.zip
+        mugideploy list --bin Qt-5.15.2\plugins\sqldrivers\qsqlpsql.dll | pygrep -v mingw64 | pygrep -v OpenSSL | pygrep -v Qt5Core | pygrep -v Qt5Sql | pygrep -v libssl | pygrep -v libcrypto | pygrep -v sqldrivers | pyxargs pyzip a -v --dir Qt-5.15.2\bin Qt-5.15.2-qsqlpsql.zip
+        echo qsqlmysql list
+        mugideploy list --bin Qt-5.15.2\plugins\sqldrivers\qsqlmysql.dll
+        echo qsqlmysql list filtered
+        mugideploy list --bin Qt-5.15.2\plugins\sqldrivers\qsqlmysql.dll | pygrep -v mingw64 | pygrep -v OpenSSL | pygrep -v Qt5Core | pygrep -v Qt5Sql | pygrep -v libssl | pygrep -v libcrypto | pygrep -v sqldrivers
+        echo qsqlpsql list
+        mugideploy list --bin Qt-5.15.2\plugins\sqldrivers\qsqlpsql.dll
+        echo qsqlpsql list filtered
+        mugideploy list --bin Qt-5.15.2\plugins\sqldrivers\qsqlpsql.dll | pygrep -v mingw64 | pygrep -v OpenSSL | pygrep -v Qt5Core | pygrep -v Qt5Sql | pygrep -v libssl | pygrep -v libcrypto | pygrep -v sqldrivers
+    - name: release
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: |
+          Qt-5.15.2-qtbase.zip
+          Qt-5.15.2-qsqlmysql.zip
+          Qt-5.15.2-qsqlpsql.zip
+          Qt-5.15.2-qtdeclarative.zip
+          Qt-5.15.2-qtquickcontrols.zip
+          Qt-5.15.2-qtquickcontrols2.zip
+          Qt-5.15.2-qtquick3d.zip
+          Qt-5.15.2-qtquicktimeline.zip
+          Qt-5.15.2-qtwebsockets.zip
+          Qt-5.15.2-qt3d.zip
+          Qt-5.15.2-qtactiveqt.zip
+          Qt-5.15.2-qtandroidextras.zip
+          Qt-5.15.2-qtcharts.zip
+          Qt-5.15.2-qtconnectivity.zip
+          Qt-5.15.2-qtdatavis3d.zip
+          Qt-5.15.2-qtgamepad.zip
+          Qt-5.15.2-qtgraphicaleffects.zip
+          Qt-5.15.2-qtimageformats.zip
+          Qt-5.15.2-qtlocation.zip
+          Qt-5.15.2-qtlottie.zip
+          Qt-5.15.2-qtmultimedia.zip
+          Qt-5.15.2-qtnetworkauth.zip
+          Qt-5.15.2-qtpurchasing.zip
+          Qt-5.15.2-qtremoteobjects.zip
+          Qt-5.15.2-qtscript.zip
+          Qt-5.15.2-qtscxml.zip
+          Qt-5.15.2-qtsensors.zip
+          Qt-5.15.2-qtserialbus.zip
+          Qt-5.15.2-qtserialport.zip
+          Qt-5.15.2-qtspeech.zip
+          Qt-5.15.2-qtsvg.zip
+          Qt-5.15.2-qttools.zip
+          Qt-5.15.2-qttranslations.zip
+          Qt-5.15.2-qtvirtualkeyboard.zip
+          Qt-5.15.2-qtwebchannel.zip
+          Qt-5.15.2-qtwebglplugin.zip
+          Qt-5.15.2-qtwebview.zip
+          Qt-5.15.2-qtwinextras.zip
+          Qt-5.15.2-qtxmlpatterns.zip
