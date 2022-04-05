@@ -3,10 +3,27 @@ from logging import warning
 import re
 import os
 import textwrap
+import urllib.request
 
 from pbat import read_compile_write
 from io import StringIO
 import yaml
+import argparse
+
+def with_proto(proto, host):
+    return proto + host.split("//")[-1]
+
+def fetch(url, path):
+    http_proxy = os.environ.get('http_proxy')
+    req = urllib.request.Request(url)
+    if http_proxy is not None:
+        if url.startswith("https"):
+            req.set_proxy(http_proxy, 'https')
+        else:
+            req.set_proxy(http_proxy, 'http')
+    res = urllib.request.urlopen(req)
+    with open(path, 'wb') as f:
+        f.write(res.read())
 
 class folded_str(str): pass
 class literal_str(str): pass
@@ -19,30 +36,33 @@ def literal_str_representer(dumper, data):
 yaml.add_representer(folded_str, folded_str_representer)
 yaml.add_representer(literal_str, literal_str_representer)
 
-def compile(text):
-
-    if isinstance(text, Step):
-        text = "\n".join(text.run)
-    elif isinstance(text, list):
-        text = "\n".join(text) + "\n"
-
-    text = """
-    curl_in_path true
-    download_test off
-    unzip_test off
-    github true
-    """ + text
-
-    src = StringIO()
-    src.write(text)
-    src.seek(0)
-    dst = StringIO()
-    read_compile_write(src, dst, echo_off=False, warning=False)
-    dst.seek(0)
-
-    value = re.sub("\\s+$","",dst.getvalue()) + "\n"
-
-    return value
+class Pbat:
+    def __init__(self, env):
+        if env == 'local':
+            self._opts = ['curl_in_path true', 'download_test on', 'unzip_test on', 'github false']
+            http_proxy = os.environ.get('http_proxy')
+            if http_proxy is not None:
+                http_proxy = http_proxy.split('/')[-1]
+                self._opts.append('curl_proxy {}'.format(http_proxy))
+        elif env == 'github':
+            self._opts = ['curl_in_path true', 'download_test off', 'unzip_test off', 'github true']
+        else:
+            raise NotImplemented()
+            
+    def compile(self, text):
+        if isinstance(text, Step):
+            text = "\n".join(text.run)
+        elif isinstance(text, list):
+            text = "\n".join(text) + "\n"
+        text = "\n".join(self._opts) + "\n" + text
+        src = StringIO()
+        src.write(text)
+        src.seek(0)
+        dst = StringIO()
+        read_compile_write(src, dst, echo_off=False, warning=False)
+        dst.seek(0)
+        value = re.sub("\\s+$","",dst.getvalue()) + "\n"
+        return value
 
 def read_names():
     names = []
@@ -90,7 +110,7 @@ def reorder(names):
     if 0:
         return [qtbase, qsqlmysql, qsqlpsql]
 
-    return [qtbase, qsqlmysql, qsqlpsql, qtdeclarative, qtquickcontrols, qtquickcontrols2, qtquick3d, qtquicktimeline, qtwebsockets] + names
+    return [qtbase, qsqlmysql, qsqlpsql, qtdeclarative, qtquickcontrols, qtquickcontrols2, qtquick3d, qtquicktimeline, qtwebsockets] + names + [qtdoc]
 
 def clean_exp(names):
     clean = []
@@ -100,6 +120,27 @@ def clean_exp(names):
         clean.append("rmdir /q /s {}".format(long_name(name)))
     clean = "\n".join(clean) + "\n"
     return clean
+
+def build_docs_cmds(name):
+    return """pushd {} 
+mingw32-make docs
+mingw32-make install_docs
+popd
+pyfind Qt-5.15.2 -type f > {}-docs.txt
+""".format(long_name(name), name).split("\n")
+
+def zip_docs_cmds(names):
+    cmds = []
+    n1 = names[-1]
+    n2 = names[0]
+    cmds.append('pycat {}.txt {}-docs.txt | pysort | pyuniq -u > {}-docs-diff.txt\n'.format(n1, n2, n2))
+    for n1, n2 in zip(names, names[1:]):
+        cmds.append('pycat {}-docs.txt {}-docs.txt | pysort | pyuniq -u > {}-docs-diff.txt\n'.format(n1, n2, n2))
+    for name in names:
+        cmds.append("del /f Qt-5.15.2-{}-docs.zip".format(name))
+    for name in names:
+        cmds.append('pyzip a --list {}-docs-diff.txt Qt-5.15.2-{}-docs.zip\n'.format(name, name))
+    return cmds
 
 def build_cmds(name):
     configure = {
@@ -168,12 +209,14 @@ mugideploy list --bin Qt-5.15.2\\plugins\\sqldrivers\\qsqlmysql.dll | {} | pyxar
 mugideploy list --bin Qt-5.15.2\\plugins\\sqldrivers\\qsqlpsql.dll | {} | pyxargs pyzip a -v --dir Qt-5.15.2\\bin Qt-5.15.2-qsqlpsql.zip
 """.format(excl,excl).split("\n")
 
-def prepare_cmds():
-    return """set MINGW_BIN_PATH=%CD%\\mingw64\\bin
+def prepare_cmds(docs):
+    cmds = """set MINGW_BIN_PATH=%CD%\\mingw64\\bin
+set_var(LLVM_INSTALL_DIR, %CD%\\libclang)
 set_path(
     %MINGW_BIN_PATH%,
     %CD%\\Qt-5.15.2\\bin,
     %CD%\\OpenSSL\\bin,
+    %CD%\\libclang\\bin,
     C:\\Strawberry\\perl\\bin,
     %CD%\\postgresql-14\\bin,
     C:\\mysql\\lib,
@@ -197,10 +240,17 @@ download(https://github.com/mugiseyebrows/build-openssl/releases/download/1.1.1n
 unzip(OpenSSL.zip, OpenSSL)
 copy_dir(C:\\Program Files\\PostgreSQL\\14\\bin, postgresql-14\\bin)
 copy_dir(C:\\Program Files\\PostgreSQL\\14\\include, postgresql-14\\include)
+# qttools depends on libclang
+download(https://download.qt.io/development_releases/prebuilt/libclang/libclang-release_130-based-windows-mingw_64.7z, libclang-release_130-based-windows-mingw_64.7z)
+unzip(libclang-release_130-based-windows-mingw_64.7z, libclang)
 """.split('\n')
+    return cmds
 
-def zip_list(names):
-    return "\n".join(['Qt-5.15.2-{}.zip'.format(name) for name in names]) + "\n"
+def zip_list(names, names2, docs):
+    zips = ['Qt-5.15.2-{}.zip'.format(name) for name in names]
+    if docs:
+        zips += ['Qt-5.15.2-{}-docs.zip'.format(name) for name in names2]
+    return "\n".join(zips) + "\n"
 
 class Dumper(yaml.Dumper):
     
@@ -215,38 +265,66 @@ class Step:
     name: str
     run: list = field(default_factory=list)
 
-if __name__ == "__main__":
+def main():
     steps = []
     
+    p = os.path.join(os.path.dirname(__file__), "md5sums.txt")
+    if not os.path.exists(p):
+        fetch("https://download.qt.io/official_releases/qt/5.15/5.15.2/submodules/md5sums.txt", p)
+
     names = read_names()
     names = reorder(names)
+
+    names_ = [n for n in names if n not in ['qsqlmysql','qsqlpsql']]
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('env', choices=['local','github'])
+    parser.add_argument('--docs', action='store_true')
+
+    args = parser.parse_args()
     
-    steps.append(Step('prepare', prepare_cmds()))
+    steps.append(Step('prepare', prepare_cmds(args.docs)))
 
     for name in names:
-        steps.append(Step('build ' + name, build_cmds(name)))
+        steps.append(Step('build {}'.format(name), build_cmds(name)))
     
+    if args.docs:
+        for name in names_:
+            steps.append(Step('build {} docs'.format(name), build_docs_cmds(name)))
+
     steps.append(Step("zip", zip_cmds(names)))
+
+    if args.docs:
+        steps.append(Step("zip docs", zip_docs_cmds(names_)))
 
     steps.append(Step("extra", extra_cmds()))
 
+    pbat = Pbat(args.env)
+
     steps_ = []
     for step in steps:
-        run = compile(step)
-        steps_.append({"name": step.name, "shell": "cmd", "run": literal_str(run)})
+        run = pbat.compile(step)
+        run = literal_str(run) if args.env == 'github' else run
+        steps_.append({"name": step.name, "shell": "cmd", "run": run})
 
-    steps_.append({
-        "name": "release",
-        "uses": "softprops/action-gh-release@v1",
-        "if": "startsWith(github.ref, 'refs/tags/')",
-        "with": {"files": literal_str(zip_list(names))},
-    })
+    if args.env == 'local':
+        dst = os.path.join(os.path.dirname(__file__), "build.bat")
+        with open(dst, 'w', encoding='utf-8') as f:
+            for step in steps_:
+                f.write("rem " + step['name'] + "\n")
+                f.write(step['run'] + "\n")
+    else:
+        steps_.append({
+            "name": "release",
+            "uses": "softprops/action-gh-release@v1",
+            "if": "startsWith(github.ref, 'refs/tags/')",
+            "with": {"files": literal_str(zip_list(names, names_, args.docs))},
+        })
+        dst = os.path.join(os.path.dirname(__file__), ".github", "workflows", "main.yml")
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        data = {"name":"main","on":{"push":{"tags":"*"}},"jobs":{"main": {"runs-on":"windows-2022","steps":steps_}}}
+        with open(dst, 'w', encoding='utf-8') as f:
+            f.write(yaml.dump(data, None, Dumper=Dumper, sort_keys=False))
 
-    dst = os.path.join(os.path.dirname(__file__), ".github", "workflows", "main.yml")
-
-    os.makedirs(os.path.dirname(dst), exist_ok=True)
-
-    data = {"name":"main","on":{"push":{"tags":"*"}},"jobs":{"main": {"runs-on":"windows-2022","steps":steps_}}}
-
-    with open(dst, 'w', encoding='utf-8') as f:
-        f.write(yaml.dump(data, None, Dumper=Dumper, sort_keys=False))
+if __name__ == "__main__":
+    main()
