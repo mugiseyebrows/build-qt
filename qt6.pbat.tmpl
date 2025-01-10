@@ -8,6 +8,7 @@ def mingw
     where gcc || exit /b
 
 def qtbase depends on mingw psql mysql
+    use(conda)
     use(python, 3.13)
     install(ninja)
     install(mugideploy)

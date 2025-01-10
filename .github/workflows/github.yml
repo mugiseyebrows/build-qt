@@ -16,7 +16,7 @@ jobs:
         move /y C:\Strawberry C:\Strawberry_
         move /y C:\tools\php C:\tools\php_
         call pull-mingw
-        call qwt681
+        call qt681
     - name: upload
       uses: actions/upload-artifact@v4
       with:

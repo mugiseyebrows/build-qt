@@ -8,7 +8,7 @@ def main
     move(C:\Strawberry, C:\Strawberry_)
     move(C:\tools\php, C:\tools\php_)
     call pull-mingw
-    call qwt681
+    call qt681
     github_upload(Qt-6.8.1.zip, Qwt-6.3.0-Qt-6.8.1.zip)
     github_release(Qt-6.8.1.zip, Qwt-6.3.0-Qt-6.8.1.zip)
 
