@@ -1,0 +1,100 @@
+{% set majmin = ver.rsplit(".", 1)[0] %}
+{% set qwt_ver = "6.3.0" %}
+{% set qwt_ref = "v6.3.0" %}
+use-patch-var 1
+
+def mingw
+    add_path(C:\mingw1310_64\bin)
+    where gcc || exit /b
+
+def qtbase depends on mingw psql mysql
+    use(python, 3.13)
+    install(ninja)
+    install(mugideploy)
+    use(cmake)
+    if_exist_return(C:\Qt\{{ver}}\mingw_64\bin\qmake.exe)
+    where(gcc, cmake, ninja, libpq.dll, libmysql.dll, mugideploy, :assert)
+    pushd_cd()
+        download(https://qt.mirror.constant.com/official_releases/qt/{{majmin}}/{{ver}}/submodules/qtbase-everywhere-src-{{ver}}.zip, :cache, :v)
+        unzip(qtbase-everywhere-src-{{ver}}.zip, :test=qtbase-everywhere-src-{{ver}})
+        pushd qtbase-everywhere-src-{{ver}}
+            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:/Qt/{{ver}}/mingw_64 -DQT_QMAKE_TARGET_MKSPEC=win32-g++ -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 .
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+            mugideploy copy-dep --bin C:\Qt\{{ver}}\mingw_64\bin\qmake.exe --dst C:\Qt\{{ver}}\mingw_64\bin
+            mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\{{ver}}\mingw_64\bin
+            mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{ver}}\mingw_64\bin
+        popd
+    popd
+    where(qmake, :assert)
+
+def qtsvg depends on qtbase
+    use(ninja)
+    use(cmake)
+    add_path(C:\Qt\{{ver}}\mingw_64\bin)
+    if_exist_return(C:\Qt\{{ver}}\mingw_64\bin\Qt6Svg.dll)
+    where(gcc, cmake, ninja, :assert)
+    download(https://qt.mirror.constant.com/official_releases/qt/{{majmin}}/{{ver}}/submodules/qtsvg-everywhere-src-{{ver}}.zip, :cache, :v)
+    unzip(qtsvg-everywhere-src-{{ver}}.zip, :t=qtsvg-everywhere-src-{{ver}})
+    pushd qtsvg-everywhere-src-{{ver}}
+        mkdir(build)
+        pushd build
+            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="C:\Qt\{{ver}}\mingw_64" -DCMAKE_TOOLCHAIN_FILE=C:\Qt\{{ver}}\mingw_64\lib\cmake\Qt6\qt.toolchain.cmake ..
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+        popd
+    popd
+
+def qtactiveqt depends on qtbase
+    use(ninja)
+    use(cmake)
+    add_path(C:\Qt\{{ver}}\mingw_64\bin)
+    if_exist_return(C:\Qt\{{ver}}\mingw_64\lib\libQt6AxContainer.a)
+    where(gcc, cmake, ninja, :assert)
+    download(https://qt.mirror.constant.com/official_releases/qt/{{majmin}}/{{ver}}/submodules/qtactiveqt-everywhere-src-{{ver}}.zip, :cache, :v)
+    unzip(qtactiveqt-everywhere-src-{{ver}}.zip, :t=qtactiveqt-everywhere-src-{{ver}})
+    pushd qtactiveqt-everywhere-src-{{ver}}
+        mkdir(build)
+        pushd build
+            cmake -G Ninja -DCMAKE_INSTALL_PREFIX="C:\Qt\{{ver}}\mingw_64" -DCMAKE_TOOLCHAIN_FILE=C:\Qt\{{ver}}\mingw_64\lib\cmake\Qt6\qt.toolchain.cmake ..
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+        popd
+    popd
+
+def psql
+    add_path(C:\postgresql-14\bin)
+    if_exist_return(C:\postgresql-14\bin\psql.exe)
+    if_exist_return(C:\Qt\{{ver}}\mingw_64\plugins\sqldrivers\qsqlpsql.dll)
+    pushd_cd()
+        download(https://get.enterprisedb.com/postgresql/postgresql-14.12-2-windows-x64-binaries.zip, :cache, :v)
+        unzip(postgresql-14.12-2-windows-x64-binaries.zip, :o=C:\)
+        move(C:\pgsql, C:\postgresql-14)
+    popd
+
+def mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    if_exist_return(C:\Qt\{{ver}}\mingw_64\plugins\sqldrivers\qsqlmysql.dll)
+    if_exist_return(C:\mysql-8.2.0-winx64\bin\mysql.exe)
+    pushd_cd()
+        download(https://cdn.mysql.com/Downloads/MySQL-8.2/mysql-8.2.0-winx64.zip, :cache, :v)
+        unzip(mysql-8.2.0-winx64.zip, :o=C:\)
+    popd
+
+def qwt depends on qtbase qtsvg mingw
+    git_clone(https://git.code.sf.net/p/qwt/git, qwt, :ref={{qwt_ref}})
+    where(gcc, qmake, mingw32-make, :assert)
+    if_exist_return(C:\Qwt-{{qwt_ver}}-Qt-{{ver}}\lib\qwt.dll)
+    pushd qwt
+        patch(../0001-release-no-examples-no-tests-install-prefix.patch, :p1, :N)
+        qmake
+        mingw32-make -j4
+        mingw32-make install
+    popd
+
+def main depends on qtbase qtsvg qtactiveqt qwt
+    zip(Qt-{{ver}}.zip, C:\Qt\{{ver}}\mingw_64)
+    zip(Qwt-{{qwt_ver}}-Qt-{{ver}}.zip, C:\Qwt-{{qwt_ver}}-Qt-{{ver}})
+    # http://dev.hec.to/assets/Qwt-6.3.0-Qt-6.8.1.zip
+    # http://dev.hec.to/assets/Qt-6.8.1.zip
