@@ -1,0 +1,8 @@
+def mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    if_exist_return(C:\mysql-8.2.0-winx64\bin\mysql.exe)
+    pushd_cd()
+        download(https://cdn.mysql.com/Downloads/MySQL-8.2/mysql-8.2.0-winx64.zip, :cache, :v)
+        unzip(mysql-8.2.0-winx64.zip, :o=C:\)
+    popd

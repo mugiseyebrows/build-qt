@@ -1,0 +1,8 @@
+def postgresql
+    add_path(C:\postgresql-14\bin)
+    if_exist_return(C:\postgresql-14\bin\psql.exe)
+    pushd_cd()
+        download(https://get.enterprisedb.com/postgresql/postgresql-14.12-2-windows-x64-binaries.zip, :cache, :v)
+        unzip(postgresql-14.12-2-windows-x64-binaries.zip, :o=C:\)
+        move(C:\pgsql, C:\postgresql-14)
+    popd

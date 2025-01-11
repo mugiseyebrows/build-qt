@@ -8,4 +8,6 @@ move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
 move /y C:\Strawberry C:\Strawberry_
 move /y C:\tools\php C:\tools\php_
 call pull-mingw
+call pull-mysql
+call pull-postgresql
 call qt681

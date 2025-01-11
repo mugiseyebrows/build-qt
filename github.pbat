@@ -10,17 +10,21 @@ def cleanup
     move(C:\Strawberry, C:\Strawberry_)
     move(C:\tools\php, C:\tools\php_)
 
-def mingw
+def pull
     call pull-mingw
+    call pull-mysql
+    call pull-postgresql
 
-def build depends on checkout cleanup mingw
+def build depends on checkout cleanup pull
     clear_path()
     add_path(C:\mingw1310_64\bin)
     use(conda)
     call qt681
 
 def release depends on build
-    github_upload(Qt-6.8.1.zip, Qwt-6.3.0-Qt-6.8.1.zip)
-    github_release(Qt-6.8.1.zip, Qwt-6.3.0-Qt-6.8.1.zip)
+    github_upload(C:/Qt/6.8.1/mingw_64, :n=Qt-6.8.1)
+    github_upload(C:/Qwt-6.3.0-Qt-6.8.1)
+    github_upload(mugideploy.log)
+    github_release(Qt-6.8.1.zip, Qwt-6.3.0-Qt-6.8.1.zip, mugideploy.log)
 
 github-workflow 1

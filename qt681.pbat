@@ -1,9 +1,17 @@
 
 
 
+
 use-patch-var 1
 
-def qtbase depends on psql mysql
+def qtbase
+    # call pull-mingw
+    add_path(C:\mingw1310_64\bin)
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    # call pull-postgresql
+    add_path(C:\postgresql-14\bin)
     use(python, 3.13)
     install(ninja)
     install(mugideploy)
@@ -20,6 +28,7 @@ def qtbase depends on psql mysql
             mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.8.1\mingw_64\bin
             mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\mingw_64\bin
             mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\mingw_64\bin
+            copy(mugideploy.log, ..\mugideploy.log)
         popd
     popd
     where(qmake, :assert)
@@ -58,24 +67,30 @@ def qtactiveqt depends on qtbase
         popd
     popd
 
-def psql
-    add_path(C:\postgresql-14\bin)
-    if_exist_return(C:\postgresql-14\bin\psql.exe)
-    if_exist_return(C:\Qt\6.8.1\mingw_64\plugins\sqldrivers\qsqlpsql.dll)
-    pushd_cd()
-        download(https://get.enterprisedb.com/postgresql/postgresql-14.12-2-windows-x64-binaries.zip, :cache, :v)
-        unzip(postgresql-14.12-2-windows-x64-binaries.zip, :o=C:\)
-        move(C:\pgsql, C:\postgresql-14)
+def qserialport depends on qtbase
+    if_exist_return(C:\Qt\6.8.1\mingw_64\bin\Qt6SerialPort.dll)
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtserialport-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qtserialport-everywhere-src-6.8.1.zip, :t=qtserialport-everywhere-src-6.8.1)
+    pushd qtserialport-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            cmake -G Ninja -DCMAKE_INSTALL_PREFIX="C:\Qt\6.8.1\mingw_64" -DCMAKE_TOOLCHAIN_FILE=C:\Qt\6.8.1\mingw_64\lib\cmake\Qt6\qt.toolchain.cmake ..
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+        popd
     popd
 
-def mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    if_exist_return(C:\Qt\6.8.1\mingw_64\plugins\sqldrivers\qsqlmysql.dll)
-    if_exist_return(C:\mysql-8.2.0-winx64\bin\mysql.exe)
-    pushd_cd()
-        download(https://cdn.mysql.com/Downloads/MySQL-8.2/mysql-8.2.0-winx64.zip, :cache, :v)
-        unzip(mysql-8.2.0-winx64.zip, :o=C:\)
+def qtimageformats depends on qtbase
+    if_exist_return(C:\qt\6.8.1\mingw_64\plugins\imageformats\qwebp.dll)
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtimageformats-everywhere-src-6.8.1.zip, qtimageformats-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qtimageformats-everywhere-src-6.8.1.zip, :t=qtimageformats-everywhere-src-6.8.1)
+    pushd qtimageformats-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            cmake -G Ninja -DCMAKE_INSTALL_PREFIX="C:\Qt\6.8.1\mingw_64" -DCMAKE_TOOLCHAIN_FILE=C:\Qt\6.8.1\mingw_64\lib\cmake\Qt6\qt.toolchain.cmake ..
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+        popd
     popd
 
 def qwt depends on qtbase qtsvg
@@ -89,6 +104,6 @@ def qwt depends on qtbase qtsvg
         mingw32-make install
     popd
 
-def main depends on qtbase qtsvg qtactiveqt qwt
+def main depends on qtbase qtsvg qtactiveqt qserialport qtimageformats qwt
     zip(Qt-6.8.1.zip, C:\Qt\6.8.1\mingw_64)
     zip(Qwt-6.3.0-Qt-6.8.1.zip, C:\Qwt-6.3.0-Qt-6.8.1)

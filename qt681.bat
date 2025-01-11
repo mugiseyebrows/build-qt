@@ -1,32 +1,11 @@
 @echo off
 rem This file is generated from qt681.pbat, all edits will be lost
-set PATH=C:\postgresql-14\bin;C:\Windows\System32;C:\Program Files\7-Zip;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Program Files\CMake\bin;C:\Program Files\Meson;C:\Qt\6.8.1\mingw_64\bin;C:\Program Files\Git\cmd;%PATH%
+set PATH=C:\mingw1310_64\bin;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Program Files\CMake\bin;C:\Windows\System32;C:\Program Files\7-Zip;C:\Program Files\Meson;C:\Qt\6.8.1\mingw_64\bin;C:\Program Files\Git\cmd;%PATH%
 if exist "C:\Program Files\Git\usr\bin\patch.exe" set PATCH=C:\Program Files\Git\usr\bin\patch.exe
 if not defined PATCH (
 echo PATCH not found
 exit /b
 )
-if exist C:\postgresql-14\bin\psql.exe goto psql_end
-if exist C:\Qt\6.8.1\mingw_64\plugins\sqldrivers\qsqlpsql.dll goto psql_end
-pushd %~dp0
-    if not exist postgresql-14.12-2-windows-x64-binaries.zip (
-        echo downloading postgresql-14.12-2-windows-x64-binaries.zip
-        curl -L -o postgresql-14.12-2-windows-x64-binaries.zip https://get.enterprisedb.com/postgresql/postgresql-14.12-2-windows-x64-binaries.zip
-    )
-    7z x -y -oC:\ postgresql-14.12-2-windows-x64-binaries.zip
-    move /y C:\pgsql C:\postgresql-14
-popd
-:psql_end
-if exist C:\Qt\6.8.1\mingw_64\plugins\sqldrivers\qsqlmysql.dll goto mysql_end
-if exist C:\mysql-8.2.0-winx64\bin\mysql.exe goto mysql_end
-pushd %~dp0
-    if not exist mysql-8.2.0-winx64.zip (
-        echo downloading mysql-8.2.0-winx64.zip
-        curl -L -o mysql-8.2.0-winx64.zip https://cdn.mysql.com/Downloads/MySQL-8.2/mysql-8.2.0-winx64.zip
-    )
-    7z x -y -oC:\ mysql-8.2.0-winx64.zip
-popd
-:mysql_end
 where ninja > NUL 2>&1 || pip install ninja
 where mugideploy > NUL 2>&1 || pip install mugideploy
 if exist C:\Qt\6.8.1\mingw_64\bin\qmake.exe goto qtbase_end
@@ -67,6 +46,7 @@ pushd %~dp0
         mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.8.1\mingw_64\bin
         mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\mingw_64\bin
         mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\mingw_64\bin
+        copy /y mugideploy.log ..\mugideploy.log
     popd
 popd
 where qmake 2> NUL || (
@@ -128,6 +108,36 @@ pushd qtactiveqt-everywhere-src-6.8.1
     popd
 popd
 :qtactiveqt_end
+if exist C:\Qt\6.8.1\mingw_64\bin\Qt6SerialPort.dll goto qserialport_end
+if not exist qtserialport-everywhere-src-6.8.1.zip (
+    echo downloading qtserialport-everywhere-src-6.8.1.zip
+    curl -L -o qtserialport-everywhere-src-6.8.1.zip https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtserialport-everywhere-src-6.8.1.zip
+)
+if not exist qtserialport-everywhere-src-6.8.1 7z x -y qtserialport-everywhere-src-6.8.1.zip
+pushd qtserialport-everywhere-src-6.8.1
+    if not exist build mkdir build
+    pushd build
+        cmake -G Ninja -DCMAKE_INSTALL_PREFIX="C:\Qt\6.8.1\mingw_64" -DCMAKE_TOOLCHAIN_FILE=C:\Qt\6.8.1\mingw_64\lib\cmake\Qt6\qt.toolchain.cmake ..
+        cmake --build . --parallel || exit /b 1
+        cmake --install . || exit /b 1
+    popd
+popd
+:qserialport_end
+if exist C:\qt\6.8.1\mingw_64\plugins\imageformats\qwebp.dll goto qtimageformats_end
+if not exist qtimageformats-everywhere-src-6.8.1.zip (
+    echo downloading qtimageformats-everywhere-src-6.8.1.zip
+    curl -L -o qtimageformats-everywhere-src-6.8.1.zip https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtimageformats-everywhere-src-6.8.1.zip
+)
+if not exist qtimageformats-everywhere-src-6.8.1 7z x -y qtimageformats-everywhere-src-6.8.1.zip
+pushd qtimageformats-everywhere-src-6.8.1
+    if not exist build mkdir build
+    pushd build
+        cmake -G Ninja -DCMAKE_INSTALL_PREFIX="C:\Qt\6.8.1\mingw_64" -DCMAKE_TOOLCHAIN_FILE=C:\Qt\6.8.1\mingw_64\lib\cmake\Qt6\qt.toolchain.cmake ..
+        cmake --build . --parallel || exit /b 1
+        cmake --install . || exit /b 1
+    popd
+popd
+:qtimageformats_end
 if not exist qwt (
     git clone https://git.code.sf.net/p/qwt/git qwt
     pushd qwt
