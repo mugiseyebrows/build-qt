@@ -3,12 +3,7 @@
 {% set qwt_ref = "v6.3.0" %}
 use-patch-var 1
 
-def mingw
-    add_path(C:\mingw1310_64\bin)
-    where gcc || exit /b
-
-def qtbase depends on mingw psql mysql
-    use(conda)
+def qtbase depends on psql mysql
     use(python, 3.13)
     install(ninja)
     install(mugideploy)
@@ -83,7 +78,7 @@ def mysql
         unzip(mysql-8.2.0-winx64.zip, :o=C:\)
     popd
 
-def qwt depends on qtbase qtsvg mingw
+def qwt depends on qtbase qtsvg
     git_clone(https://git.code.sf.net/p/qwt/git, qwt, :ref={{qwt_ref}})
     where(gcc, qmake, mingw32-make, :assert)
     if_exist_return(C:\Qwt-{{qwt_ver}}-Qt-{{ver}}\lib\qwt.dll)
@@ -97,5 +92,3 @@ def qwt depends on qtbase qtsvg mingw
 def main depends on qtbase qtsvg qtactiveqt qwt
     zip(Qt-{{ver}}.zip, C:\Qt\{{ver}}\mingw_64)
     zip(Qwt-{{qwt_ver}}-Qt-{{ver}}.zip, C:\Qwt-{{qwt_ver}}-Qt-{{ver}})
-    # http://dev.hec.to/assets/Qwt-6.3.0-Qt-6.8.1.zip
-    # http://dev.hec.to/assets/Qt-6.8.1.zip

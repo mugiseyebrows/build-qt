@@ -1,12 +1,11 @@
 @echo off
 rem This file is generated from qt681.pbat, all edits will be lost
-set PATH=C:\mingw1310_64\bin;C:\postgresql-14\bin;C:\Windows\System32;C:\Program Files\7-Zip;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\Miniconda3;C:\Miniconda3\Scripts;%USERPROFILE%\Miniconda3;%USERPROFILE%\Miniconda3\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Program Files\CMake\bin;C:\Program Files\Meson;C:\Qt\6.8.1\mingw_64\bin;C:\Program Files\Git\cmd;%PATH%
+set PATH=C:\postgresql-14\bin;C:\Windows\System32;C:\Program Files\7-Zip;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Program Files\CMake\bin;C:\Program Files\Meson;C:\Qt\6.8.1\mingw_64\bin;C:\Program Files\Git\cmd;%PATH%
 if exist "C:\Program Files\Git\usr\bin\patch.exe" set PATCH=C:\Program Files\Git\usr\bin\patch.exe
 if not defined PATCH (
 echo PATCH not found
 exit /b
 )
-where gcc || exit /b
 if exist C:\postgresql-14\bin\psql.exe goto psql_end
 if exist C:\Qt\6.8.1\mingw_64\plugins\sqldrivers\qsqlpsql.dll goto psql_end
 pushd %~dp0
