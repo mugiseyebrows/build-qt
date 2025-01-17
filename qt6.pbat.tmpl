@@ -68,6 +68,7 @@ def configure
         mkdir(build)
         pushd build
             cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DQT_BUILD_SUBMODULES="{{ modules | join(';') }}" -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:\Qt\{{ver}}\{{subdir}} -DQT_QMAKE_TARGET_MKSPEC={{mkspec}} -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -Wno-dev ..
+            type config.summary
         popd
     popd
 
@@ -82,9 +83,10 @@ def {{module}}
 def install
     {{ env() }}
     pushd qt-everywhere-src-{{ver}}\build
+        ninja
         ninja install
     popd
-    mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
+    mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qmake.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
     mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
     mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
     mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
@@ -113,11 +115,13 @@ def qwt depends on qtbase qtsvg
     popd
 
 def main depends on prepare configure {{ modules | join(' ') }} install docs qwt
-    zip(Qt-{{ver}}-{{mkspec_}}.zip, C:\Qt\{{ver}}\{{subdir}})
-    zip(Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}}.zip, C:\Qwt-{{qwt_ver}}-Qt-{{ver}})
+    zip(Qt-{{ver}}-{{mkspec_}}.7z, C:\Qt\{{ver}}\{{subdir}})
+    zip(Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}}.7z, C:\Qwt-{{qwt_ver}}-Qt-{{ver}})
     github_upload(C:\Qt\{{ver}}\{{subdir}}, :n=Qt-{{ver}}-{{mkspec_}})
     github_upload(C:\Qwt-{{qwt_ver}}-Qt-{{ver}}, :n=Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}})
     github_upload(mugideploy.log, :n=mugideploy.log)
+    github_upload(qt-everywhere-src-{{ver}}\build\config.summary, :n=config.summary)
+    github_release(Qt-{{ver}}-{{mkspec_}}.7z, Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}}.7z)
 
 github-workflow 1
 workflow-name build-{{mkspec_}}

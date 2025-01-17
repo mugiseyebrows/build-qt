@@ -24,6 +24,7 @@ pushd qt-everywhere-src-6.8.1
     if not exist build mkdir build
     pushd build
         cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DQT_BUILD_SUBMODULES="qtbase;qtsvg;qtactiveqt;qtserialport;qtimageformats;qtshadertools;qtdeclarative;qttools;qtdoc" -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:\Qt\6.8.1\msvc2020_64 -DQT_QMAKE_TARGET_MKSPEC=win32-msvc -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -Wno-dev ..
+        type config.summary
     popd
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
@@ -94,9 +95,10 @@ where ninja > NUL 2>&1 || pip install ninja
 set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
 pushd qt-everywhere-src-6.8.1\build
+    ninja
     ninja install
 popd
-mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
+mugideploy copy-dep --bin C:\Qt\6.8.1\msvc2020_64\bin\qmake.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
 mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
 mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
 mugideploy copy-dep --bin C:\Qt\6.8.1\msvc2020_64\bin\qdoc.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
@@ -124,5 +126,5 @@ pushd qwt
     nmake
     nmake install
 popd
-7z a -y Qt-6.8.1-msvc2020.zip C:\Qt\6.8.1\msvc2020_64
-7z a -y Qwt-6.3.0-Qt-6.8.1-msvc2020.zip C:\Qwt-6.3.0-Qt-6.8.1
+7z a -y Qt-6.8.1-msvc2020.7z C:\Qt\6.8.1\msvc2020_64
+7z a -y Qwt-6.3.0-Qt-6.8.1-msvc2020.7z C:\Qwt-6.3.0-Qt-6.8.1
