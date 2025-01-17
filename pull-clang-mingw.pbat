@@ -1,2 +1,3 @@
+if_exist_return(C:\llvm19-mingw\bin\clang.exe)
 download(https://github.com/mugiseyebrows/build-clang/releases/download/19.1.7/llvm19-mingw.7z, :cache, :v)
 unzip(llvm19-mingw.7z, :o=C:\llvm19-mingw)
