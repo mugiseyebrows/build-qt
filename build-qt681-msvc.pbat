@@ -37,17 +37,18 @@ def qtbase
     install(mugideploy)
     use(cmake)
     
-    add_path(C:\llvm19-msvc2020\bin)
-    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
     call_vcvars()
     
+
+    
+
     download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtbase-everywhere-src-6.8.1.zip, :cache, :v)
     unzip(qtbase-everywhere-src-6.8.1.zip, :t=qtbase-everywhere-src-6.8.1)
     pushd qtbase-everywhere-src-6.8.1
         mkdir(build)
         pushd build
             
-            cmake -G Ninja -DCMAKE_C_COMPILER="cl" -DCMAKE_CXX_COMPILER="cl" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:\Qt\6.8.1\msvc2020_64 -DQT_QMAKE_TARGET_MKSPEC=win32-msvc -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 ..
+            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:\Qt\6.8.1\msvc2020_64 -DQT_QMAKE_TARGET_MKSPEC=win32-msvc -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 ..
             
             cmake --build . --parallel || exit /b 1
             cmake --install . || exit /b 1
@@ -72,10 +73,11 @@ def qtsvg
     install(mugideploy)
     use(cmake)
     
-    add_path(C:\llvm19-msvc2020\bin)
-    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
     call_vcvars()
     
+
+    
+
     download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtsvg-everywhere-src-6.8.1.zip, :cache, :v)
     unzip(qtsvg-everywhere-src-6.8.1.zip, :t=qtsvg-everywhere-src-6.8.1)
     pushd qtsvg-everywhere-src-6.8.1
@@ -103,10 +105,11 @@ def qtactiveqt
     install(mugideploy)
     use(cmake)
     
-    add_path(C:\llvm19-msvc2020\bin)
-    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
     call_vcvars()
     
+
+    
+
     download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtactiveqt-everywhere-src-6.8.1.zip, :cache, :v)
     unzip(qtactiveqt-everywhere-src-6.8.1.zip, :t=qtactiveqt-everywhere-src-6.8.1)
     pushd qtactiveqt-everywhere-src-6.8.1
@@ -134,10 +137,11 @@ def qserialport
     install(mugideploy)
     use(cmake)
     
-    add_path(C:\llvm19-msvc2020\bin)
-    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
     call_vcvars()
     
+
+    
+
     download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qserialport-everywhere-src-6.8.1.zip, :cache, :v)
     unzip(qserialport-everywhere-src-6.8.1.zip, :t=qserialport-everywhere-src-6.8.1)
     pushd qserialport-everywhere-src-6.8.1
@@ -165,10 +169,11 @@ def qtimageformats
     install(mugideploy)
     use(cmake)
     
-    add_path(C:\llvm19-msvc2020\bin)
-    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
     call_vcvars()
     
+
+    
+
     download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtimageformats-everywhere-src-6.8.1.zip, :cache, :v)
     unzip(qtimageformats-everywhere-src-6.8.1.zip, :t=qtimageformats-everywhere-src-6.8.1)
     pushd qtimageformats-everywhere-src-6.8.1
@@ -196,10 +201,11 @@ def qtshadertools
     install(mugideploy)
     use(cmake)
     
-    add_path(C:\llvm19-msvc2020\bin)
-    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
     call_vcvars()
     
+
+    
+
     download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtshadertools-everywhere-src-6.8.1.zip, :cache, :v)
     unzip(qtshadertools-everywhere-src-6.8.1.zip, :t=qtshadertools-everywhere-src-6.8.1)
     pushd qtshadertools-everywhere-src-6.8.1
@@ -227,10 +233,11 @@ def qtdeclarative
     install(mugideploy)
     use(cmake)
     
-    add_path(C:\llvm19-msvc2020\bin)
-    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
     call_vcvars()
     
+
+    
+
     download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtdeclarative-everywhere-src-6.8.1.zip, :cache, :v)
     unzip(qtdeclarative-everywhere-src-6.8.1.zip, :t=qtdeclarative-everywhere-src-6.8.1)
     pushd qtdeclarative-everywhere-src-6.8.1
@@ -258,10 +265,16 @@ def qttools
     install(mugideploy)
     use(cmake)
     
-    add_path(C:\llvm19-msvc2020\bin)
-    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
     call_vcvars()
     
+
+    
+    
+    add_path(C:\llvm19-msvc2020\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
+    
+    
+
     download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qttools-everywhere-src-6.8.1.zip, :cache, :v)
     unzip(qttools-everywhere-src-6.8.1.zip, :t=qttools-everywhere-src-6.8.1)
     pushd qttools-everywhere-src-6.8.1

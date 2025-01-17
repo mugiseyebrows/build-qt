@@ -45,20 +45,27 @@ def {{module}}
     use(cmake)
     {% if mkspec == "win32-g++" %}
     add_path(C:\mingw1310_64\bin)
+    {% else %}
+    call_vcvars()
+    {% endif %}
+
+    {% if module == "qttools" %}
+    {% if mkspec == "win32-g++" %}
     add_path(C:\llvm19-mingw\bin)
     set LLVM_INSTALL_DIR=C:\llvm19-mingw
     {% else %}
     add_path(C:\llvm19-msvc2020\bin)
     set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
-    call_vcvars()
     {% endif %}
+    {% endif %}
+
     download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/submodules/{{module}}-everywhere-src-{{ver}}.zip, :cache, :v)
     unzip({{module}}-everywhere-src-{{ver}}.zip, :t={{module}}-everywhere-src-{{ver}})
     pushd {{module}}-everywhere-src-{{ver}}
         mkdir(build)
         pushd build
             {% if module == "qtbase" %}
-            cmake -G Ninja -DCMAKE_C_COMPILER="{{cc}}" -DCMAKE_CXX_COMPILER="{{cxx}}" -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:\Qt\{{ver}}\{{subdir}} -DQT_QMAKE_TARGET_MKSPEC={{mkspec}} -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 ..
+            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:\Qt\{{ver}}\{{subdir}} -DQT_QMAKE_TARGET_MKSPEC={{mkspec}} -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 ..
             {% else %}
             call qt-configure-module ..
             {% endif %}
