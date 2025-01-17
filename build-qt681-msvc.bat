@@ -10,6 +10,7 @@ move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
 move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
 move /y C:\Strawberry C:\Strawberry_
 move /y C:\tools\php C:\tools\php_
+move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 where ninja > NUL 2>&1 || pip install ninja
 where mugideploy > NUL 2>&1 || pip install mugideploy
 call vcvars64.bat

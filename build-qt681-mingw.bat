@@ -4,12 +4,14 @@ set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bi
 call pull-mysql
 call pull-postgresql
 call pull-clang-mingw
+call pull-mingw
 move /y C:\mingw64 C:\mingw64_
 move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
 move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
 move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
 move /y C:\Strawberry C:\Strawberry_
 move /y C:\tools\php C:\tools\php_
+move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 where ninja > NUL 2>&1 || pip install ninja
 where mugideploy > NUL 2>&1 || pip install mugideploy
 if not exist qtbase-everywhere-src-6.8.1.zip (

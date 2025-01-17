@@ -16,6 +16,7 @@ def prepare
     call pull-postgresql
     
     call pull-clang-mingw
+    call pull-mingw
     
     move /y C:\mingw64 C:\mingw64_
     move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
@@ -23,6 +24,7 @@ def prepare
     move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
     move /y C:\Strawberry C:\Strawberry_
     move /y C:\tools\php C:\tools\php_
+    move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 
 
 def qtbase

@@ -21,6 +21,7 @@ def prepare
     call pull-postgresql
     {% if mkspec == "win32-g++" %}
     call pull-clang-mingw
+    call pull-mingw
     {% else %}
     call pull-clang-msvc
     {% endif %}
@@ -30,6 +31,7 @@ def prepare
     move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
     move /y C:\Strawberry C:\Strawberry_
     move /y C:\tools\php C:\tools\php_
+    move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 
 {% for module in ["qtbase", "qtsvg", "qtactiveqt", "qserialport", "qtimageformats", "qtshadertools", "qtdeclarative", "qttools"] %}
 def {{module}}
