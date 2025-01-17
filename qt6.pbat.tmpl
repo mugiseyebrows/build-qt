@@ -2,7 +2,7 @@
 {% set qwt_ver = "6.3.0" %}
 {% set qwt_ref = "v6.3.0" %}
 {% set host = "qt.mirror.constant.com" %}
-{% set modules = ["qtbase", "qtsvg", "qtactiveqt", "qtserialport", "qtimageformats", "qtshadertools", "qtdeclarative", "qttools"] %}
+{% set modules = ["qtbase", "qtsvg", "qtactiveqt", "qtserialport", "qtimageformats", "qtshadertools", "qtdeclarative", "qttools", "qtdoc"] %}
 
 {% if mkspec == "win32-g++" %}
 {% set subdir = "mingw_64" %}
@@ -16,6 +16,29 @@
 {% set cxx = "cl" %}
 {% endif %}
 
+
+{% macro env() %}
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\{{ver}}\{{subdir}}\bin)
+    use(python, 3.13)
+    use(conda)
+    # where python
+    install(mugideploy)
+    # mugideploy --help
+    install(ninja)
+    use(cmake)
+    add_path(C:\llvm19\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    {% if mkspec == "win32-g++" %}
+    add_path(C:\mingw1310_64\bin)
+    {% else %}
+    call_vcvars()
+    {% endif %}
+{% endmacro %}
+
 def prepare
     github_checkout()
     call pull-mysql
@@ -26,8 +49,8 @@ def prepare
     {% else %}
     call pull-clang-msvc
     {% endif %}
-    echo dir C:\llvm19\bin
-    dir C:\llvm19\bin
+    # echo dir C:\llvm19\bin
+    # dir C:\llvm19\bin
     move /y C:\mingw64 C:\mingw64_
     move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
     move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
@@ -36,96 +59,64 @@ def prepare
     move /y C:\tools\php C:\tools\php_
     move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 
-{% for module in modules %}
-def {{module}}
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    # call pull-postgresql
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\{{ver}}\{{subdir}}\bin)
-    use(python, 3.13)
 
-    {% if module in ["qtbase","qttools"] %}
-    use(conda)
-    # where python
-    install(mugideploy)
-    # mugideploy --help
-    {% endif %}
-
-    install(ninja)
-    use(cmake)
-
-    {% if mkspec == "win32-g++" %}
-    add_path(C:\mingw1310_64\bin)
-    {% else %}
-    call_vcvars()
-    {% endif %}
-
-    {% if module == "qttools" %}
-    add_path(C:\llvm19\bin)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    {% endif %}
-
-    download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/submodules/{{module}}-everywhere-src-{{ver}}.zip, :cache, :v)
-    unzip({{module}}-everywhere-src-{{ver}}.zip, :t={{module}}-everywhere-src-{{ver}})
-    pushd {{module}}-everywhere-src-{{ver}}
+def configure
+    {{ env() }}
+    download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/single/qt-everywhere-src-{{ver}}.zip, :cache, :v)
+    unzip(qt-everywhere-src-{{ver}}.zip, :t=qt-everywhere-src-{{ver}})
+    pushd qt-everywhere-src-{{ver}}
         mkdir(build)
         pushd build
-            {% if module == "qtbase" %}
-            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:\Qt\{{ver}}\{{subdir}} -DQT_QMAKE_TARGET_MKSPEC={{mkspec}} -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -Wno-dev ..
-            {% else %}
-            call qt-configure-module ..
-            {% endif %}
-            cmake --build . --parallel || exit /b 1
-            cmake --install . || exit /b 1
-            {% if module == "qtbase" %}
-            mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
-            mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
-            mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
-            {% endif %}
-            {% if module == "qttools" %}
-            mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
-            {% endif %}
+            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DQT_BUILD_SUBMODULES="{{ modules | join(';') }}" -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:\Qt\{{ver}}\{{subdir}} -DQT_QMAKE_TARGET_MKSPEC={{mkspec}} -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -Wno-dev ..
         popd
+    popd
+
+{% for module in modules %}
+def {{module}}
+    {{ env() }}
+    pushd qt-everywhere-src-{{ver}}\build
+        ninja {{module}}
+        ninja {{module}}/install
+        {% if module == "qtbase" %}
+        mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
+        mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
+        mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
+        {% endif %}
+        {% if module == "qttools" %}
+        mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
+        {% endif %}
     popd
 {% endfor %}
 
 def docs
-    {% if mkspec == "win32-g++" %}
-    add_path(C:\mingw1310_64\bin)
-    {% else %}
-    call_vcvars()
-    {% endif %}
-    add_path(C:\Qt\{{ver}}\{{subdir}}\bin)
-    {% for module in modules %}
-    pushd {{module}}-everywhere-src-{{ver}}\build
+    {{ env() }}
+    pushd qt-everywhere-src-{{ver}}\build
         ninja docs
         ninja install_docs
     popd
-    {% endfor %}
 
 def qwt depends on qtbase qtsvg
-    git_clone(https://git.code.sf.net/p/qwt/git, qwt, :ref={{qwt_ref}})
-    {% if mkspec == "win32-g++" %}
-    add_path(C:\mingw1310_64\bin)
-    {% else %}
-    call_vcvars()
-    {% endif %}
-    add_path(C:\Qt\{{ver}}\{{subdir}}\bin)
     # if_exist_return(C:\Qwt-{{qwt_ver}}-Qt-{{ver}}\lib\qwt.dll)
+    {{ env() }}
+    git_clone(https://git.code.sf.net/p/qwt/git, qwt, :ref={{qwt_ref}})
     pushd qwt
         "C:\Program Files\Git\usr\bin\patch.exe" -N -p1 -i ../0001-release-no-examples-no-tests-install-prefix.patch
         qmake
+        {% if mkspec == "win32-g++" %}
         mingw32-make -j4
         mingw32-make install
+        {% else %}
+        nmake
+        nmake install
+        {% endif %}
     popd
 
-def main depends on prepare {{ modules | join(' ') }} docs qwt
+def main depends on prepare configure {{ modules | join(' ') }} docs qwt
     zip(Qt-{{ver}}-{{mkspec_}}.zip, C:\Qt\{{ver}}\{{subdir}})
     zip(Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}}.zip, C:\Qwt-{{qwt_ver}}-Qt-{{ver}})
-    github_upload(Qt-{{ver}}-{{mkspec_}}.zip)
-    github_upload(Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}}.zip)
+    github_upload(C:\Qt\{{ver}}\{{subdir}}, :n=Qt-{{ver}}-{{mkspec_}})
+    github_upload(C:\Qwt-{{qwt_ver}}-Qt-{{ver}}, :n=Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}})
+    github_upload(qt-everywhere-src-{{ver}}\build\mugideploy.log, :n=mugideploy.log)
 
 github-workflow 1
 workflow-name build-{{mkspec_}}
