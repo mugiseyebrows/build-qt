@@ -1,6 +1,6 @@
 @echo off
 rem This file is generated from build-qt681-msvc.pbat, all edits will be lost
-set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.8.1\msvc2020_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda3;C:\Miniconda3\Scripts;%USERPROFILE%\Miniconda3;%USERPROFILE%\Miniconda3\Scripts;C:\Program Files\CMake\bin;C:\llvm19\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build;C:\Windows\System32;C:\Program Files\7-Zip;C:\Program Files\Git\cmd;%PATH%
+set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.8.1\msvc2020_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda3;C:\Miniconda3\Scripts;%USERPROFILE%\Miniconda3;%USERPROFILE%\Miniconda3\Scripts;C:\Program Files\CMake\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build;C:\llvm19\bin;C:\Windows\System32;C:\Program Files\7-Zip;C:\Program Files\Git\cmd;%PATH%
 call pull-mysql
 call pull-postgresql
 call pull-clang-msvc
@@ -32,10 +32,6 @@ set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
 pushd qt-everywhere-src-6.8.1\build
     ninja qtbase
-    ninja qtbase/install
-    mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
-    mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
-    mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -43,7 +39,6 @@ set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
 pushd qt-everywhere-src-6.8.1\build
     ninja qtsvg
-    ninja qtsvg/install
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -51,7 +46,6 @@ set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
 pushd qt-everywhere-src-6.8.1\build
     ninja qtactiveqt
-    ninja qtactiveqt/install
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -59,7 +53,6 @@ set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
 pushd qt-everywhere-src-6.8.1\build
     ninja qtserialport
-    ninja qtserialport/install
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -67,7 +60,6 @@ set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
 pushd qt-everywhere-src-6.8.1\build
     ninja qtimageformats
-    ninja qtimageformats/install
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -75,7 +67,6 @@ set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
 pushd qt-everywhere-src-6.8.1\build
     ninja qtshadertools
-    ninja qtshadertools/install
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -83,7 +74,6 @@ set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
 pushd qt-everywhere-src-6.8.1\build
     ninja qtdeclarative
-    ninja qtdeclarative/install
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -91,8 +81,6 @@ set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
 pushd qt-everywhere-src-6.8.1\build
     ninja qttools
-    ninja qttools/install
-    mugideploy copy-dep --bin C:\Qt\6.8.1\msvc2020_64\bin\qdoc.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -100,8 +88,18 @@ set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
 pushd qt-everywhere-src-6.8.1\build
     ninja qtdoc
-    ninja qtdoc/install
 popd
+where mugideploy > NUL 2>&1 || pip install mugideploy
+where ninja > NUL 2>&1 || pip install ninja
+set LLVM_INSTALL_DIR=C:\llvm19
+call vcvars64.bat
+pushd qt-everywhere-src-6.8.1\build
+    ninja install
+popd
+mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
+mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
+mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
+mugideploy copy-dep --bin C:\Qt\6.8.1\msvc2020_64\bin\qdoc.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
 set LLVM_INSTALL_DIR=C:\llvm19

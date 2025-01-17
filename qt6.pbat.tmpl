@@ -16,7 +16,6 @@
 {% set cxx = "cl" %}
 {% endif %}
 
-
 {% macro env() %}
     # call pull-mysql
     add_path(C:\mysql-8.2.0-winx64\bin)
@@ -30,13 +29,15 @@
     # mugideploy --help
     install(ninja)
     use(cmake)
-    add_path(C:\llvm19\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     {% if mkspec == "win32-g++" %}
     add_path(C:\mingw1310_64\bin)
+    set CC=C:\mingw1310_64\bin\gcc
+    set CXX=C:\mingw1310_64\bin\g++
     {% else %}
     call_vcvars()
     {% endif %}
+    add_path(C:\llvm19\bin)
 {% endmacro %}
 
 def prepare
@@ -59,7 +60,6 @@ def prepare
     move /y C:\tools\php C:\tools\php_
     move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 
-
 def configure
     {{ env() }}
     download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/single/qt-everywhere-src-{{ver}}.zip, :cache, :v)
@@ -76,17 +76,18 @@ def {{module}}
     {{ env() }}
     pushd qt-everywhere-src-{{ver}}\build
         ninja {{module}}
-        ninja {{module}}/install
-        {% if module == "qtbase" %}
-        mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
-        mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
-        mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
-        {% endif %}
-        {% if module == "qttools" %}
-        mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
-        {% endif %}
     popd
 {% endfor %}
+
+def install
+    {{ env() }}
+    pushd qt-everywhere-src-{{ver}}\build
+        ninja install
+    popd
+    mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
+    mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
+    mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
+    mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
 
 def docs
     {{ env() }}
@@ -111,12 +112,12 @@ def qwt depends on qtbase qtsvg
         {% endif %}
     popd
 
-def main depends on prepare configure {{ modules | join(' ') }} docs qwt
+def main depends on prepare configure {{ modules | join(' ') }} install docs qwt
     zip(Qt-{{ver}}-{{mkspec_}}.zip, C:\Qt\{{ver}}\{{subdir}})
     zip(Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}}.zip, C:\Qwt-{{qwt_ver}}-Qt-{{ver}})
     github_upload(C:\Qt\{{ver}}\{{subdir}}, :n=Qt-{{ver}}-{{mkspec_}})
     github_upload(C:\Qwt-{{qwt_ver}}-Qt-{{ver}}, :n=Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}})
-    github_upload(qt-everywhere-src-{{ver}}\build\mugideploy.log, :n=mugideploy.log)
+    github_upload(mugideploy.log, :n=mugideploy.log)
 
 github-workflow 1
 workflow-name build-{{mkspec_}}

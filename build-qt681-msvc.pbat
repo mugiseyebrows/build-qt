@@ -13,7 +13,6 @@
 
 
 
-
 def prepare
     github_checkout()
     call pull-mysql
@@ -31,7 +30,6 @@ def prepare
     move /y C:\tools\php C:\tools\php_
     move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 
-
 def configure
     
     # call pull-mysql
@@ -46,11 +44,11 @@ def configure
     # mugideploy --help
     install(ninja)
     use(cmake)
-    add_path(C:\llvm19\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     
     call_vcvars()
     
+    add_path(C:\llvm19\bin)
 
     download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/single/qt-everywhere-src-6.8.1.zip, :cache, :v)
     unzip(qt-everywhere-src-6.8.1.zip, :t=qt-everywhere-src-6.8.1)
@@ -76,21 +74,14 @@ def qtbase
     # mugideploy --help
     install(ninja)
     use(cmake)
-    add_path(C:\llvm19\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     
     call_vcvars()
     
+    add_path(C:\llvm19\bin)
 
     pushd qt-everywhere-src-6.8.1\build
         ninja qtbase
-        ninja qtbase/install
-        
-        mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
-        mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
-        mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
-        
-        
     popd
 
 def qtsvg
@@ -107,17 +98,14 @@ def qtsvg
     # mugideploy --help
     install(ninja)
     use(cmake)
-    add_path(C:\llvm19\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     
     call_vcvars()
     
+    add_path(C:\llvm19\bin)
 
     pushd qt-everywhere-src-6.8.1\build
         ninja qtsvg
-        ninja qtsvg/install
-        
-        
     popd
 
 def qtactiveqt
@@ -134,17 +122,14 @@ def qtactiveqt
     # mugideploy --help
     install(ninja)
     use(cmake)
-    add_path(C:\llvm19\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     
     call_vcvars()
     
+    add_path(C:\llvm19\bin)
 
     pushd qt-everywhere-src-6.8.1\build
         ninja qtactiveqt
-        ninja qtactiveqt/install
-        
-        
     popd
 
 def qtserialport
@@ -161,17 +146,14 @@ def qtserialport
     # mugideploy --help
     install(ninja)
     use(cmake)
-    add_path(C:\llvm19\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     
     call_vcvars()
     
+    add_path(C:\llvm19\bin)
 
     pushd qt-everywhere-src-6.8.1\build
         ninja qtserialport
-        ninja qtserialport/install
-        
-        
     popd
 
 def qtimageformats
@@ -188,17 +170,14 @@ def qtimageformats
     # mugideploy --help
     install(ninja)
     use(cmake)
-    add_path(C:\llvm19\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     
     call_vcvars()
     
+    add_path(C:\llvm19\bin)
 
     pushd qt-everywhere-src-6.8.1\build
         ninja qtimageformats
-        ninja qtimageformats/install
-        
-        
     popd
 
 def qtshadertools
@@ -215,17 +194,14 @@ def qtshadertools
     # mugideploy --help
     install(ninja)
     use(cmake)
-    add_path(C:\llvm19\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     
     call_vcvars()
     
+    add_path(C:\llvm19\bin)
 
     pushd qt-everywhere-src-6.8.1\build
         ninja qtshadertools
-        ninja qtshadertools/install
-        
-        
     popd
 
 def qtdeclarative
@@ -242,17 +218,14 @@ def qtdeclarative
     # mugideploy --help
     install(ninja)
     use(cmake)
-    add_path(C:\llvm19\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     
     call_vcvars()
     
+    add_path(C:\llvm19\bin)
 
     pushd qt-everywhere-src-6.8.1\build
         ninja qtdeclarative
-        ninja qtdeclarative/install
-        
-        
     popd
 
 def qttools
@@ -269,19 +242,14 @@ def qttools
     # mugideploy --help
     install(ninja)
     use(cmake)
-    add_path(C:\llvm19\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     
     call_vcvars()
     
+    add_path(C:\llvm19\bin)
 
     pushd qt-everywhere-src-6.8.1\build
         ninja qttools
-        ninja qttools/install
-        
-        
-        mugideploy copy-dep --bin C:\Qt\6.8.1\msvc2020_64\bin\qdoc.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
-        
     popd
 
 def qtdoc
@@ -298,19 +266,44 @@ def qtdoc
     # mugideploy --help
     install(ninja)
     use(cmake)
-    add_path(C:\llvm19\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     
     call_vcvars()
     
+    add_path(C:\llvm19\bin)
 
     pushd qt-everywhere-src-6.8.1\build
         ninja qtdoc
-        ninja qtdoc/install
-        
-        
     popd
 
+
+def install
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.8.1\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    # where python
+    install(mugideploy)
+    # mugideploy --help
+    install(ninja)
+    use(cmake)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+
+    pushd qt-everywhere-src-6.8.1\build
+        ninja install
+    popd
+    mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
+    mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
+    mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
+    mugideploy copy-dep --bin C:\Qt\6.8.1\msvc2020_64\bin\qdoc.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
 
 def docs
     
@@ -326,11 +319,11 @@ def docs
     # mugideploy --help
     install(ninja)
     use(cmake)
-    add_path(C:\llvm19\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     
     call_vcvars()
     
+    add_path(C:\llvm19\bin)
 
     pushd qt-everywhere-src-6.8.1\build
         ninja docs
@@ -352,11 +345,11 @@ def qwt depends on qtbase qtsvg
     # mugideploy --help
     install(ninja)
     use(cmake)
-    add_path(C:\llvm19\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     
     call_vcvars()
     
+    add_path(C:\llvm19\bin)
 
     git_clone(https://git.code.sf.net/p/qwt/git, qwt, :ref=v6.3.0)
     pushd qwt
@@ -368,12 +361,12 @@ def qwt depends on qtbase qtsvg
         
     popd
 
-def main depends on prepare configure qtbase qtsvg qtactiveqt qtserialport qtimageformats qtshadertools qtdeclarative qttools qtdoc docs qwt
+def main depends on prepare configure qtbase qtsvg qtactiveqt qtserialport qtimageformats qtshadertools qtdeclarative qttools qtdoc install docs qwt
     zip(Qt-6.8.1-msvc2020.zip, C:\Qt\6.8.1\msvc2020_64)
     zip(Qwt-6.3.0-Qt-6.8.1-msvc2020.zip, C:\Qwt-6.3.0-Qt-6.8.1)
     github_upload(C:\Qt\6.8.1\msvc2020_64, :n=Qt-6.8.1-msvc2020)
     github_upload(C:\Qwt-6.3.0-Qt-6.8.1, :n=Qwt-6.3.0-Qt-6.8.1-msvc2020)
-    github_upload(qt-everywhere-src-6.8.1\build\mugideploy.log, :n=mugideploy.log)
+    github_upload(mugideploy.log, :n=mugideploy.log)
 
 github-workflow 1
 workflow-name build-msvc2020
