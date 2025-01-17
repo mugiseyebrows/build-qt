@@ -2,6 +2,7 @@
 {% set qwt_ver = "6.3.0" %}
 {% set qwt_ref = "v6.3.0" %}
 {% set host = "qt.mirror.constant.com" %}
+{% set modules = ["qtbase", "qtsvg", "qtactiveqt", "qserialport", "qtimageformats", "qtshadertools", "qtdeclarative", "qttools"] %}
 
 {% if mkspec == "win32-g++" %}
 {% set subdir = "mingw_64" %}
@@ -33,7 +34,7 @@ def prepare
     move /y C:\tools\php C:\tools\php_
     move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 
-{% for module in ["qtbase", "qtsvg", "qtactiveqt", "qserialport", "qtimageformats", "qtshadertools", "qtdeclarative", "qttools"] %}
+{% for module in modules %}
 def {{module}}
     # call pull-mysql
     add_path(C:\mysql-8.2.0-winx64\bin)
@@ -99,7 +100,8 @@ def docs
     {% else %}
     call_vcvars()
     {% endif %}
-    {% for module in ["qtbase", "qtsvg", "qtactiveqt", "qserialport", "qtimageformats", "qtshadertools", "qtdeclarative", "qttools"] %}
+    add_path(C:\Qt\{{ver}}\{{subdir}}\bin)
+    {% for module in modules %}
     pushd {{module}}-everywhere-src-{{ver}}\build
         ninja docs
         ninja install_docs
@@ -122,7 +124,7 @@ def qwt depends on qtbase qtsvg
         mingw32-make install
     popd
 
-def main depends on prepare qtbase qtsvg qtactiveqt qserialport qtimageformats qtshadertools qtdeclarative qttools docs qwt
+def main depends on prepare {% for module in modules %} {{ module }} {% endfor %} docs qwt
     zip(Qt-{{ver}}-{{mkspec_}}.zip, C:\Qt\{{ver}}\{{subdir}})
     zip(Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}}.zip, C:\Qwt-{{qwt_ver}}-Qt-{{ver}})
     github_upload(Qt-{{ver}}-{{mkspec_}}.zip)

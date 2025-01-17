@@ -185,7 +185,7 @@ jobs:
     - name: docs
       shell: cmd
       run: |
-        set PATH=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;%PATH%
+        set PATH=C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\Qt\6.8.1\msvc2020_64\bin;%PATH%
         call vcvars64.bat
         pushd qtbase-everywhere-src-6.8.1\build
             ninja docs

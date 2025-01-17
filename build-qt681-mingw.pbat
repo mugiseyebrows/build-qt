@@ -10,6 +10,7 @@
 
 
 
+
 def prepare
     github_checkout()
     call pull-mysql
@@ -333,6 +334,7 @@ def docs
     
     add_path(C:\mingw1310_64\bin)
     
+    add_path(C:\Qt\6.8.1\mingw_64\bin)
     
     pushd qtbase-everywhere-src-6.8.1\build
         ninja docs
@@ -389,7 +391,7 @@ def qwt depends on qtbase qtsvg
         mingw32-make install
     popd
 
-def main depends on prepare qtbase qtsvg qtactiveqt qserialport qtimageformats qtshadertools qtdeclarative qttools docs qwt
+def main depends on prepare  qtbase  qtsvg  qtactiveqt  qserialport  qtimageformats  qtshadertools  qtdeclarative  qttools  docs qwt
     zip(Qt-6.8.1-mingw.zip, C:\Qt\6.8.1\mingw_64)
     zip(Qwt-6.3.0-Qt-6.8.1-mingw.zip, C:\Qwt-6.3.0-Qt-6.8.1)
     github_upload(Qt-6.8.1-mingw.zip)

@@ -178,7 +178,7 @@ jobs:
     - name: docs
       shell: cmd
       run: |
-        set PATH=C:\mingw1310_64\bin;%PATH%
+        set PATH=C:\mingw1310_64\bin;C:\Qt\6.8.1\mingw_64\bin;%PATH%
         pushd qtbase-everywhere-src-6.8.1\build
             ninja docs
             ninja install_docs
