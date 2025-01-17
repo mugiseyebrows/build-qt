@@ -4,6 +4,7 @@
 
 use-patch-var 1
 
+
 def qtbase
     # call pull-mingw
     add_path(C:\mingw1310_64\bin)
@@ -16,22 +17,120 @@ def qtbase
     install(ninja)
     install(mugideploy)
     use(cmake)
-    if_exist_return(C:\Qt\6.8.1\mingw_64\bin\qmake.exe)
-    where(gcc, cmake, ninja, libpq.dll, libmysql.dll, mugideploy, :assert)
-    pushd_cd()
-        download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtbase-everywhere-src-6.8.1.zip, :cache, :v)
-        unzip(qtbase-everywhere-src-6.8.1.zip, :test=qtbase-everywhere-src-6.8.1)
-        pushd qtbase-everywhere-src-6.8.1
-            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:/Qt/6.8.1/mingw_64 -DQT_QMAKE_TARGET_MKSPEC=win32-g++ -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 .
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtbase-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qtbase-everywhere-src-6.8.1.zip, :t=qtbase-everywhere-src-6.8.1)
+    pushd qtbase-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            
+                cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:/Qt/6.8.1/mingw_64 -DQT_QMAKE_TARGET_MKSPEC=win32-g++ -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 ..
+            
             cmake --build . --parallel || exit /b 1
             cmake --install . || exit /b 1
-            mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.8.1\mingw_64\bin
-            mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\mingw_64\bin
-            mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\mingw_64\bin
-            copy(mugideploy.log, ..\mugideploy.log)
         popd
     popd
-    where(qmake, :assert)
+
+def qtsvg
+    # call pull-mingw
+    add_path(C:\mingw1310_64\bin)
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    # call pull-postgresql
+    add_path(C:\postgresql-14\bin)
+    use(python, 3.13)
+    install(ninja)
+    install(mugideploy)
+    use(cmake)
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtsvg-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qtsvg-everywhere-src-6.8.1.zip, :t=qtsvg-everywhere-src-6.8.1)
+    pushd qtsvg-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            
+                call qt-configure-module ..
+            
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+        popd
+    popd
+
+def qtactiveqt
+    # call pull-mingw
+    add_path(C:\mingw1310_64\bin)
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    # call pull-postgresql
+    add_path(C:\postgresql-14\bin)
+    use(python, 3.13)
+    install(ninja)
+    install(mugideploy)
+    use(cmake)
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtactiveqt-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qtactiveqt-everywhere-src-6.8.1.zip, :t=qtactiveqt-everywhere-src-6.8.1)
+    pushd qtactiveqt-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            
+                call qt-configure-module ..
+            
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+        popd
+    popd
+
+def qserialport
+    # call pull-mingw
+    add_path(C:\mingw1310_64\bin)
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    # call pull-postgresql
+    add_path(C:\postgresql-14\bin)
+    use(python, 3.13)
+    install(ninja)
+    install(mugideploy)
+    use(cmake)
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qserialport-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qserialport-everywhere-src-6.8.1.zip, :t=qserialport-everywhere-src-6.8.1)
+    pushd qserialport-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            
+                call qt-configure-module ..
+            
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+        popd
+    popd
+
+def qtimageformats
+    # call pull-mingw
+    add_path(C:\mingw1310_64\bin)
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    # call pull-postgresql
+    add_path(C:\postgresql-14\bin)
+    use(python, 3.13)
+    install(ninja)
+    install(mugideploy)
+    use(cmake)
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtimageformats-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qtimageformats-everywhere-src-6.8.1.zip, :t=qtimageformats-everywhere-src-6.8.1)
+    pushd qtimageformats-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            
+                call qt-configure-module ..
+            
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+        popd
+    popd
+
+
 
 def qtsvg depends on qtbase
     use(ninja)

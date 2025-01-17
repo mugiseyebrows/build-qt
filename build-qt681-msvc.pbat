@@ -1,0 +1,348 @@
+
+
+
+
+
+
+
+
+
+
+def prepare
+    github_checkout()
+    call pull-mysql
+    call pull-postgresql
+    
+    call pull-clang-msvc
+    
+    move /y C:\mingw64 C:\mingw64_
+    move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
+    move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
+    move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
+    move /y C:\Strawberry C:\Strawberry_
+    move /y C:\tools\php C:\tools\php_
+
+
+def qtbase
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    # call pull-postgresql
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.8.1\msvc2020_64\bin)
+    use(python, 3.13)
+    install(ninja)
+    install(mugideploy)
+    use(cmake)
+    
+    add_path(C:\llvm19-msvc2020\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
+    call_vcvars()
+    
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtbase-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qtbase-everywhere-src-6.8.1.zip, :t=qtbase-everywhere-src-6.8.1)
+    pushd qtbase-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            
+            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:\Qt\6.8.1\msvc2020_64 -DQT_QMAKE_TARGET_MKSPEC=win32-msvc -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 ..
+            
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+            
+            mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
+            mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
+            mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
+            
+            
+        popd
+    popd
+
+def qtsvg
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    # call pull-postgresql
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.8.1\msvc2020_64\bin)
+    use(python, 3.13)
+    install(ninja)
+    install(mugideploy)
+    use(cmake)
+    
+    add_path(C:\llvm19-msvc2020\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
+    call_vcvars()
+    
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtsvg-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qtsvg-everywhere-src-6.8.1.zip, :t=qtsvg-everywhere-src-6.8.1)
+    pushd qtsvg-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            
+            call qt-configure-module ..
+            
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+            
+            
+        popd
+    popd
+
+def qtactiveqt
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    # call pull-postgresql
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.8.1\msvc2020_64\bin)
+    use(python, 3.13)
+    install(ninja)
+    install(mugideploy)
+    use(cmake)
+    
+    add_path(C:\llvm19-msvc2020\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
+    call_vcvars()
+    
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtactiveqt-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qtactiveqt-everywhere-src-6.8.1.zip, :t=qtactiveqt-everywhere-src-6.8.1)
+    pushd qtactiveqt-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            
+            call qt-configure-module ..
+            
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+            
+            
+        popd
+    popd
+
+def qserialport
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    # call pull-postgresql
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.8.1\msvc2020_64\bin)
+    use(python, 3.13)
+    install(ninja)
+    install(mugideploy)
+    use(cmake)
+    
+    add_path(C:\llvm19-msvc2020\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
+    call_vcvars()
+    
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qserialport-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qserialport-everywhere-src-6.8.1.zip, :t=qserialport-everywhere-src-6.8.1)
+    pushd qserialport-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            
+            call qt-configure-module ..
+            
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+            
+            
+        popd
+    popd
+
+def qtimageformats
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    # call pull-postgresql
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.8.1\msvc2020_64\bin)
+    use(python, 3.13)
+    install(ninja)
+    install(mugideploy)
+    use(cmake)
+    
+    add_path(C:\llvm19-msvc2020\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
+    call_vcvars()
+    
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtimageformats-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qtimageformats-everywhere-src-6.8.1.zip, :t=qtimageformats-everywhere-src-6.8.1)
+    pushd qtimageformats-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            
+            call qt-configure-module ..
+            
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+            
+            
+        popd
+    popd
+
+def qtshadertools
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    # call pull-postgresql
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.8.1\msvc2020_64\bin)
+    use(python, 3.13)
+    install(ninja)
+    install(mugideploy)
+    use(cmake)
+    
+    add_path(C:\llvm19-msvc2020\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
+    call_vcvars()
+    
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtshadertools-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qtshadertools-everywhere-src-6.8.1.zip, :t=qtshadertools-everywhere-src-6.8.1)
+    pushd qtshadertools-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            
+            call qt-configure-module ..
+            
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+            
+            
+        popd
+    popd
+
+def qtdeclarative
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    # call pull-postgresql
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.8.1\msvc2020_64\bin)
+    use(python, 3.13)
+    install(ninja)
+    install(mugideploy)
+    use(cmake)
+    
+    add_path(C:\llvm19-msvc2020\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
+    call_vcvars()
+    
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtdeclarative-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qtdeclarative-everywhere-src-6.8.1.zip, :t=qtdeclarative-everywhere-src-6.8.1)
+    pushd qtdeclarative-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            
+            call qt-configure-module ..
+            
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+            
+            
+        popd
+    popd
+
+def qttools
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    # call pull-postgresql
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.8.1\msvc2020_64\bin)
+    use(python, 3.13)
+    install(ninja)
+    install(mugideploy)
+    use(cmake)
+    
+    add_path(C:\llvm19-msvc2020\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
+    call_vcvars()
+    
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qttools-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qttools-everywhere-src-6.8.1.zip, :t=qttools-everywhere-src-6.8.1)
+    pushd qttools-everywhere-src-6.8.1
+        mkdir(build)
+        pushd build
+            
+            call qt-configure-module ..
+            
+            cmake --build . --parallel || exit /b 1
+            cmake --install . || exit /b 1
+            
+            
+            mugideploy copy-dep --bin C:\Qt\6.8.1\msvc2020_64\bin\qdoc.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
+            
+        popd
+    popd
+
+
+def docs
+    
+    call_vcvars()
+    
+    
+    pushd qtbase-everywhere-src-6.8.1\build
+        ninja docs
+        ninja install_docs
+    popd
+    
+    pushd qtsvg-everywhere-src-6.8.1\build
+        ninja docs
+        ninja install_docs
+    popd
+    
+    pushd qtactiveqt-everywhere-src-6.8.1\build
+        ninja docs
+        ninja install_docs
+    popd
+    
+    pushd qserialport-everywhere-src-6.8.1\build
+        ninja docs
+        ninja install_docs
+    popd
+    
+    pushd qtimageformats-everywhere-src-6.8.1\build
+        ninja docs
+        ninja install_docs
+    popd
+    
+    pushd qtshadertools-everywhere-src-6.8.1\build
+        ninja docs
+        ninja install_docs
+    popd
+    
+    pushd qtdeclarative-everywhere-src-6.8.1\build
+        ninja docs
+        ninja install_docs
+    popd
+    
+    pushd qttools-everywhere-src-6.8.1\build
+        ninja docs
+        ninja install_docs
+    popd
+    
+
+def qwt depends on qtbase qtsvg
+    git_clone(https://git.code.sf.net/p/qwt/git, qwt, :ref=v6.3.0)
+    
+    call_vcvars()
+    
+    add_path(C:\Qt\6.8.1\msvc2020_64\bin)
+    # if_exist_return(C:\Qwt-6.3.0-Qt-6.8.1\lib\qwt.dll)
+    pushd qwt
+        "C:\Program Files\Git\usr\bin\patch.exe" -N -p1 -i ../0001-release-no-examples-no-tests-install-prefix.patch
+        qmake
+        mingw32-make -j4
+        mingw32-make install
+    popd
+
+def main depends on prepare qtbase qtsvg qtactiveqt qserialport qtimageformats qtshadertools qtdeclarative qttools docs qwt
+    zip(Qt-6.8.1-msvc2020.zip, C:\Qt\6.8.1\msvc2020_64)
+    zip(Qwt-6.3.0-Qt-6.8.1-msvc2020.zip, C:\Qwt-6.3.0-Qt-6.8.1)
+    github_upload(Qt-6.8.1-msvc2020.zip)
+    github_upload(Qwt-6.3.0-Qt-6.8.1-msvc2020.zip)
+
+github-workflow 1
+workflow-name build-msvc2020

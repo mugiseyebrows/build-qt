@@ -2,108 +2,110 @@
 {% set qwt_ver = "6.3.0" %}
 {% set qwt_ref = "v6.3.0" %}
 {% set host = "qt.mirror.constant.com" %}
-use-patch-var 1
 
-def qtbase
-    # call pull-mingw
-    add_path(C:\mingw1310_64\bin)
+{% if mkspec == "win32-g++" %}
+{% set subdir = "mingw_64" %}
+{% set mkspec_ = "mingw" %}
+{% else %}
+{% set subdir = "msvc2020_64" %}
+{% set mkspec_ = "msvc2020" %}
+{% endif %}
+
+def prepare
+    github_checkout()
+    call pull-mysql
+    call pull-postgresql
+    {% if mkspec == "win32-g++" %}
+    call pull-clang-mingw
+    {% else %}
+    call pull-clang-msvc
+    {% endif %}
+    move /y C:\mingw64 C:\mingw64_
+    move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
+    move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
+    move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
+    move /y C:\Strawberry C:\Strawberry_
+    move /y C:\tools\php C:\tools\php_
+
+{% for module in ["qtbase", "qtsvg", "qtactiveqt", "qserialport", "qtimageformats", "qtshadertools", "qtdeclarative", "qttools"] %}
+def {{module}}
     # call pull-mysql
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     # call pull-postgresql
     add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\{{ver}}\{{subdir}}\bin)
     use(python, 3.13)
     install(ninja)
     install(mugideploy)
     use(cmake)
-    if_exist_return(C:\Qt\{{ver}}\mingw_64\bin\qmake.exe)
-    where(gcc, cmake, ninja, libpq.dll, libmysql.dll, mugideploy, :assert)
-    pushd_cd()
-        download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/submodules/qtbase-everywhere-src-{{ver}}.zip, :cache, :v)
-        unzip(qtbase-everywhere-src-{{ver}}.zip, :test=qtbase-everywhere-src-{{ver}})
-        pushd qtbase-everywhere-src-{{ver}}
-            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:/Qt/{{ver}}/mingw_64 -DQT_QMAKE_TARGET_MKSPEC=win32-g++ -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 .
-            cmake --build . --parallel || exit /b 1
-            cmake --install . || exit /b 1
-            mugideploy copy-dep --bin C:\Qt\{{ver}}\mingw_64\bin\qmake.exe --dst C:\Qt\{{ver}}\mingw_64\bin
-            mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\{{ver}}\mingw_64\bin
-            mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{ver}}\mingw_64\bin
-            copy(mugideploy.log, ..\mugideploy.log)
-        popd
-    popd
-    where(qmake, :assert)
-
-def qtsvg depends on qtbase
-    use(ninja)
-    use(cmake)
-    add_path(C:\Qt\{{ver}}\mingw_64\bin)
-    if_exist_return(C:\Qt\{{ver}}\mingw_64\bin\Qt6Svg.dll)
-    where(gcc, cmake, ninja, :assert)
-    download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/submodules/qtsvg-everywhere-src-{{ver}}.zip, :cache, :v)
-    unzip(qtsvg-everywhere-src-{{ver}}.zip, :t=qtsvg-everywhere-src-{{ver}})
-    pushd qtsvg-everywhere-src-{{ver}}
+    {% if mkspec == "win32-g++" %}
+    add_path(C:\mingw1310_64\bin)
+    add_path(C:\llvm19-mingw\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19-mingw
+    {% else %}
+    add_path(C:\llvm19-msvc2020\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
+    call_vcvars()
+    {% endif %}
+    download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/submodules/{{module}}-everywhere-src-{{ver}}.zip, :cache, :v)
+    unzip({{module}}-everywhere-src-{{ver}}.zip, :t={{module}}-everywhere-src-{{ver}})
+    pushd {{module}}-everywhere-src-{{ver}}
         mkdir(build)
         pushd build
-            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="C:\Qt\{{ver}}\mingw_64" -DCMAKE_TOOLCHAIN_FILE=C:\Qt\{{ver}}\mingw_64\lib\cmake\Qt6\qt.toolchain.cmake ..
+            {% if module == "qtbase" %}
+            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:\Qt\{{ver}}\{{subdir}} -DQT_QMAKE_TARGET_MKSPEC={{mkspec}} -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 ..
+            {% else %}
+            call qt-configure-module ..
+            {% endif %}
             cmake --build . --parallel || exit /b 1
             cmake --install . || exit /b 1
+            {% if module == "qtbase" %}
+            mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
+            mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
+            mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
+            {% endif %}
+            {% if module == "qttools" %}
+            mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
+            {% endif %}
         popd
     popd
+{% endfor %}
 
-def qtactiveqt depends on qtbase
-    use(ninja)
-    use(cmake)
-    add_path(C:\Qt\{{ver}}\mingw_64\bin)
-    if_exist_return(C:\Qt\{{ver}}\mingw_64\lib\libQt6AxContainer.a)
-    where(gcc, cmake, ninja, :assert)
-    download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/submodules/qtactiveqt-everywhere-src-{{ver}}.zip, :cache, :v)
-    unzip(qtactiveqt-everywhere-src-{{ver}}.zip, :t=qtactiveqt-everywhere-src-{{ver}})
-    pushd qtactiveqt-everywhere-src-{{ver}}
-        mkdir(build)
-        pushd build
-            cmake -G Ninja -DCMAKE_INSTALL_PREFIX="C:\Qt\{{ver}}\mingw_64" -DCMAKE_TOOLCHAIN_FILE=C:\Qt\{{ver}}\mingw_64\lib\cmake\Qt6\qt.toolchain.cmake ..
-            cmake --build . --parallel || exit /b 1
-            cmake --install . || exit /b 1
-        popd
+def docs
+    {% if mkspec == "win32-g++" %}
+    add_path(C:\mingw1310_64\bin)
+    {% else %}
+    call_vcvars()
+    {% endif %}
+    {% for module in ["qtbase", "qtsvg", "qtactiveqt", "qserialport", "qtimageformats", "qtshadertools", "qtdeclarative", "qttools"] %}
+    pushd {{module}}-everywhere-src-{{ver}}\build
+        ninja docs
+        ninja install_docs
     popd
-
-def qserialport depends on qtbase
-    if_exist_return(C:\Qt\{{ver}}\mingw_64\bin\Qt6SerialPort.dll)
-    download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/submodules/qtserialport-everywhere-src-{{ver}}.zip, :cache, :v)
-    unzip(qtserialport-everywhere-src-{{ver}}.zip, :t=qtserialport-everywhere-src-{{ver}})
-    pushd qtserialport-everywhere-src-{{ver}}
-        mkdir(build)
-        pushd build
-            cmake -G Ninja -DCMAKE_INSTALL_PREFIX="C:\Qt\{{ver}}\mingw_64" -DCMAKE_TOOLCHAIN_FILE=C:\Qt\{{ver}}\mingw_64\lib\cmake\Qt6\qt.toolchain.cmake ..
-            cmake --build . --parallel || exit /b 1
-            cmake --install . || exit /b 1
-        popd
-    popd
-
-def qtimageformats depends on qtbase
-    if_exist_return(C:\qt\{{ver}}\mingw_64\plugins\imageformats\qwebp.dll)
-    download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/submodules/qtimageformats-everywhere-src-{{ver}}.zip, qtimageformats-everywhere-src-{{ver}}.zip, :cache, :v)
-    unzip(qtimageformats-everywhere-src-{{ver}}.zip, :t=qtimageformats-everywhere-src-{{ver}})
-    pushd qtimageformats-everywhere-src-{{ver}}
-        mkdir(build)
-        pushd build
-            cmake -G Ninja -DCMAKE_INSTALL_PREFIX="C:\Qt\{{ver}}\mingw_64" -DCMAKE_TOOLCHAIN_FILE=C:\Qt\{{ver}}\mingw_64\lib\cmake\Qt6\qt.toolchain.cmake ..
-            cmake --build . --parallel || exit /b 1
-            cmake --install . || exit /b 1
-        popd
-    popd
+    {% endfor %}
 
 def qwt depends on qtbase qtsvg
     git_clone(https://git.code.sf.net/p/qwt/git, qwt, :ref={{qwt_ref}})
-    where(gcc, qmake, mingw32-make, :assert)
-    if_exist_return(C:\Qwt-{{qwt_ver}}-Qt-{{ver}}\lib\qwt.dll)
+    {% if mkspec == "win32-g++" %}
+    add_path(C:\mingw1310_64\bin)
+    {% else %}
+    call_vcvars()
+    {% endif %}
+    add_path(C:\Qt\{{ver}}\{{subdir}}\bin)
+    # if_exist_return(C:\Qwt-{{qwt_ver}}-Qt-{{ver}}\lib\qwt.dll)
     pushd qwt
-        patch(../0001-release-no-examples-no-tests-install-prefix.patch, :p1, :N)
+        "C:\Program Files\Git\usr\bin\patch.exe" -N -p1 -i ../0001-release-no-examples-no-tests-install-prefix.patch
         qmake
         mingw32-make -j4
         mingw32-make install
     popd
 
-def main depends on qtbase qtsvg qtactiveqt qserialport qtimageformats qwt
-    zip(Qt-{{ver}}.zip, C:\Qt\{{ver}}\mingw_64)
-    zip(Qwt-{{qwt_ver}}-Qt-{{ver}}.zip, C:\Qwt-{{qwt_ver}}-Qt-{{ver}})
+def main depends on prepare qtbase qtsvg qtactiveqt qserialport qtimageformats qtshadertools qtdeclarative qttools docs qwt
+    zip(Qt-{{ver}}-{{mkspec_}}.zip, C:\Qt\{{ver}}\{{subdir}})
+    zip(Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}}.zip, C:\Qwt-{{qwt_ver}}-Qt-{{ver}})
+    github_upload(Qt-{{ver}}-{{mkspec_}}.zip)
+    github_upload(Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}}.zip)
+
+github-workflow 1
+workflow-name build-{{mkspec_}}

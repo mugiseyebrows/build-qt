@@ -1,6 +1,6 @@
 @echo off
 rem This file is generated from qt681.pbat, all edits will be lost
-set PATH=C:\mingw1310_64\bin;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Program Files\CMake\bin;C:\Windows\System32;C:\Program Files\7-Zip;C:\Program Files\Meson;C:\Qt\6.8.1\mingw_64\bin;C:\Program Files\Git\cmd;%PATH%
+set PATH=C:\mingw1310_64\bin;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Program Files\CMake\bin;C:\Windows\System32;C:\Program Files\7-Zip;C:\Qt\6.8.1\mingw_64\bin;C:\Program Files\Git\cmd;%PATH%
 if exist "C:\Program Files\Git\usr\bin\patch.exe" set PATCH=C:\Program Files\Git\usr\bin\patch.exe
 if not defined PATCH (
 echo PATCH not found
@@ -8,52 +8,19 @@ exit /b
 )
 where ninja > NUL 2>&1 || pip install ninja
 where mugideploy > NUL 2>&1 || pip install mugideploy
-if exist C:\Qt\6.8.1\mingw_64\bin\qmake.exe goto qtbase_end
-where gcc 2> NUL || (
-    echo gcc not found
-    exit /b 1
+if not exist qtbase-everywhere-src-6.8.1.zip (
+    echo downloading qtbase-everywhere-src-6.8.1.zip
+    curl -L -o qtbase-everywhere-src-6.8.1.zip https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtbase-everywhere-src-6.8.1.zip
 )
-where cmake 2> NUL || (
-    echo cmake not found
-    exit /b 1
-)
-where ninja 2> NUL || (
-    echo ninja not found
-    exit /b 1
-)
-where libpq.dll 2> NUL || (
-    echo libpq.dll not found
-    exit /b 1
-)
-where libmysql.dll 2> NUL || (
-    echo libmysql.dll not found
-    exit /b 1
-)
-where mugideploy 2> NUL || (
-    echo mugideploy not found
-    exit /b 1
-)
-pushd %~dp0
-    if not exist qtbase-everywhere-src-6.8.1.zip (
-        echo downloading qtbase-everywhere-src-6.8.1.zip
-        curl -L -o qtbase-everywhere-src-6.8.1.zip https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtbase-everywhere-src-6.8.1.zip
-    )
-    if not exist qtbase-everywhere-src-6.8.1 7z x -y qtbase-everywhere-src-6.8.1.zip
-    pushd qtbase-everywhere-src-6.8.1
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:/Qt/6.8.1/mingw_64 -DQT_QMAKE_TARGET_MKSPEC=win32-g++ -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 .
+if not exist qtbase-everywhere-src-6.8.1 7z x -y qtbase-everywhere-src-6.8.1.zip
+pushd qtbase-everywhere-src-6.8.1
+    if not exist build mkdir build
+    pushd build
+            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:/Qt/6.8.1/mingw_64 -DQT_QMAKE_TARGET_MKSPEC=win32-g++ -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 ..
         cmake --build . --parallel || exit /b 1
         cmake --install . || exit /b 1
-        mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.8.1\mingw_64\bin
-        mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\mingw_64\bin
-        mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\mingw_64\bin
-        copy /y mugideploy.log ..\mugideploy.log
     popd
 popd
-where qmake 2> NUL || (
-    echo qmake not found
-    exit /b 1
-)
-:qtbase_end
 if exist C:\Qt\6.8.1\mingw_64\bin\Qt6Svg.dll goto qtsvg_end
 where gcc 2> NUL || (
     echo gcc not found
