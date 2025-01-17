@@ -39,9 +39,9 @@ def qtbase
 
     
     use(conda)
-    where python
+    # where python
     install(mugideploy)
-    mugideploy --help
+    # mugideploy --help
     
 
     install(ninja)
@@ -142,7 +142,7 @@ def qtactiveqt
         popd
     popd
 
-def qserialport
+def qtserialport
     # call pull-mysql
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
@@ -162,9 +162,9 @@ def qserialport
 
     
 
-    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qserialport-everywhere-src-6.8.1.zip, :cache, :v)
-    unzip(qserialport-everywhere-src-6.8.1.zip, :t=qserialport-everywhere-src-6.8.1)
-    pushd qserialport-everywhere-src-6.8.1
+    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtserialport-everywhere-src-6.8.1.zip, :cache, :v)
+    unzip(qtserialport-everywhere-src-6.8.1.zip, :t=qtserialport-everywhere-src-6.8.1)
+    pushd qtserialport-everywhere-src-6.8.1
         mkdir(build)
         pushd build
             
@@ -293,9 +293,9 @@ def qttools
 
     
     use(conda)
-    where python
+    # where python
     install(mugideploy)
-    mugideploy --help
+    # mugideploy --help
     
 
     install(ninja)
@@ -351,7 +351,7 @@ def docs
         ninja install_docs
     popd
     
-    pushd qserialport-everywhere-src-6.8.1\build
+    pushd qtserialport-everywhere-src-6.8.1\build
         ninja docs
         ninja install_docs
     popd
@@ -391,7 +391,7 @@ def qwt depends on qtbase qtsvg
         mingw32-make install
     popd
 
-def main depends on prepare  qtbase  qtsvg  qtactiveqt  qserialport  qtimageformats  qtshadertools  qtdeclarative  qttools  docs qwt
+def main depends on prepare  qtbase  qtsvg  qtactiveqt  qtserialport  qtimageformats  qtshadertools  qtdeclarative  qttools  docs qwt
     zip(Qt-6.8.1-mingw.zip, C:\Qt\6.8.1\mingw_64)
     zip(Qwt-6.3.0-Qt-6.8.1-mingw.zip, C:\Qwt-6.3.0-Qt-6.8.1)
     github_upload(Qt-6.8.1-mingw.zip)

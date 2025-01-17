@@ -12,9 +12,7 @@ move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
 move /y C:\Strawberry C:\Strawberry_
 move /y C:\tools\php C:\tools\php_
 move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
-where python
 where mugideploy > NUL 2>&1 || pip install mugideploy
-mugideploy --help
 where ninja > NUL 2>&1 || pip install ninja
 if not exist qtbase-everywhere-src-6.8.1.zip (
     echo downloading qtbase-everywhere-src-6.8.1.zip
@@ -61,12 +59,12 @@ pushd qtactiveqt-everywhere-src-6.8.1
     popd
 popd
 where ninja > NUL 2>&1 || pip install ninja
-if not exist qserialport-everywhere-src-6.8.1.zip (
-    echo downloading qserialport-everywhere-src-6.8.1.zip
-    curl -L -o qserialport-everywhere-src-6.8.1.zip https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qserialport-everywhere-src-6.8.1.zip
+if not exist qtserialport-everywhere-src-6.8.1.zip (
+    echo downloading qtserialport-everywhere-src-6.8.1.zip
+    curl -L -o qtserialport-everywhere-src-6.8.1.zip https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qtserialport-everywhere-src-6.8.1.zip
 )
-if not exist qserialport-everywhere-src-6.8.1 7z x -y qserialport-everywhere-src-6.8.1.zip
-pushd qserialport-everywhere-src-6.8.1
+if not exist qtserialport-everywhere-src-6.8.1 7z x -y qtserialport-everywhere-src-6.8.1.zip
+pushd qtserialport-everywhere-src-6.8.1
     if not exist build mkdir build
     pushd build
         call qt-configure-module ..
@@ -116,9 +114,7 @@ pushd qtdeclarative-everywhere-src-6.8.1
         cmake --install . || exit /b 1
     popd
 popd
-where python
 where mugideploy > NUL 2>&1 || pip install mugideploy
-mugideploy --help
 where ninja > NUL 2>&1 || pip install ninja
 set LLVM_INSTALL_DIR=C:\llvm19-mingw
 if not exist qttools-everywhere-src-6.8.1.zip (
@@ -147,7 +143,7 @@ pushd qtactiveqt-everywhere-src-6.8.1\build
     ninja docs
     ninja install_docs
 popd
-pushd qserialport-everywhere-src-6.8.1\build
+pushd qtserialport-everywhere-src-6.8.1\build
     ninja docs
     ninja install_docs
 popd

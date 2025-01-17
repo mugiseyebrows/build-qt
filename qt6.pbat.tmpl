@@ -2,7 +2,7 @@
 {% set qwt_ver = "6.3.0" %}
 {% set qwt_ref = "v6.3.0" %}
 {% set host = "qt.mirror.constant.com" %}
-{% set modules = ["qtbase", "qtsvg", "qtactiveqt", "qserialport", "qtimageformats", "qtshadertools", "qtdeclarative", "qttools"] %}
+{% set modules = ["qtbase", "qtsvg", "qtactiveqt", "qtserialport", "qtimageformats", "qtshadertools", "qtdeclarative", "qttools"] %}
 
 {% if mkspec == "win32-g++" %}
 {% set subdir = "mingw_64" %}
@@ -46,9 +46,9 @@ def {{module}}
 
     {% if module in ["qtbase","qttools"] %}
     use(conda)
-    where python
+    # where python
     install(mugideploy)
-    mugideploy --help
+    # mugideploy --help
     {% endif %}
 
     install(ninja)
