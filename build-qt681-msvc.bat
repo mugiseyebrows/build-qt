@@ -1,9 +1,11 @@
 @echo off
 rem This file is generated from build-qt681-msvc.pbat, all edits will be lost
-set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.8.1\msvc2020_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda3;C:\Miniconda3\Scripts;%USERPROFILE%\Miniconda3;%USERPROFILE%\Miniconda3\Scripts;C:\Program Files\CMake\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build;C:\Windows\System32;C:\Program Files\7-Zip;C:\llvm19-msvc2020\bin;C:\Program Files\Git\cmd;%PATH%
+set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.8.1\msvc2020_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda3;C:\Miniconda3\Scripts;%USERPROFILE%\Miniconda3;%USERPROFILE%\Miniconda3\Scripts;C:\Program Files\CMake\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build;C:\Windows\System32;C:\Program Files\7-Zip;C:\llvm19\bin;C:\Program Files\Git\cmd;%PATH%
 call pull-mysql
 call pull-postgresql
 call pull-clang-msvc
+echo dir C:\llvm19\bin
+dir C:\llvm19\bin
 move /y C:\mingw64 C:\mingw64_
 move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
 move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
@@ -123,7 +125,7 @@ popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
 call vcvars64.bat
-set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
+set LLVM_INSTALL_DIR=C:\llvm19
 if not exist qttools-everywhere-src-6.8.1.zip (
     echo downloading qttools-everywhere-src-6.8.1.zip
     curl -L -o qttools-everywhere-src-6.8.1.zip https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qttools-everywhere-src-6.8.1.zip

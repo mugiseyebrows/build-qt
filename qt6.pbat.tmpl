@@ -26,6 +26,8 @@ def prepare
     {% else %}
     call pull-clang-msvc
     {% endif %}
+    echo dir C:\llvm19\bin
+    dir C:\llvm19\bin
     move /y C:\mingw64 C:\mingw64_
     move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
     move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
@@ -61,13 +63,8 @@ def {{module}}
     {% endif %}
 
     {% if module == "qttools" %}
-    {% if mkspec == "win32-g++" %}
-    add_path(C:\llvm19-mingw\bin)
-    set LLVM_INSTALL_DIR=C:\llvm19-mingw
-    {% else %}
-    add_path(C:\llvm19-msvc2020\bin)
-    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
-    {% endif %}
+    add_path(C:\llvm19\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19
     {% endif %}
 
     download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/submodules/{{module}}-everywhere-src-{{ver}}.zip, :cache, :v)
@@ -124,7 +121,7 @@ def qwt depends on qtbase qtsvg
         mingw32-make install
     popd
 
-def main depends on prepare {% for module in modules %} {{ module }} {% endfor %} docs qwt
+def main depends on prepare {{ modules | join(' ') }} docs qwt
     zip(Qt-{{ver}}-{{mkspec_}}.zip, C:\Qt\{{ver}}\{{subdir}})
     zip(Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}}.zip, C:\Qwt-{{qwt_ver}}-Qt-{{ver}})
     github_upload(Qt-{{ver}}-{{mkspec_}}.zip)

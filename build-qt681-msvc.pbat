@@ -18,6 +18,8 @@ def prepare
     
     call pull-clang-msvc
     
+    echo dir C:\llvm19\bin
+    dir C:\llvm19\bin
     move /y C:\mingw64 C:\mingw64_
     move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
     move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
@@ -305,10 +307,8 @@ def qttools
     
 
     
-    
-    add_path(C:\llvm19-msvc2020\bin)
-    set LLVM_INSTALL_DIR=C:\llvm19-msvc2020
-    
+    add_path(C:\llvm19\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19
     
 
     download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/submodules/qttools-everywhere-src-6.8.1.zip, :cache, :v)
@@ -390,7 +390,7 @@ def qwt depends on qtbase qtsvg
         mingw32-make install
     popd
 
-def main depends on prepare  qtbase  qtsvg  qtactiveqt  qtserialport  qtimageformats  qtshadertools  qtdeclarative  qttools  docs qwt
+def main depends on prepare qtbase qtsvg qtactiveqt qtserialport qtimageformats qtshadertools qtdeclarative qttools docs qwt
     zip(Qt-6.8.1-msvc2020.zip, C:\Qt\6.8.1\msvc2020_64)
     zip(Qwt-6.3.0-Qt-6.8.1-msvc2020.zip, C:\Qwt-6.3.0-Qt-6.8.1)
     github_upload(Qt-6.8.1-msvc2020.zip)

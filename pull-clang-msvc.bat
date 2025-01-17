@@ -6,5 +6,5 @@ if not exist llvm19-msvc2020.7z (
 echo downloading llvm19-msvc2020.7z
 curl -L -o llvm19-msvc2020.7z https://github.com/mugiseyebrows/build-clang/releases/download/19.1.7/llvm19-msvc2020.7z
 )
-7z x -y -oC:\llvm19-msvc2020 llvm19-msvc2020.7z
+7z x -y -oC:\ llvm19-msvc2020.7z
 :main_end
