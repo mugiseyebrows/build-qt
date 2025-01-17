@@ -42,9 +42,17 @@ def {{module}}
     add_path(C:\postgresql-14\bin)
     add_path(C:\Qt\{{ver}}\{{subdir}}\bin)
     use(python, 3.13)
-    install(ninja)
+
+    {% if module in ["qtbase","qttools"] %}
+    use(conda)
+    where python
     install(mugideploy)
+    mugideploy --help
+    {% endif %}
+
+    install(ninja)
     use(cmake)
+
     {% if mkspec == "win32-g++" %}
     add_path(C:\mingw1310_64\bin)
     {% else %}
