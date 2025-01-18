@@ -4,6 +4,8 @@ set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bi
 call pull-mysql
 call pull-postgresql
 call pull-clang-msvc
+echo dir C:\llvm19\bin\libclang.dll
+dir C:\llvm19\bin\libclang.dll
 move /y C:\mingw64 C:\mingw64_
 move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
 move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
@@ -101,7 +103,6 @@ popd
 mugideploy copy-dep --bin C:\Qt\6.8.1\msvc2020_64\bin\qmake.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
 mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
 mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\msvc2020_64\bin
-mugideploy copy-dep --bin C:\Qt\6.8.1\msvc2020_64\bin\qdoc.exe --dst C:\Qt\6.8.1\msvc2020_64\bin
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
 set LLVM_INSTALL_DIR=C:\llvm19
@@ -128,3 +129,4 @@ pushd qwt
 popd
 7z a -y Qt-6.8.1-msvc2020.7z C:\Qt\6.8.1\msvc2020_64
 7z a -y Qwt-6.3.0-Qt-6.8.1-msvc2020.7z C:\Qwt-6.3.0-Qt-6.8.1
+7z a -y libclang-msvc2020.7z C:\llvm19\bin\libclang.dll

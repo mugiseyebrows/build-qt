@@ -21,8 +21,8 @@ def prepare
     call pull-clang-mingw
     call pull-mingw
     
-    # echo dir C:\llvm19\bin
-    # dir C:\llvm19\bin
+    echo dir C:\llvm19\bin\libclang.dll
+    dir C:\llvm19\bin\libclang.dll
     move /y C:\mingw64 C:\mingw64_
     move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
     move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
@@ -328,7 +328,7 @@ def install
     mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.8.1\mingw_64\bin
     mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\mingw_64\bin
     mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\mingw_64\bin
-    mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qdoc.exe --dst C:\Qt\6.8.1\mingw_64\bin
+    # mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qdoc.exe --dst C:\Qt\6.8.1\mingw_64\bin
 
 def docs
     
@@ -391,13 +391,14 @@ def qwt depends on qtbase qtsvg
     popd
 
 def main depends on prepare configure qtbase qtsvg qtactiveqt qtserialport qtimageformats qtshadertools qtdeclarative qttools qtdoc install docs qwt
-    zip(Qt-6.8.1-mingw.7z, C:\Qt\6.8.1\mingw_64)
-    zip(Qwt-6.3.0-Qt-6.8.1-mingw.7z, C:\Qwt-6.3.0-Qt-6.8.1)
-    github_upload(C:\Qt\6.8.1\mingw_64, :n=Qt-6.8.1-mingw)
-    github_upload(C:\Qwt-6.3.0-Qt-6.8.1, :n=Qwt-6.3.0-Qt-6.8.1-mingw)
+    zip(Qt-6.8.1-mingw13.7z, C:\Qt\6.8.1\mingw_64)
+    zip(Qwt-6.3.0-Qt-6.8.1-mingw13.7z, C:\Qwt-6.3.0-Qt-6.8.1)
+    zip(libclang-mingw13.7z, C:\llvm19\bin\libclang.dll)
+    github_upload(C:\Qt\6.8.1\mingw_64, :n=Qt-6.8.1-mingw13)
+    github_upload(C:\Qwt-6.3.0-Qt-6.8.1, :n=Qwt-6.3.0-Qt-6.8.1-mingw13)
     github_upload(mugideploy.log, :n=mugideploy.log)
     github_upload(qt-everywhere-src-6.8.1\build\config.summary, :n=config.summary)
-    github_release(Qt-6.8.1-mingw.7z, Qwt-6.3.0-Qt-6.8.1-mingw.7z)
+    github_release(Qt-6.8.1-mingw13.7z, Qwt-6.3.0-Qt-6.8.1-mingw13.7z, libclang-mingw13.7z)
 
 github-workflow 1
-workflow-name build-mingw
+workflow-name build-mingw13

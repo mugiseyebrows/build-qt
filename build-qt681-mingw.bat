@@ -5,6 +5,8 @@ call pull-mysql
 call pull-postgresql
 call pull-clang-mingw
 call pull-mingw
+echo dir C:\llvm19\bin\libclang.dll
+dir C:\llvm19\bin\libclang.dll
 move /y C:\mingw64 C:\mingw64_
 move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
 move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
@@ -113,7 +115,6 @@ popd
 mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.8.1\mingw_64\bin
 mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\mingw_64\bin
 mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\mingw_64\bin
-mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qdoc.exe --dst C:\Qt\6.8.1\mingw_64\bin
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
 set LLVM_INSTALL_DIR=C:\llvm19
@@ -140,5 +141,6 @@ pushd qwt
     mingw32-make -j4
     mingw32-make install
 popd
-7z a -y Qt-6.8.1-mingw.7z C:\Qt\6.8.1\mingw_64
-7z a -y Qwt-6.3.0-Qt-6.8.1-mingw.7z C:\Qwt-6.3.0-Qt-6.8.1
+7z a -y Qt-6.8.1-mingw13.7z C:\Qt\6.8.1\mingw_64
+7z a -y Qwt-6.3.0-Qt-6.8.1-mingw13.7z C:\Qwt-6.3.0-Qt-6.8.1
+7z a -y libclang-mingw13.7z C:\llvm19\bin\libclang.dll
