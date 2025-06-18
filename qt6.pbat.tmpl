@@ -1,8 +1,8 @@
 {% set majmin = ver.rsplit(".", 1)[0] %}
-{% set qwt_ver = "6.3.0" %}
-{% set qwt_ref = "v6.3.0" %}
+{% set qwt_ver = "6.3.1" %}
+{% set qwt_ref = "v6.3.1" %}
 {% set host = "qt.mirror.constant.com" %}
-{% set modules = ["qtbase", "qtsvg", "qtactiveqt", "qtserialport", "qtimageformats", "qtshadertools", "qtdeclarative", "qttools", "qtdoc"] %}
+{% set modules = ["qtbase", "qtsvg", "qtactiveqt", "qtserialport", "qtimageformats", "qtshadertools", "qtdeclarative", "qttools", "qtcharts", "qtdoc"] %}
 
 {% if mkspec == "win32-g++" %}
 {% set subdir = "mingw_64" %}
@@ -120,7 +120,7 @@ def main depends on prepare configure {{ modules | join(' ') }} install docs qwt
     zip(libclang-{{mkspec_}}.7z, C:\llvm19\bin\libclang.dll)
     github_upload(C:\Qt\{{ver}}\{{subdir}}, :n=Qt-{{ver}}-{{mkspec_}})
     github_upload(C:\Qwt-{{qwt_ver}}-Qt-{{ver}}, :n=Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}})
-    github_upload(mugideploy.log, :n=mugideploy.log)
+    #github_upload(mugideploy.log, :n=mugideploy.log)
     github_upload(qt-everywhere-src-{{ver}}\build\config.summary, :n=config.summary)
     github_release(Qt-{{ver}}-{{mkspec_}}.7z, Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}}.7z, libclang-{{mkspec_}}.7z)
 

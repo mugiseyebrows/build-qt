@@ -37,7 +37,7 @@ def configure
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.8.1\mingw_64\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
     use(python, 3.13)
     use(conda)
     # where python
@@ -53,12 +53,12 @@ def configure
     
     add_path(C:\llvm19\bin)
 
-    download(https://qt.mirror.constant.com/official_releases/qt/6.8/6.8.1/single/qt-everywhere-src-6.8.1.zip, :cache, :v)
-    unzip(qt-everywhere-src-6.8.1.zip, :t=qt-everywhere-src-6.8.1)
-    pushd qt-everywhere-src-6.8.1
+    download(https://qt.mirror.constant.com/official_releases/qt/6.9/6.9.1/single/qt-everywhere-src-6.9.1.zip, :cache, :v)
+    unzip(qt-everywhere-src-6.9.1.zip, :t=qt-everywhere-src-6.9.1)
+    pushd qt-everywhere-src-6.9.1
         mkdir(build)
         pushd build
-            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DQT_BUILD_SUBMODULES="qtbase;qtsvg;qtactiveqt;qtserialport;qtimageformats;qtshadertools;qtdeclarative;qttools;qtdoc" -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:\Qt\6.8.1\mingw_64 -DQT_QMAKE_TARGET_MKSPEC=win32-g++ -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -Wno-dev ..
+            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DQT_BUILD_SUBMODULES="qtbase;qtsvg;qtactiveqt;qtserialport;qtimageformats;qtshadertools;qtdeclarative;qttools;qtcharts;qtdoc" -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:\Qt\6.9.1\mingw_64 -DQT_QMAKE_TARGET_MKSPEC=win32-g++ -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -Wno-dev ..
             type config.summary
         popd
     popd
@@ -70,7 +70,7 @@ def qtbase
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.8.1\mingw_64\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
     use(python, 3.13)
     use(conda)
     # where python
@@ -86,7 +86,7 @@ def qtbase
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.8.1\build
+    pushd qt-everywhere-src-6.9.1\build
         ninja qtbase
     popd
 
@@ -96,7 +96,7 @@ def qtsvg
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.8.1\mingw_64\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
     use(python, 3.13)
     use(conda)
     # where python
@@ -112,7 +112,7 @@ def qtsvg
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.8.1\build
+    pushd qt-everywhere-src-6.9.1\build
         ninja qtsvg
     popd
 
@@ -122,7 +122,7 @@ def qtactiveqt
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.8.1\mingw_64\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
     use(python, 3.13)
     use(conda)
     # where python
@@ -138,7 +138,7 @@ def qtactiveqt
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.8.1\build
+    pushd qt-everywhere-src-6.9.1\build
         ninja qtactiveqt
     popd
 
@@ -148,7 +148,7 @@ def qtserialport
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.8.1\mingw_64\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
     use(python, 3.13)
     use(conda)
     # where python
@@ -164,7 +164,7 @@ def qtserialport
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.8.1\build
+    pushd qt-everywhere-src-6.9.1\build
         ninja qtserialport
     popd
 
@@ -174,7 +174,7 @@ def qtimageformats
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.8.1\mingw_64\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
     use(python, 3.13)
     use(conda)
     # where python
@@ -190,7 +190,7 @@ def qtimageformats
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.8.1\build
+    pushd qt-everywhere-src-6.9.1\build
         ninja qtimageformats
     popd
 
@@ -200,7 +200,7 @@ def qtshadertools
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.8.1\mingw_64\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
     use(python, 3.13)
     use(conda)
     # where python
@@ -216,7 +216,7 @@ def qtshadertools
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.8.1\build
+    pushd qt-everywhere-src-6.9.1\build
         ninja qtshadertools
     popd
 
@@ -226,7 +226,7 @@ def qtdeclarative
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.8.1\mingw_64\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
     use(python, 3.13)
     use(conda)
     # where python
@@ -242,7 +242,7 @@ def qtdeclarative
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.8.1\build
+    pushd qt-everywhere-src-6.9.1\build
         ninja qtdeclarative
     popd
 
@@ -252,7 +252,7 @@ def qttools
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.8.1\mingw_64\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
     use(python, 3.13)
     use(conda)
     # where python
@@ -268,8 +268,34 @@ def qttools
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.8.1\build
+    pushd qt-everywhere-src-6.9.1\build
         ninja qttools
+    popd
+
+def qtcharts
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
+    use(python, 3.13)
+    use(conda)
+    # where python
+    install(mugideploy)
+    # mugideploy --help
+    install(ninja)
+    use(cmake)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    add_path(C:\mingw1310_64\bin)
+    set CC=C:\mingw1310_64\bin\gcc
+    set CXX=C:\mingw1310_64\bin\g++
+    
+    add_path(C:\llvm19\bin)
+
+    pushd qt-everywhere-src-6.9.1\build
+        ninja qtcharts
     popd
 
 def qtdoc
@@ -278,7 +304,7 @@ def qtdoc
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.8.1\mingw_64\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
     use(python, 3.13)
     use(conda)
     # where python
@@ -294,7 +320,7 @@ def qtdoc
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.8.1\build
+    pushd qt-everywhere-src-6.9.1\build
         ninja qtdoc
     popd
 
@@ -305,7 +331,7 @@ def install
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.8.1\mingw_64\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
     use(python, 3.13)
     use(conda)
     # where python
@@ -321,14 +347,14 @@ def install
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.8.1\build
+    pushd qt-everywhere-src-6.9.1\build
         ninja
         ninja install
     popd
-    mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.8.1\mingw_64\bin
-    mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.8.1\mingw_64\bin
-    mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.8.1\mingw_64\bin
-    # mugideploy copy-dep --bin C:\Qt\6.8.1\mingw_64\bin\qdoc.exe --dst C:\Qt\6.8.1\mingw_64\bin
+    mugideploy copy-dep --bin C:\Qt\6.9.1\mingw_64\bin\qmake.exe --dst C:\Qt\6.9.1\mingw_64\bin
+    mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.9.1\mingw_64\bin
+    mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.9.1\mingw_64\bin
+    # mugideploy copy-dep --bin C:\Qt\6.9.1\mingw_64\bin\qdoc.exe --dst C:\Qt\6.9.1\mingw_64\bin
 
 def docs
     
@@ -336,7 +362,7 @@ def docs
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.8.1\mingw_64\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
     use(python, 3.13)
     use(conda)
     # where python
@@ -352,19 +378,19 @@ def docs
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.8.1\build
+    pushd qt-everywhere-src-6.9.1\build
         ninja docs
         ninja install_docs
     popd
 
 def qwt depends on qtbase qtsvg
-    # if_exist_return(C:\Qwt-6.3.0-Qt-6.8.1\lib\qwt.dll)
+    # if_exist_return(C:\Qwt-6.3.1-Qt-6.9.1\lib\qwt.dll)
     
     # call pull-mysql
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.8.1\mingw_64\bin)
+    add_path(C:\Qt\6.9.1\mingw_64\bin)
     use(python, 3.13)
     use(conda)
     # where python
@@ -380,7 +406,7 @@ def qwt depends on qtbase qtsvg
     
     add_path(C:\llvm19\bin)
 
-    git_clone(https://git.code.sf.net/p/qwt/git, qwt, :ref=v6.3.0)
+    git_clone(https://git.code.sf.net/p/qwt/git, qwt, :ref=v6.3.1)
     pushd qwt
         "C:\Program Files\Git\usr\bin\patch.exe" -N -p1 -i ../0001-release-no-examples-no-tests-install-prefix.patch
         qmake
@@ -390,15 +416,15 @@ def qwt depends on qtbase qtsvg
         
     popd
 
-def main depends on prepare configure qtbase qtsvg qtactiveqt qtserialport qtimageformats qtshadertools qtdeclarative qttools qtdoc install docs qwt
-    zip(Qt-6.8.1-mingw13.7z, C:\Qt\6.8.1\mingw_64)
-    zip(Qwt-6.3.0-Qt-6.8.1-mingw13.7z, C:\Qwt-6.3.0-Qt-6.8.1)
+def main depends on prepare configure qtbase qtsvg qtactiveqt qtserialport qtimageformats qtshadertools qtdeclarative qttools qtcharts qtdoc install docs qwt
+    zip(Qt-6.9.1-mingw13.7z, C:\Qt\6.9.1\mingw_64)
+    zip(Qwt-6.3.1-Qt-6.9.1-mingw13.7z, C:\Qwt-6.3.1-Qt-6.9.1)
     zip(libclang-mingw13.7z, C:\llvm19\bin\libclang.dll)
-    github_upload(C:\Qt\6.8.1\mingw_64, :n=Qt-6.8.1-mingw13)
-    github_upload(C:\Qwt-6.3.0-Qt-6.8.1, :n=Qwt-6.3.0-Qt-6.8.1-mingw13)
-    github_upload(mugideploy.log, :n=mugideploy.log)
-    github_upload(qt-everywhere-src-6.8.1\build\config.summary, :n=config.summary)
-    github_release(Qt-6.8.1-mingw13.7z, Qwt-6.3.0-Qt-6.8.1-mingw13.7z, libclang-mingw13.7z)
+    github_upload(C:\Qt\6.9.1\mingw_64, :n=Qt-6.9.1-mingw13)
+    github_upload(C:\Qwt-6.3.1-Qt-6.9.1, :n=Qwt-6.3.1-Qt-6.9.1-mingw13)
+    #github_upload(mugideploy.log, :n=mugideploy.log)
+    github_upload(qt-everywhere-src-6.9.1\build\config.summary, :n=config.summary)
+    github_release(Qt-6.9.1-mingw13.7z, Qwt-6.3.1-Qt-6.9.1-mingw13.7z, libclang-mingw13.7z)
 
 github-workflow 1
 workflow-name build-mingw13
