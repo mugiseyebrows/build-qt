@@ -1,6 +1,7 @@
 {% set majmin = ver.rsplit(".", 1)[0] %}
 {% set host = "qt.mirror.constant.com" %}
 {% set modules = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
+{% set modules = ["qtbase"] %}
 
 {% if mkspec == "win32-g++" %}
 {% set subdir = "mingw_64" %}
@@ -68,7 +69,7 @@ def configure
         mkdir(build)
         pushd build
             # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
-            call ..\configure -prefix C:\Qt\{{ver}}\{{subdir}} -platform {{mkspec}} -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF
+            call ..\configure -prefix C:\Qt\{{ver}}\{{subdir}} -platform {{mkspec}} -submodules qtbase -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
             type config.summary
         popd
     popd
@@ -98,7 +99,7 @@ def docs
         ninja install_docs
     popd
 
-def main depends on prepare get_source configure {{ modules | join(' ') }} install docs
+def main depends on prepare get_source configure {{ modules | join(' ') }} install
     zip(Qt-{{ver}}-{{compiler}}.7z, C:\Qt\{{ver}}\{{subdir}})
     #zip(libclang-{{compiler}}.7z, C:\llvm19\bin\libclang.dll)
     github_upload(C:\Qt\{{ver}}\{{subdir}}, :n=Qt-{{ver}}-{{compiler}})
