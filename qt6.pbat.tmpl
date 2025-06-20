@@ -1,17 +1,15 @@
 {% set majmin = ver.rsplit(".", 1)[0] %}
-{% set qwt_ver = "6.3.1" %}
-{% set qwt_ref = "v6.3.1" %}
 {% set host = "qt.mirror.constant.com" %}
-{% set modules = ["qtbase", "qtsvg", "qtactiveqt", "qtserialport", "qtimageformats", "qtshadertools", "qtdeclarative", "qttools", "qtcharts", "qtdoc"] %}
+{% set modules = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
 
 {% if mkspec == "win32-g++" %}
 {% set subdir = "mingw_64" %}
-{% set mkspec_ = "mingw13" %}
+{% set compiler = "mingw13" %}
 {% set cc = "gcc" %}
 {% set cxx = "g++" %}
 {% else %}
 {% set subdir = "msvc2020_64" %}
-{% set mkspec_ = "msvc2020" %}
+{% set compiler = "msvc2020" %}
 {% set cc = "cl" %}
 {% set cxx = "cl" %}
 {% endif %}
@@ -24,11 +22,10 @@
     add_path(C:\Qt\{{ver}}\{{subdir}}\bin)
     use(python, 3.13)
     use(conda)
+    use(cmake)
     # where python
     install(mugideploy)
-    # mugideploy --help
     install(ninja)
-    use(cmake)
     set LLVM_INSTALL_DIR=C:\llvm19
     {% if mkspec == "win32-g++" %}
     add_path(C:\mingw1310_64\bin)
@@ -60,14 +57,18 @@ def prepare
     move /y C:\tools\php C:\tools\php_
     move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 
-def configure
-    {{ env() }}
+def get_source
+    if_exist_return(qt-everywhere-src-{{ver}})
     download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/single/qt-everywhere-src-{{ver}}.zip, :cache, :v)
     unzip(qt-everywhere-src-{{ver}}.zip, :t=qt-everywhere-src-{{ver}})
+
+def configure
+    {{ env() }}
     pushd qt-everywhere-src-{{ver}}
         mkdir(build)
         pushd build
-            cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DQT_BUILD_SUBMODULES="{{ modules | join(';') }}" -DBUILD_SHARED_LIBS=ON -DCMAKE_INSTALL_PREFIX=C:\Qt\{{ver}}\{{subdir}} -DQT_QMAKE_TARGET_MKSPEC={{mkspec}} -DQT_BUILD_TESTS=FALSE -DQT_BUILD_EXAMPLES=FALSE -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -Wno-dev ..
+            # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
+            call ..\configure -prefix C:\Qt\{{ver}}\{{subdir}} -platform {{mkspec}} -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF
             type config.summary
         popd
     popd
@@ -76,14 +77,13 @@ def configure
 def {{module}}
     {{ env() }}
     pushd qt-everywhere-src-{{ver}}\build
-        ninja {{module}}
+        ninja {{module}}/all || exit /b
     popd
 {% endfor %}
 
 def install
     {{ env() }}
     pushd qt-everywhere-src-{{ver}}\build
-        ninja
         ninja install
     popd
     mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qmake.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
@@ -98,31 +98,12 @@ def docs
         ninja install_docs
     popd
 
-def qwt depends on qtbase qtsvg
-    # if_exist_return(C:\Qwt-{{qwt_ver}}-Qt-{{ver}}\lib\qwt.dll)
-    {{ env() }}
-    git_clone(https://git.code.sf.net/p/qwt/git, qwt, :ref={{qwt_ref}})
-    pushd qwt
-        "C:\Program Files\Git\usr\bin\patch.exe" -N -p1 -i ../0001-release-no-examples-no-tests-install-prefix.patch
-        qmake
-        {% if mkspec == "win32-g++" %}
-        mingw32-make -j4
-        mingw32-make install
-        {% else %}
-        nmake
-        nmake install
-        {% endif %}
-    popd
-
-def main depends on prepare configure {{ modules | join(' ') }} install docs qwt
-    zip(Qt-{{ver}}-{{mkspec_}}.7z, C:\Qt\{{ver}}\{{subdir}})
-    zip(Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}}.7z, C:\Qwt-{{qwt_ver}}-Qt-{{ver}})
-    zip(libclang-{{mkspec_}}.7z, C:\llvm19\bin\libclang.dll)
-    github_upload(C:\Qt\{{ver}}\{{subdir}}, :n=Qt-{{ver}}-{{mkspec_}})
-    github_upload(C:\Qwt-{{qwt_ver}}-Qt-{{ver}}, :n=Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}})
-    #github_upload(mugideploy.log, :n=mugideploy.log)
-    github_upload(qt-everywhere-src-{{ver}}\build\config.summary, :n=config.summary)
-    github_release(Qt-{{ver}}-{{mkspec_}}.7z, Qwt-{{qwt_ver}}-Qt-{{ver}}-{{mkspec_}}.7z, libclang-{{mkspec_}}.7z)
+def main depends on prepare get_source configure {{ modules | join(' ') }} install docs
+    zip(Qt-{{ver}}-{{compiler}}.7z, C:\Qt\{{ver}}\{{subdir}})
+    #zip(libclang-{{compiler}}.7z, C:\llvm19\bin\libclang.dll)
+    github_upload(C:\Qt\{{ver}}\{{subdir}}, :n=Qt-{{ver}}-{{compiler}})
+    #github_upload(qt-everywhere-src-{{ver}}\build\config.summary, :n=config.summary)
+    github_release(Qt-{{ver}}-{{compiler}}.7z)
 
 github-workflow 1
-workflow-name build-{{mkspec_}}
+workflow-name build-{{compiler}}

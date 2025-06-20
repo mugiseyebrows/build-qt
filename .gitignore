@@ -1,1 +1,4 @@
 *.7z
+*.zip
+qt-everywhere-src-6.9.1/
+qwt/
