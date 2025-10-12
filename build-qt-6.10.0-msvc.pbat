@@ -13,13 +13,6 @@
 
 def prepare
     github_checkout()
-    call pull-mysql
-    call pull-postgresql
-    
-    call pull-clang-msvc
-    
-    echo dir C:\llvm19\bin\libclang.dll
-    dir C:\llvm19\bin\libclang.dll
     move /y C:\mingw64 C:\mingw64_
     move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
     move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
@@ -29,9 +22,9 @@ def prepare
     move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 
 def get_source
-    if_exist_return(qt-everywhere-src-6.9.1)
-    download(https://qt.mirror.constant.com/official_releases/qt/6.9/6.9.1/single/qt-everywhere-src-6.9.1.zip, :cache, :v)
-    unzip(qt-everywhere-src-6.9.1.zip, :t=qt-everywhere-src-6.9.1)
+    if_exist_return(qt-everywhere-src-6.10.0)
+    download(https://qt.mirror.constant.com/official_releases/qt/6.10/6.10.0/single/qt-everywhere-src-6.10.0.zip, :cache, :v)
+    unzip(qt-everywhere-src-6.10.0.zip, :t=qt-everywhere-src-6.10.0)
 
 def configure
     
@@ -39,7 +32,7 @@ def configure
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -52,14 +45,37 @@ def configure
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1
+    pushd qt-everywhere-src-6.10.0
         mkdir(build)
         pushd build
             # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
-            call ..\configure -prefix C:\Qt\6.9.1\msvc2020_64 -platform win32-msvc -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
+            call ..\configure -prefix C:\Qt\6.10.0\msvc2020_64 -platform win32-msvc -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
             type config.summary
         popd
     popd
+
+def clang
+    
+    if_exist_return(C:\llvm19-msvc2020\bin\clang.exe)
+    download(https://github.com/mugiseyebrows/build-clang/releases/download/19.1.7/llvm19-msvc2020.7z, :cache, :v)
+    unzip(llvm19-msvc2020.7z, :o=C:\)
+    
+
+def mingw
+    
+    echo 1
+    
+
+def mysql
+    if_exist_return(C:\mysql-8.2.0-winx64\bin\mysql.exe)
+    download(https://cdn.mysql.com/Downloads/MySQL-8.2/mysql-8.2.0-winx64.zip, :cache, :v)
+    unzip(mysql-8.2.0-winx64.zip, :o=C:\)
+
+def postgresql
+    if_exist_return(C:\postgresql-14\bin\psql.exe)
+    download(https://get.enterprisedb.com/postgresql/postgresql-14.12-2-windows-x64-binaries.zip, :cache, :v)
+    unzip(postgresql-14.12-2-windows-x64-binaries.zip, :o=C:\)
+    move(C:\pgsql, C:\postgresql-14)
 
 
 def qtbase
@@ -68,7 +84,7 @@ def qtbase
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -81,7 +97,7 @@ def qtbase
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtbase/all || exit /b
     popd
 
@@ -91,7 +107,7 @@ def qtactiveqt
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -104,7 +120,7 @@ def qtactiveqt
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtactiveqt/all || exit /b
     popd
 
@@ -114,7 +130,7 @@ def qtcoap
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -127,7 +143,7 @@ def qtcoap
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtcoap/all || exit /b
     popd
 
@@ -137,7 +153,7 @@ def qtimageformats
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -150,7 +166,7 @@ def qtimageformats
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtimageformats/all || exit /b
     popd
 
@@ -160,7 +176,7 @@ def qtlanguageserver
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -173,7 +189,7 @@ def qtlanguageserver
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtlanguageserver/all || exit /b
     popd
 
@@ -183,7 +199,7 @@ def qtnetworkauth
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -196,7 +212,7 @@ def qtnetworkauth
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtnetworkauth/all || exit /b
     popd
 
@@ -206,7 +222,7 @@ def qtserialport
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -219,7 +235,7 @@ def qtserialport
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtserialport/all || exit /b
     popd
 
@@ -229,7 +245,7 @@ def qtserialbus
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -242,7 +258,7 @@ def qtserialbus
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtserialbus/all || exit /b
     popd
 
@@ -252,7 +268,7 @@ def qtshadertools
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -265,7 +281,7 @@ def qtshadertools
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtshadertools/all || exit /b
     popd
 
@@ -275,7 +291,7 @@ def qtsvg
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -288,7 +304,7 @@ def qtsvg
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtsvg/all || exit /b
     popd
 
@@ -298,7 +314,7 @@ def qtdeclarative
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -311,7 +327,7 @@ def qtdeclarative
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtdeclarative/all || exit /b
     popd
 
@@ -321,7 +337,7 @@ def qt5compat
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -334,7 +350,7 @@ def qt5compat
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qt5compat/all || exit /b
     popd
 
@@ -344,7 +360,7 @@ def qtconnectivity
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -357,7 +373,7 @@ def qtconnectivity
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtconnectivity/all || exit /b
     popd
 
@@ -367,7 +383,7 @@ def qtgrpc
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -380,7 +396,7 @@ def qtgrpc
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtgrpc/all || exit /b
     popd
 
@@ -390,7 +406,7 @@ def qtlottie
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -403,7 +419,7 @@ def qtlottie
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtlottie/all || exit /b
     popd
 
@@ -413,7 +429,7 @@ def qtmqtt
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -426,7 +442,7 @@ def qtmqtt
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtmqtt/all || exit /b
     popd
 
@@ -436,7 +452,7 @@ def qtopcua
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -449,7 +465,7 @@ def qtopcua
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtopcua/all || exit /b
     popd
 
@@ -459,7 +475,7 @@ def qtpositioning
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -472,7 +488,7 @@ def qtpositioning
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtpositioning/all || exit /b
     popd
 
@@ -482,7 +498,7 @@ def qtlocation
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -495,7 +511,7 @@ def qtlocation
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtlocation/all || exit /b
     popd
 
@@ -505,7 +521,7 @@ def qtquicktimeline
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -518,7 +534,7 @@ def qtquicktimeline
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtquicktimeline/all || exit /b
     popd
 
@@ -528,7 +544,7 @@ def qtquick3d
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -541,7 +557,7 @@ def qtquick3d
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtquick3d/all || exit /b
     popd
 
@@ -551,7 +567,7 @@ def qtgraphs
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -564,7 +580,7 @@ def qtgraphs
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtgraphs/all || exit /b
     popd
 
@@ -574,7 +590,7 @@ def qtmultimedia
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -587,7 +603,7 @@ def qtmultimedia
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtmultimedia/all || exit /b
     popd
 
@@ -597,7 +613,7 @@ def qt3d
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -610,7 +626,7 @@ def qt3d
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qt3d/all || exit /b
     popd
 
@@ -620,7 +636,7 @@ def qtcharts
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -633,7 +649,7 @@ def qtcharts
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtcharts/all || exit /b
     popd
 
@@ -643,7 +659,7 @@ def qtdatavis3d
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -656,7 +672,7 @@ def qtdatavis3d
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtdatavis3d/all || exit /b
     popd
 
@@ -666,7 +682,7 @@ def qtquick3dphysics
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -679,7 +695,7 @@ def qtquick3dphysics
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtquick3dphysics/all || exit /b
     popd
 
@@ -689,7 +705,7 @@ def qtquickeffectmaker
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -702,7 +718,7 @@ def qtquickeffectmaker
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtquickeffectmaker/all || exit /b
     popd
 
@@ -712,7 +728,7 @@ def qtremoteobjects
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -725,7 +741,7 @@ def qtremoteobjects
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtremoteobjects/all || exit /b
     popd
 
@@ -735,7 +751,7 @@ def qtscxml
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -748,7 +764,7 @@ def qtscxml
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtscxml/all || exit /b
     popd
 
@@ -758,7 +774,7 @@ def qtsensors
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -771,7 +787,7 @@ def qtsensors
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtsensors/all || exit /b
     popd
 
@@ -781,7 +797,7 @@ def qtspeech
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -794,7 +810,7 @@ def qtspeech
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtspeech/all || exit /b
     popd
 
@@ -804,7 +820,7 @@ def qttools
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -817,7 +833,7 @@ def qttools
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qttools/all || exit /b
     popd
 
@@ -827,7 +843,7 @@ def qttranslations
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -840,7 +856,7 @@ def qttranslations
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qttranslations/all || exit /b
     popd
 
@@ -850,7 +866,7 @@ def qtvirtualkeyboard
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -863,7 +879,7 @@ def qtvirtualkeyboard
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtvirtualkeyboard/all || exit /b
     popd
 
@@ -873,7 +889,7 @@ def qtwayland
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -886,7 +902,7 @@ def qtwayland
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtwayland/all || exit /b
     popd
 
@@ -896,7 +912,7 @@ def qtwebsockets
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -909,7 +925,7 @@ def qtwebsockets
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtwebsockets/all || exit /b
     popd
 
@@ -919,7 +935,7 @@ def qthttpserver
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -932,7 +948,7 @@ def qthttpserver
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qthttpserver/all || exit /b
     popd
 
@@ -942,7 +958,7 @@ def qtwebchannel
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -955,7 +971,7 @@ def qtwebchannel
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtwebchannel/all || exit /b
     popd
 
@@ -965,7 +981,7 @@ def qtdoc
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -978,7 +994,7 @@ def qtdoc
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtdoc/all || exit /b
     popd
 
@@ -988,7 +1004,7 @@ def qtwebview
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -1001,7 +1017,7 @@ def qtwebview
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja qtwebview/all || exit /b
     popd
 
@@ -1012,7 +1028,7 @@ def install
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -1025,13 +1041,13 @@ def install
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja install
     popd
-    mugideploy copy-dep --bin C:\Qt\6.9.1\msvc2020_64\bin\qmake.exe --dst C:\Qt\6.9.1\msvc2020_64\bin
-    mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.9.1\msvc2020_64\bin
-    mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.9.1\msvc2020_64\bin
-    # mugideploy copy-dep --bin C:\Qt\6.9.1\msvc2020_64\bin\qdoc.exe --dst C:\Qt\6.9.1\msvc2020_64\bin
+    mugideploy copy-dep --bin C:\Qt\6.10.0\msvc2020_64\bin\qmake.exe --dst C:\Qt\6.10.0\msvc2020_64\bin
+    mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.10.0\msvc2020_64\bin
+    mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.10.0\msvc2020_64\bin
+    # mugideploy copy-dep --bin C:\Qt\6.10.0\msvc2020_64\bin\qdoc.exe --dst C:\Qt\6.10.0\msvc2020_64\bin
 
 def docs
     
@@ -1039,7 +1055,7 @@ def docs
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.9.1\msvc2020_64\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
     use(python, 3.13)
     use(conda)
     use(cmake)
@@ -1052,17 +1068,17 @@ def docs
     
     add_path(C:\llvm19\bin)
 
-    pushd qt-everywhere-src-6.9.1\build
+    pushd qt-everywhere-src-6.10.0\build
         ninja docs
         ninja install_docs
     popd
 
-def main depends on prepare get_source configure qtbase qtactiveqt qtcoap qtimageformats qtlanguageserver qtnetworkauth qtserialport qtserialbus qtshadertools qtsvg qtdeclarative qt5compat qtconnectivity qtgrpc qtlottie qtmqtt qtopcua qtpositioning qtlocation qtquicktimeline qtquick3d qtgraphs qtmultimedia qt3d qtcharts qtdatavis3d qtquick3dphysics qtquickeffectmaker qtremoteobjects qtscxml qtsensors qtspeech qttools qttranslations qtvirtualkeyboard qtwayland qtwebsockets qthttpserver qtwebchannel qtdoc qtwebview install docs
-    zip(Qt-6.9.1-msvc2020.7z, C:\Qt\6.9.1\msvc2020_64)
+def main depends on clang mingw mysql postgresql prepare get_source configure qtbase qtactiveqt qtcoap qtimageformats qtlanguageserver qtnetworkauth qtserialport qtserialbus qtshadertools qtsvg qtdeclarative qt5compat qtconnectivity qtgrpc qtlottie qtmqtt qtopcua qtpositioning qtlocation qtquicktimeline qtquick3d qtgraphs qtmultimedia qt3d qtcharts qtdatavis3d qtquick3dphysics qtquickeffectmaker qtremoteobjects qtscxml qtsensors qtspeech qttools qttranslations qtvirtualkeyboard qtwayland qtwebsockets qthttpserver qtwebchannel qtdoc qtwebview install docs
+    zip(Qt-6.10.0-msvc2020.7z, C:\Qt\6.10.0\msvc2020_64)
     #zip(libclang-msvc2020.7z, C:\llvm19\bin\libclang.dll)
-    github_upload(C:\Qt\6.9.1\msvc2020_64, :n=Qt-6.9.1-msvc2020)
-    #github_upload(qt-everywhere-src-6.9.1\build\config.summary, :n=config.summary)
-    github_release(Qt-6.9.1-msvc2020.7z)
+    github_upload(C:\Qt\6.10.0\msvc2020_64, :n=Qt-6.10.0-msvc2020)
+    #github_upload(qt-everywhere-src-6.10.0\build\config.summary, :n=config.summary)
+    github_release(Qt-6.10.0-msvc2020.7z)
 
 github-workflow 1
 workflow-name build-msvc2020
