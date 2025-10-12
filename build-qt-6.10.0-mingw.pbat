@@ -13,13 +13,13 @@
 
 def prepare
     github_checkout()
-    move /y C:\mingw64 C:\mingw64_
-    move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
-    move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
-    move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
-    move /y C:\Strawberry C:\Strawberry_
-    move /y C:\tools\php C:\tools\php_
-    move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
+    if exist C:\mingw64 move /y C:\mingw64 C:\mingw64_
+    if exist "C:\Program Files\PostgreSQL" move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
+    if exist "C:\Program Files\MySQL" move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
+    if exist "C:\Program Files\OpenSSL" move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
+    if exist C:\Strawberry move /y C:\Strawberry C:\Strawberry_
+    if exist C:\tools\php move /y C:\tools\php C:\tools\php_
+    if exist "C:\Program Files\LLVM" move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 
 def get_source
     if_exist_return(qt-everywhere-src-6.10.0)
@@ -46,6 +46,7 @@ def configure
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0
         mkdir(build)
@@ -81,8 +82,13 @@ def mysql
 def postgresql
     if_exist_return(C:\postgresql-14\bin\psql.exe)
     download(https://get.enterprisedb.com/postgresql/postgresql-14.12-2-windows-x64-binaries.zip, :cache, :v)
+    7z rn postgresql-14.12-2-windows-x64-binaries.zip pgsql postgresql-14
     unzip(postgresql-14.12-2-windows-x64-binaries.zip, :o=C:\)
-    move(C:\pgsql, C:\postgresql-14)
+
+def protobuf
+    if_exist_return(C:\protoc\bin\protoc.exe)
+    download(https://github.com/protocolbuffers/protobuf/releases/download/v33.0-rc2/protoc-33.0-rc-2-win64.zip, :cache, :v)
+    unzip(protoc-33.0-rc-2-win64.zip, :o=C:\protoc)
 
 
 def qtbase
@@ -105,6 +111,7 @@ def qtbase
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtbase/all || exit /b
@@ -130,6 +137,7 @@ def qtactiveqt
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtactiveqt/all || exit /b
@@ -155,6 +163,7 @@ def qtcoap
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtcoap/all || exit /b
@@ -180,6 +189,7 @@ def qtimageformats
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtimageformats/all || exit /b
@@ -205,6 +215,7 @@ def qtlanguageserver
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtlanguageserver/all || exit /b
@@ -230,6 +241,7 @@ def qtnetworkauth
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtnetworkauth/all || exit /b
@@ -255,6 +267,7 @@ def qtserialport
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtserialport/all || exit /b
@@ -280,6 +293,7 @@ def qtserialbus
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtserialbus/all || exit /b
@@ -305,6 +319,7 @@ def qtshadertools
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtshadertools/all || exit /b
@@ -330,6 +345,7 @@ def qtsvg
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtsvg/all || exit /b
@@ -355,6 +371,7 @@ def qtdeclarative
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtdeclarative/all || exit /b
@@ -380,6 +397,7 @@ def qt5compat
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qt5compat/all || exit /b
@@ -405,6 +423,7 @@ def qtconnectivity
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtconnectivity/all || exit /b
@@ -430,6 +449,7 @@ def qtgrpc
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtgrpc/all || exit /b
@@ -455,6 +475,7 @@ def qtlottie
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtlottie/all || exit /b
@@ -480,6 +501,7 @@ def qtmqtt
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtmqtt/all || exit /b
@@ -505,6 +527,7 @@ def qtopcua
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtopcua/all || exit /b
@@ -530,6 +553,7 @@ def qtpositioning
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtpositioning/all || exit /b
@@ -555,6 +579,7 @@ def qtlocation
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtlocation/all || exit /b
@@ -580,6 +605,7 @@ def qtquicktimeline
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtquicktimeline/all || exit /b
@@ -605,6 +631,7 @@ def qtquick3d
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtquick3d/all || exit /b
@@ -630,6 +657,7 @@ def qtgraphs
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtgraphs/all || exit /b
@@ -655,6 +683,7 @@ def qtmultimedia
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtmultimedia/all || exit /b
@@ -680,6 +709,7 @@ def qt3d
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qt3d/all || exit /b
@@ -705,6 +735,7 @@ def qtcharts
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtcharts/all || exit /b
@@ -730,6 +761,7 @@ def qtdatavis3d
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtdatavis3d/all || exit /b
@@ -755,6 +787,7 @@ def qtquick3dphysics
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtquick3dphysics/all || exit /b
@@ -780,6 +813,7 @@ def qtquickeffectmaker
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtquickeffectmaker/all || exit /b
@@ -805,6 +839,7 @@ def qtremoteobjects
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtremoteobjects/all || exit /b
@@ -830,6 +865,7 @@ def qtscxml
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtscxml/all || exit /b
@@ -855,6 +891,7 @@ def qtsensors
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtsensors/all || exit /b
@@ -880,6 +917,7 @@ def qtspeech
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtspeech/all || exit /b
@@ -905,6 +943,7 @@ def qttools
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qttools/all || exit /b
@@ -930,6 +969,7 @@ def qttranslations
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qttranslations/all || exit /b
@@ -955,6 +995,7 @@ def qtvirtualkeyboard
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtvirtualkeyboard/all || exit /b
@@ -980,6 +1021,7 @@ def qtwayland
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtwayland/all || exit /b
@@ -1005,6 +1047,7 @@ def qtwebsockets
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtwebsockets/all || exit /b
@@ -1030,6 +1073,7 @@ def qthttpserver
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qthttpserver/all || exit /b
@@ -1055,6 +1099,7 @@ def qtwebchannel
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtwebchannel/all || exit /b
@@ -1080,6 +1125,7 @@ def qtdoc
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtdoc/all || exit /b
@@ -1105,6 +1151,7 @@ def qtwebview
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtwebview/all || exit /b
@@ -1131,6 +1178,7 @@ def install
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja install
@@ -1160,17 +1208,19 @@ def docs
     set CXX=C:\mingw1310_64\bin\g++
     
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
         ninja docs
         ninja install_docs
     popd
 
-def main depends on clang mingw mysql postgresql prepare get_source configure qtbase qtactiveqt qtcoap qtimageformats qtlanguageserver qtnetworkauth qtserialport qtserialbus qtshadertools qtsvg qtdeclarative qt5compat qtconnectivity qtgrpc qtlottie qtmqtt qtopcua qtpositioning qtlocation qtquicktimeline qtquick3d qtgraphs qtmultimedia qt3d qtcharts qtdatavis3d qtquick3dphysics qtquickeffectmaker qtremoteobjects qtscxml qtsensors qtspeech qttools qttranslations qtvirtualkeyboard qtwayland qtwebsockets qthttpserver qtwebchannel qtdoc qtwebview install docs
+def main depends on clang mingw mysql postgresql protobuf prepare get_source configure qtbase qtactiveqt qtcoap qtimageformats qtlanguageserver qtnetworkauth qtserialport qtserialbus qtshadertools qtsvg qtdeclarative qt5compat qtconnectivity qtgrpc qtlottie qtmqtt qtopcua qtpositioning qtlocation qtquicktimeline qtquick3d qtgraphs qtmultimedia qt3d qtcharts qtdatavis3d qtquick3dphysics qtquickeffectmaker qtremoteobjects qtscxml qtsensors qtspeech qttools qttranslations qtvirtualkeyboard qtwayland qtwebsockets qthttpserver qtwebchannel qtdoc qtwebview install docs
+    copy(qt-everywhere-src-6.10.0\build\config.summary, C:\Qt\6.10.0\mingw_64)
     zip(Qt-6.10.0-mingw13.7z, C:\Qt\6.10.0\mingw_64)
     #zip(libclang-mingw13.7z, C:\llvm19\bin\libclang.dll)
     github_upload(C:\Qt\6.10.0\mingw_64, :n=Qt-6.10.0-mingw13)
-    #github_upload(qt-everywhere-src-6.10.0\build\config.summary, :n=config.summary)
+    github_upload(qt-everywhere-src-6.10.0\build\config.summary, :n=config.summary)
     github_release(Qt-6.10.0-mingw13.7z)
 
 github-workflow 1

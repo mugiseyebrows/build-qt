@@ -49,19 +49,30 @@ jobs:
             echo downloading postgresql-14.12-2-windows-x64-binaries.zip
             curl -L -o postgresql-14.12-2-windows-x64-binaries.zip https://get.enterprisedb.com/postgresql/postgresql-14.12-2-windows-x64-binaries.zip
         )
+        7z rn postgresql-14.12-2-windows-x64-binaries.zip pgsql postgresql-14
         7z x -y -oC:\ postgresql-14.12-2-windows-x64-binaries.zip
-        move /y C:\pgsql C:\postgresql-14
         :postgresql_end
+    - name: protobuf
+      shell: cmd
+      run: |
+        set PATH=C:\Program Files\7-Zip;%PATH%
+        if exist C:\protoc\bin\protoc.exe goto protobuf_end
+        if not exist protoc-33.0-rc-2-win64.zip (
+            echo downloading protoc-33.0-rc-2-win64.zip
+            curl -L -o protoc-33.0-rc-2-win64.zip https://github.com/protocolbuffers/protobuf/releases/download/v33.0-rc2/protoc-33.0-rc-2-win64.zip
+        )
+        7z x -y -oC:\protoc protoc-33.0-rc-2-win64.zip
+        :protobuf_end
     - name: prepare
       shell: cmd
       run: |
-        move /y C:\mingw64 C:\mingw64_
-        move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
-        move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
-        move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
-        move /y C:\Strawberry C:\Strawberry_
-        move /y C:\tools\php C:\tools\php_
-        move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
+        if exist C:\mingw64 move /y C:\mingw64 C:\mingw64_
+        if exist "C:\Program Files\PostgreSQL" move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
+        if exist "C:\Program Files\MySQL" move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
+        if exist "C:\Program Files\OpenSSL" move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
+        if exist C:\Strawberry move /y C:\Strawberry C:\Strawberry_
+        if exist C:\tools\php move /y C:\tools\php C:\tools\php_
+        if exist "C:\Program Files\LLVM" move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
     - name: get_source
       shell: cmd
       run: |
@@ -76,7 +87,7 @@ jobs:
     - name: configure
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -92,7 +103,7 @@ jobs:
     - name: qtbase
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -104,7 +115,7 @@ jobs:
     - name: qtactiveqt
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -116,7 +127,7 @@ jobs:
     - name: qtcoap
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -128,7 +139,7 @@ jobs:
     - name: qtimageformats
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -140,7 +151,7 @@ jobs:
     - name: qtlanguageserver
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -152,7 +163,7 @@ jobs:
     - name: qtnetworkauth
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -164,7 +175,7 @@ jobs:
     - name: qtserialport
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -176,7 +187,7 @@ jobs:
     - name: qtserialbus
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -188,7 +199,7 @@ jobs:
     - name: qtshadertools
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -200,7 +211,7 @@ jobs:
     - name: qtsvg
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -212,7 +223,7 @@ jobs:
     - name: qtdeclarative
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -224,7 +235,7 @@ jobs:
     - name: qt5compat
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -236,7 +247,7 @@ jobs:
     - name: qtconnectivity
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -248,7 +259,7 @@ jobs:
     - name: qtgrpc
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -260,7 +271,7 @@ jobs:
     - name: qtlottie
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -272,7 +283,7 @@ jobs:
     - name: qtmqtt
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -284,7 +295,7 @@ jobs:
     - name: qtopcua
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -296,7 +307,7 @@ jobs:
     - name: qtpositioning
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -308,7 +319,7 @@ jobs:
     - name: qtlocation
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -320,7 +331,7 @@ jobs:
     - name: qtquicktimeline
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -332,7 +343,7 @@ jobs:
     - name: qtquick3d
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -344,7 +355,7 @@ jobs:
     - name: qtgraphs
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -356,7 +367,7 @@ jobs:
     - name: qtmultimedia
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -368,7 +379,7 @@ jobs:
     - name: qt3d
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -380,7 +391,7 @@ jobs:
     - name: qtcharts
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -392,7 +403,7 @@ jobs:
     - name: qtdatavis3d
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -404,7 +415,7 @@ jobs:
     - name: qtquick3dphysics
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -416,7 +427,7 @@ jobs:
     - name: qtquickeffectmaker
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -428,7 +439,7 @@ jobs:
     - name: qtremoteobjects
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -440,7 +451,7 @@ jobs:
     - name: qtscxml
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -452,7 +463,7 @@ jobs:
     - name: qtsensors
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -464,7 +475,7 @@ jobs:
     - name: qtspeech
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -476,7 +487,7 @@ jobs:
     - name: qttools
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -488,7 +499,7 @@ jobs:
     - name: qttranslations
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -500,7 +511,7 @@ jobs:
     - name: qtvirtualkeyboard
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -512,7 +523,7 @@ jobs:
     - name: qtwayland
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -524,7 +535,7 @@ jobs:
     - name: qtwebsockets
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -536,7 +547,7 @@ jobs:
     - name: qthttpserver
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -548,7 +559,7 @@ jobs:
     - name: qtwebchannel
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -560,7 +571,7 @@ jobs:
     - name: qtdoc
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -572,7 +583,7 @@ jobs:
     - name: qtwebview
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -584,7 +595,7 @@ jobs:
     - name: install
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -599,7 +610,7 @@ jobs:
     - name: docs
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;C:\Program Files\CMake\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
         where mugideploy > NUL 2>&1 || pip install mugideploy
         where ninja > NUL 2>&1 || pip install ninja
         set LLVM_INSTALL_DIR=C:\llvm19
@@ -613,12 +624,18 @@ jobs:
       shell: cmd
       run: |
         set PATH=C:\Program Files\7-Zip;%PATH%
+        copy /y qt-everywhere-src-6.10.0\build\config.summary C:\Qt\6.10.0\mingw_64
         7z a -y Qt-6.10.0-mingw13.7z C:\Qt\6.10.0\mingw_64
     - name: upload
       uses: actions/upload-artifact@v4
       with:
         name: Qt-6.10.0-mingw13
         path: C:\Qt\6.10.0\mingw_64
+    - name: upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: config.summary
+        path: qt-everywhere-src-6.10.0\build\config.summary
     - name: release
       uses: softprops/action-gh-release@v2
       if: startsWith(github.ref, 'refs/tags/')

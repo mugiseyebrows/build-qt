@@ -1,6 +1,6 @@
 @echo off
 rem This file is generated from build-qt-6.10.0-msvc.pbat, all edits will be lost
-set PATH=C:\Windows\System32;C:\Program Files\7-Zip;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda3;C:\Miniconda3\Scripts;%USERPROFILE%\Miniconda3;%USERPROFILE%\Miniconda3\Scripts;C:\Program Files\CMake\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build;C:\llvm19\bin;%PATH%
+set PATH=C:\Windows\System32;C:\Program Files\7-Zip;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda3;C:\Miniconda3\Scripts;%USERPROFILE%\Miniconda3;%USERPROFILE%\Miniconda3\Scripts;C:\Program Files\CMake\bin;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build;C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
 if exist C:\llvm19-msvc2020\bin\clang.exe goto clang_end
 if not exist llvm19-msvc2020.7z (
     echo downloading llvm19-msvc2020.7z
@@ -21,16 +21,23 @@ if not exist postgresql-14.12-2-windows-x64-binaries.zip (
     echo downloading postgresql-14.12-2-windows-x64-binaries.zip
     curl -L -o postgresql-14.12-2-windows-x64-binaries.zip https://get.enterprisedb.com/postgresql/postgresql-14.12-2-windows-x64-binaries.zip
 )
+7z rn postgresql-14.12-2-windows-x64-binaries.zip pgsql postgresql-14
 7z x -y -oC:\ postgresql-14.12-2-windows-x64-binaries.zip
-move /y C:\pgsql C:\postgresql-14
 :postgresql_end
-move /y C:\mingw64 C:\mingw64_
-move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
-move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
-move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
-move /y C:\Strawberry C:\Strawberry_
-move /y C:\tools\php C:\tools\php_
-move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
+if exist C:\protoc\bin\protoc.exe goto protobuf_end
+if not exist protoc-33.0-rc-2-win64.zip (
+    echo downloading protoc-33.0-rc-2-win64.zip
+    curl -L -o protoc-33.0-rc-2-win64.zip https://github.com/protocolbuffers/protobuf/releases/download/v33.0-rc2/protoc-33.0-rc-2-win64.zip
+)
+7z x -y -oC:\protoc protoc-33.0-rc-2-win64.zip
+:protobuf_end
+if exist C:\mingw64 move /y C:\mingw64 C:\mingw64_
+if exist "C:\Program Files\PostgreSQL" move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
+if exist "C:\Program Files\MySQL" move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
+if exist "C:\Program Files\OpenSSL" move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
+if exist C:\Strawberry move /y C:\Strawberry C:\Strawberry_
+if exist C:\tools\php move /y C:\tools\php C:\tools\php_
+if exist "C:\Program Files\LLVM" move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 if exist qt-everywhere-src-6.10.0 goto get_source_end
 if not exist qt-everywhere-src-6.10.0.zip (
     echo downloading qt-everywhere-src-6.10.0.zip
@@ -354,4 +361,5 @@ pushd qt-everywhere-src-6.10.0\build
     ninja docs
     ninja install_docs
 popd
+copy /y qt-everywhere-src-6.10.0\build\config.summary C:\Qt\6.10.0\msvc2020_64
 7z a -y Qt-6.10.0-msvc2020.7z C:\Qt\6.10.0\msvc2020_64

@@ -35,17 +35,18 @@
     call_vcvars()
     {% endif %}
     add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
 {% endmacro %}
 
 def prepare
     github_checkout()
-    move /y C:\mingw64 C:\mingw64_
-    move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
-    move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
-    move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
-    move /y C:\Strawberry C:\Strawberry_
-    move /y C:\tools\php C:\tools\php_
-    move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
+    if exist C:\mingw64 move /y C:\mingw64 C:\mingw64_
+    if exist "C:\Program Files\PostgreSQL" move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
+    if exist "C:\Program Files\MySQL" move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
+    if exist "C:\Program Files\OpenSSL" move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
+    if exist C:\Strawberry move /y C:\Strawberry C:\Strawberry_
+    if exist C:\tools\php move /y C:\tools\php C:\tools\php_
+    if exist "C:\Program Files\LLVM" move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 
 def get_source
     if_exist_return(qt-everywhere-src-{{ver}})
@@ -94,8 +95,13 @@ def mysql
 def postgresql
     if_exist_return(C:\postgresql-14\bin\psql.exe)
     download(https://get.enterprisedb.com/postgresql/postgresql-14.12-2-windows-x64-binaries.zip, :cache, :v)
+    7z rn postgresql-14.12-2-windows-x64-binaries.zip pgsql postgresql-14
     unzip(postgresql-14.12-2-windows-x64-binaries.zip, :o=C:\)
-    move(C:\pgsql, C:\postgresql-14)
+
+def protobuf
+    if_exist_return(C:\protoc\bin\protoc.exe)
+    download(https://github.com/protocolbuffers/protobuf/releases/download/v33.0-rc2/protoc-33.0-rc-2-win64.zip, :cache, :v)
+    unzip(protoc-33.0-rc-2-win64.zip, :o=C:\protoc)
 
 {% for module in modules %}
 def {{module}}
@@ -122,7 +128,8 @@ def docs
         ninja install_docs
     popd
 
-def main depends on clang mingw mysql postgresql prepare get_source configure {{ modules | join(' ') }} install docs
+def main depends on clang mingw mysql postgresql protobuf prepare get_source configure {{ modules | join(' ') }} install docs
+    copy(qt-everywhere-src-{{ver}}\build\config.summary, C:\Qt\{{ver}}\{{subdir}})
     zip(Qt-{{ver}}-{{compiler}}.7z, C:\Qt\{{ver}}\{{subdir}})
     #zip(libclang-{{compiler}}.7z, C:\llvm19\bin\libclang.dll)
     github_upload(C:\Qt\{{ver}}\{{subdir}}, :n=Qt-{{ver}}-{{compiler}})
