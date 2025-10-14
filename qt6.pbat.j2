@@ -1,6 +1,7 @@
 {% set majmin = ver.rsplit(".", 1)[0] %}
 {% set host = "qt.mirror.constant.com" %}
-{% set modules = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
+{% set modules1 = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
+{% set modules = ['qtshadertools', 'qtimageformats', 'qtlanguageserver', 'qtsvg', 'qtserialport', 'qtactiveqt', 'qtdeclarative', 'qtwebsockets', 'qtsensors', 'qttools', 'qtpositioning', 'qtlocation', 'qtquicktimeline', 'qthttpserver', 'qtquick3d', 'qtmultimedia', 'qtquick3dphysics', 'qtgraphs', 'qtdoc'] %}
 
 {% if mkspec == "win32-g++" %}
 {% set subdir = "mingw_64" %}
@@ -59,18 +60,18 @@ def configure
         mkdir(build)
         pushd build
             # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
-            call ..\configure -prefix C:\Qt\{{ver}}\{{subdir}} -platform {{mkspec}} -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
+            call ..\configure -prefix C:\Qt\{{ver}}\{{subdir}} -platform {{mkspec}} -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
             type config.summary
         popd
     popd
 
-def clang
+def llvm
     {% if mkspec == "win32-g++" %}
-    if_exist_return(C:\llvm19-mingw\bin\clang.exe)
+    if_exist_return(C:\llvm19\bin\clang.exe)
     download(https://github.com/mugiseyebrows/build-clang/releases/download/19.1.7/llvm19-mingw.7z, :cache, :v)
     unzip(llvm19-mingw.7z, :o=C:\)
     {% else %}
-    if_exist_return(C:\llvm19-msvc2020\bin\clang.exe)
+    if_exist_return(C:\llvm19\bin\clang.exe)
     download(https://github.com/mugiseyebrows/build-clang/releases/download/19.1.7/llvm19-msvc2020.7z, :cache, :v)
     unzip(llvm19-msvc2020.7z, :o=C:\)
     {% endif %}
@@ -82,7 +83,6 @@ def mingw
     download(https://github.com/brechtsanders/winlibs_mingw/releases/download/13.1.0-16.0.5-11.0.0-ucrt-r5/winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z, :cache, :v)
     7z rn winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z mingw64 mingw1310_64
     unzip(winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z, :t=C:\mingw1310_64\bin\gcc.exe, :o=C:\)
-    #move(C:\mingw64, C:\mingw1310_64)
     {% else %}
     echo 1
     {% endif %}
@@ -100,8 +100,15 @@ def postgresql
 
 def protobuf
     if_exist_return(C:\protoc\bin\protoc.exe)
-    download(https://github.com/protocolbuffers/protobuf/releases/download/v33.0-rc2/protoc-33.0-rc-2-win64.zip, :cache, :v)
-    unzip(protoc-33.0-rc-2-win64.zip, :o=C:\protoc)
+    {% if mkspec == "win32-g++" %}
+    download(https://github.com/mugiseyebrows/build-protobuf/releases/download/v32.1/protobuf-mingw13.7z, :cache, :v)
+    7z rn protobuf-mingw13.7z protobuf-mingw13 protobuf
+    unzip(protobuf-mingw13.7z, :o=C:\)
+    {% else %}
+    download(https://github.com/mugiseyebrows/build-protobuf/releases/download/v32.1/protobuf-msvc2020.7z, :cache, :v)
+    7z rn protobuf-msvc2020.7z protobuf-msvc2020 protobuf
+    unzip(protobuf-msvc2020.7z, :o=C:\)
+    {% endif %}
 
 {% for module in modules %}
 def {{module}}
@@ -119,7 +126,8 @@ def install
     mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qmake.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
     mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
     mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
-    # mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
+    rem libclang.dll is huge
+    rem mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
 
 def docs
     {{ env() }}
@@ -128,7 +136,7 @@ def docs
         ninja install_docs
     popd
 
-def main depends on clang mingw mysql postgresql protobuf prepare get_source configure {{ modules | join(' ') }} install docs
+def main depends on llvm mingw mysql postgresql protobuf prepare get_source configure {{ modules | join(' ') }} install docs
     copy(qt-everywhere-src-{{ver}}\build\config.summary, C:\Qt\{{ver}}\{{subdir}})
     zip(Qt-{{ver}}-{{compiler}}.7z, C:\Qt\{{ver}}\{{subdir}})
     #zip(libclang-{{compiler}}.7z, C:\llvm19\bin\libclang.dll)

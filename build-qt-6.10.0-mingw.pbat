@@ -11,6 +11,7 @@
 
 
 
+
 def prepare
     github_checkout()
     if exist C:\mingw64 move /y C:\mingw64 C:\mingw64_
@@ -52,14 +53,14 @@ def configure
         mkdir(build)
         pushd build
             # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
-            call ..\configure -prefix C:\Qt\6.10.0\mingw_64 -platform win32-g++ -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
+            call ..\configure -prefix C:\Qt\6.10.0\mingw_64 -platform win32-g++ -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
             type config.summary
         popd
     popd
 
-def clang
+def llvm
     
-    if_exist_return(C:\llvm19-mingw\bin\clang.exe)
+    if_exist_return(C:\llvm19\bin\clang.exe)
     download(https://github.com/mugiseyebrows/build-clang/releases/download/19.1.7/llvm19-mingw.7z, :cache, :v)
     unzip(llvm19-mingw.7z, :o=C:\)
     
@@ -71,7 +72,6 @@ def mingw
     download(https://github.com/brechtsanders/winlibs_mingw/releases/download/13.1.0-16.0.5-11.0.0-ucrt-r5/winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z, :cache, :v)
     7z rn winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z mingw64 mingw1310_64
     unzip(winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z, :t=C:\mingw1310_64\bin\gcc.exe, :o=C:\)
-    #move(C:\mingw64, C:\mingw1310_64)
     
 
 def mysql
@@ -87,11 +87,14 @@ def postgresql
 
 def protobuf
     if_exist_return(C:\protoc\bin\protoc.exe)
-    download(https://github.com/protocolbuffers/protobuf/releases/download/v33.0-rc2/protoc-33.0-rc-2-win64.zip, :cache, :v)
-    unzip(protoc-33.0-rc-2-win64.zip, :o=C:\protoc)
+    
+    download(https://github.com/mugiseyebrows/build-protobuf/releases/download/v32.1/protobuf-mingw13.7z, :cache, :v)
+    7z rn protobuf-mingw13.7z protobuf-mingw13 protobuf
+    unzip(protobuf-mingw13.7z, :o=C:\)
+    
 
 
-def qtbase
+def qtshadertools
     
     # call pull-mysql
     add_path(C:\mysql-8.2.0-winx64\bin)
@@ -114,59 +117,7 @@ def qtbase
     add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
-        ninja qtbase/all || exit /b
-    popd
-
-def qtactiveqt
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtactiveqt/all || exit /b
-    popd
-
-def qtcoap
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtcoap/all || exit /b
+        ninja qtshadertools/all || exit /b
     popd
 
 def qtimageformats
@@ -221,7 +172,7 @@ def qtlanguageserver
         ninja qtlanguageserver/all || exit /b
     popd
 
-def qtnetworkauth
+def qtsvg
     
     # call pull-mysql
     add_path(C:\mysql-8.2.0-winx64\bin)
@@ -244,7 +195,7 @@ def qtnetworkauth
     add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
-        ninja qtnetworkauth/all || exit /b
+        ninja qtsvg/all || exit /b
     popd
 
 def qtserialport
@@ -273,7 +224,7 @@ def qtserialport
         ninja qtserialport/all || exit /b
     popd
 
-def qtserialbus
+def qtactiveqt
     
     # call pull-mysql
     add_path(C:\mysql-8.2.0-winx64\bin)
@@ -296,59 +247,7 @@ def qtserialbus
     add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
-        ninja qtserialbus/all || exit /b
-    popd
-
-def qtshadertools
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtshadertools/all || exit /b
-    popd
-
-def qtsvg
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtsvg/all || exit /b
+        ninja qtactiveqt/all || exit /b
     popd
 
 def qtdeclarative
@@ -377,7 +276,7 @@ def qtdeclarative
         ninja qtdeclarative/all || exit /b
     popd
 
-def qt5compat
+def qtwebsockets
     
     # call pull-mysql
     add_path(C:\mysql-8.2.0-winx64\bin)
@@ -400,10 +299,10 @@ def qt5compat
     add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
-        ninja qt5compat/all || exit /b
+        ninja qtwebsockets/all || exit /b
     popd
 
-def qtconnectivity
+def qtsensors
     
     # call pull-mysql
     add_path(C:\mysql-8.2.0-winx64\bin)
@@ -426,10 +325,10 @@ def qtconnectivity
     add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
-        ninja qtconnectivity/all || exit /b
+        ninja qtsensors/all || exit /b
     popd
 
-def qtgrpc
+def qttools
     
     # call pull-mysql
     add_path(C:\mysql-8.2.0-winx64\bin)
@@ -452,85 +351,7 @@ def qtgrpc
     add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
-        ninja qtgrpc/all || exit /b
-    popd
-
-def qtlottie
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtlottie/all || exit /b
-    popd
-
-def qtmqtt
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtmqtt/all || exit /b
-    popd
-
-def qtopcua
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtopcua/all || exit /b
+        ninja qttools/all || exit /b
     popd
 
 def qtpositioning
@@ -611,6 +432,32 @@ def qtquicktimeline
         ninja qtquicktimeline/all || exit /b
     popd
 
+def qthttpserver
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\mingw_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    add_path(C:\mingw1310_64\bin)
+    set CC=C:\mingw1310_64\bin\gcc
+    set CXX=C:\mingw1310_64\bin\g++
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd qt-everywhere-src-6.10.0\build
+        ninja qthttpserver/all || exit /b
+    popd
+
 def qtquick3d
     
     # call pull-mysql
@@ -635,32 +482,6 @@ def qtquick3d
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtquick3d/all || exit /b
-    popd
-
-def qtgraphs
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtgraphs/all || exit /b
     popd
 
 def qtmultimedia
@@ -689,84 +510,6 @@ def qtmultimedia
         ninja qtmultimedia/all || exit /b
     popd
 
-def qt3d
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qt3d/all || exit /b
-    popd
-
-def qtcharts
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtcharts/all || exit /b
-    popd
-
-def qtdatavis3d
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtdatavis3d/all || exit /b
-    popd
-
 def qtquick3dphysics
     
     # call pull-mysql
@@ -793,7 +536,7 @@ def qtquick3dphysics
         ninja qtquick3dphysics/all || exit /b
     popd
 
-def qtquickeffectmaker
+def qtgraphs
     
     # call pull-mysql
     add_path(C:\mysql-8.2.0-winx64\bin)
@@ -816,293 +559,7 @@ def qtquickeffectmaker
     add_path(C:\protoc\bin)
 
     pushd qt-everywhere-src-6.10.0\build
-        ninja qtquickeffectmaker/all || exit /b
-    popd
-
-def qtremoteobjects
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtremoteobjects/all || exit /b
-    popd
-
-def qtscxml
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtscxml/all || exit /b
-    popd
-
-def qtsensors
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtsensors/all || exit /b
-    popd
-
-def qtspeech
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtspeech/all || exit /b
-    popd
-
-def qttools
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qttools/all || exit /b
-    popd
-
-def qttranslations
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qttranslations/all || exit /b
-    popd
-
-def qtvirtualkeyboard
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtvirtualkeyboard/all || exit /b
-    popd
-
-def qtwayland
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtwayland/all || exit /b
-    popd
-
-def qtwebsockets
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtwebsockets/all || exit /b
-    popd
-
-def qthttpserver
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qthttpserver/all || exit /b
-    popd
-
-def qtwebchannel
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtwebchannel/all || exit /b
+        ninja qtgraphs/all || exit /b
     popd
 
 def qtdoc
@@ -1129,32 +586,6 @@ def qtdoc
 
     pushd qt-everywhere-src-6.10.0\build
         ninja qtdoc/all || exit /b
-    popd
-
-def qtwebview
-    
-    # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\6.10.0\mingw_64\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
-    set LLVM_INSTALL_DIR=C:\llvm19
-    
-    add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
-    
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
-
-    pushd qt-everywhere-src-6.10.0\build
-        ninja qtwebview/all || exit /b
     popd
 
 
@@ -1186,7 +617,8 @@ def install
     mugideploy copy-dep --bin C:\Qt\6.10.0\mingw_64\bin\qmake.exe --dst C:\Qt\6.10.0\mingw_64\bin
     mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.10.0\mingw_64\bin
     mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.10.0\mingw_64\bin
-    # mugideploy copy-dep --bin C:\Qt\6.10.0\mingw_64\bin\qdoc.exe --dst C:\Qt\6.10.0\mingw_64\bin
+    rem libclang.dll is huge
+    rem mugideploy copy-dep --bin C:\Qt\6.10.0\mingw_64\bin\qdoc.exe --dst C:\Qt\6.10.0\mingw_64\bin
 
 def docs
     
@@ -1215,12 +647,12 @@ def docs
         ninja install_docs
     popd
 
-def main depends on clang mingw mysql postgresql protobuf prepare get_source configure qtbase qtactiveqt qtcoap qtimageformats qtlanguageserver qtnetworkauth qtserialport qtserialbus qtshadertools qtsvg qtdeclarative qt5compat qtconnectivity qtgrpc qtlottie qtmqtt qtopcua qtpositioning qtlocation qtquicktimeline qtquick3d qtgraphs qtmultimedia qt3d qtcharts qtdatavis3d qtquick3dphysics qtquickeffectmaker qtremoteobjects qtscxml qtsensors qtspeech qttools qttranslations qtvirtualkeyboard qtwayland qtwebsockets qthttpserver qtwebchannel qtdoc qtwebview install docs
+def main depends on llvm mingw mysql postgresql protobuf prepare get_source configure qtshadertools qtimageformats qtlanguageserver qtsvg qtserialport qtactiveqt qtdeclarative qtwebsockets qtsensors qttools qtpositioning qtlocation qtquicktimeline qthttpserver qtquick3d qtmultimedia qtquick3dphysics qtgraphs qtdoc install docs
     copy(qt-everywhere-src-6.10.0\build\config.summary, C:\Qt\6.10.0\mingw_64)
     zip(Qt-6.10.0-mingw13.7z, C:\Qt\6.10.0\mingw_64)
     #zip(libclang-mingw13.7z, C:\llvm19\bin\libclang.dll)
     github_upload(C:\Qt\6.10.0\mingw_64, :n=Qt-6.10.0-mingw13)
-    github_upload(qt-everywhere-src-6.10.0\build\config.summary, :n=config.summary)
+    #github_upload(qt-everywhere-src-6.10.0\build\config.summary, :n=config.summary)
     github_release(Qt-6.10.0-mingw13.7z)
 
 github-workflow 1

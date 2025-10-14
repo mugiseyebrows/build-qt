@@ -1,13 +1,13 @@
 @echo off
 rem This file is generated from build-qt-6.10.0-mingw.pbat, all edits will be lost
 set PATH=C:\Windows\System32;C:\Program Files\7-Zip;C:\mingw1310_64\bin;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\mingw_64\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda3;C:\Miniconda3\Scripts;%USERPROFILE%\Miniconda3;%USERPROFILE%\Miniconda3\Scripts;C:\Program Files\CMake\bin;C:\llvm19\bin;C:\protoc\bin;%PATH%
-if exist C:\llvm19-mingw\bin\clang.exe goto clang_end
+if exist C:\llvm19\bin\clang.exe goto llvm_end
 if not exist llvm19-mingw.7z (
     echo downloading llvm19-mingw.7z
     curl -L -o llvm19-mingw.7z https://github.com/mugiseyebrows/build-clang/releases/download/19.1.7/llvm19-mingw.7z
 )
 7z x -y -oC:\ llvm19-mingw.7z
-:clang_end
+:llvm_end
 if exist C:\mingw1310_64\bin\gcc.exe goto mingw_end
 if not exist winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z (
     echo downloading winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z
@@ -32,11 +32,12 @@ if not exist postgresql-14.12-2-windows-x64-binaries.zip (
 7z x -y -oC:\ postgresql-14.12-2-windows-x64-binaries.zip
 :postgresql_end
 if exist C:\protoc\bin\protoc.exe goto protobuf_end
-if not exist protoc-33.0-rc-2-win64.zip (
-    echo downloading protoc-33.0-rc-2-win64.zip
-    curl -L -o protoc-33.0-rc-2-win64.zip https://github.com/protocolbuffers/protobuf/releases/download/v33.0-rc2/protoc-33.0-rc-2-win64.zip
+if not exist protobuf-mingw13.7z (
+    echo downloading protobuf-mingw13.7z
+    curl -L -o protobuf-mingw13.7z https://github.com/mugiseyebrows/build-protobuf/releases/download/v32.1/protobuf-mingw13.7z
 )
-7z x -y -oC:\protoc protoc-33.0-rc-2-win64.zip
+7z rn protobuf-mingw13.7z protobuf-mingw13 protobuf
+7z x -y -oC:\ protobuf-mingw13.7z
 :protobuf_end
 if exist C:\mingw64 move /y C:\mingw64 C:\mingw64_
 if exist "C:\Program Files\PostgreSQL" move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
@@ -60,7 +61,7 @@ set CXX=C:\mingw1310_64\bin\g++
 pushd qt-everywhere-src-6.10.0
     if not exist build mkdir build
     pushd build
-        call ..\configure -prefix C:\Qt\6.10.0\mingw_64 -platform win32-g++ -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
+        call ..\configure -prefix C:\Qt\6.10.0\mingw_64 -platform win32-g++ -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
         type config.summary
     popd
 popd
@@ -70,23 +71,7 @@ set LLVM_INSTALL_DIR=C:\llvm19
 set CC=C:\mingw1310_64\bin\gcc
 set CXX=C:\mingw1310_64\bin\g++
 pushd qt-everywhere-src-6.10.0\build
-    ninja qtbase/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtactiveqt/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtcoap/all || exit /b
+    ninja qtshadertools/all || exit /b
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -110,7 +95,7 @@ set LLVM_INSTALL_DIR=C:\llvm19
 set CC=C:\mingw1310_64\bin\gcc
 set CXX=C:\mingw1310_64\bin\g++
 pushd qt-everywhere-src-6.10.0\build
-    ninja qtnetworkauth/all || exit /b
+    ninja qtsvg/all || exit /b
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -126,23 +111,7 @@ set LLVM_INSTALL_DIR=C:\llvm19
 set CC=C:\mingw1310_64\bin\gcc
 set CXX=C:\mingw1310_64\bin\g++
 pushd qt-everywhere-src-6.10.0\build
-    ninja qtserialbus/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtshadertools/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtsvg/all || exit /b
+    ninja qtactiveqt/all || exit /b
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -158,7 +127,7 @@ set LLVM_INSTALL_DIR=C:\llvm19
 set CC=C:\mingw1310_64\bin\gcc
 set CXX=C:\mingw1310_64\bin\g++
 pushd qt-everywhere-src-6.10.0\build
-    ninja qt5compat/all || exit /b
+    ninja qtwebsockets/all || exit /b
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -166,7 +135,7 @@ set LLVM_INSTALL_DIR=C:\llvm19
 set CC=C:\mingw1310_64\bin\gcc
 set CXX=C:\mingw1310_64\bin\g++
 pushd qt-everywhere-src-6.10.0\build
-    ninja qtconnectivity/all || exit /b
+    ninja qtsensors/all || exit /b
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -174,31 +143,7 @@ set LLVM_INSTALL_DIR=C:\llvm19
 set CC=C:\mingw1310_64\bin\gcc
 set CXX=C:\mingw1310_64\bin\g++
 pushd qt-everywhere-src-6.10.0\build
-    ninja qtgrpc/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtlottie/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtmqtt/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtopcua/all || exit /b
+    ninja qttools/all || exit /b
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -230,7 +175,7 @@ set LLVM_INSTALL_DIR=C:\llvm19
 set CC=C:\mingw1310_64\bin\gcc
 set CXX=C:\mingw1310_64\bin\g++
 pushd qt-everywhere-src-6.10.0\build
-    ninja qtquick3d/all || exit /b
+    ninja qthttpserver/all || exit /b
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -238,7 +183,7 @@ set LLVM_INSTALL_DIR=C:\llvm19
 set CC=C:\mingw1310_64\bin\gcc
 set CXX=C:\mingw1310_64\bin\g++
 pushd qt-everywhere-src-6.10.0\build
-    ninja qtgraphs/all || exit /b
+    ninja qtquick3d/all || exit /b
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -254,30 +199,6 @@ set LLVM_INSTALL_DIR=C:\llvm19
 set CC=C:\mingw1310_64\bin\gcc
 set CXX=C:\mingw1310_64\bin\g++
 pushd qt-everywhere-src-6.10.0\build
-    ninja qt3d/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtcharts/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtdatavis3d/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
     ninja qtquick3dphysics/all || exit /b
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
@@ -286,95 +207,7 @@ set LLVM_INSTALL_DIR=C:\llvm19
 set CC=C:\mingw1310_64\bin\gcc
 set CXX=C:\mingw1310_64\bin\g++
 pushd qt-everywhere-src-6.10.0\build
-    ninja qtquickeffectmaker/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtremoteobjects/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtscxml/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtsensors/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtspeech/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qttools/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qttranslations/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtvirtualkeyboard/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtwayland/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtwebsockets/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qthttpserver/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtwebchannel/all || exit /b
+    ninja qtgraphs/all || exit /b
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
@@ -390,19 +223,13 @@ set LLVM_INSTALL_DIR=C:\llvm19
 set CC=C:\mingw1310_64\bin\gcc
 set CXX=C:\mingw1310_64\bin\g++
 pushd qt-everywhere-src-6.10.0\build
-    ninja qtwebview/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-set CC=C:\mingw1310_64\bin\gcc
-set CXX=C:\mingw1310_64\bin\g++
-pushd qt-everywhere-src-6.10.0\build
     ninja install
 popd
 mugideploy copy-dep --bin C:\Qt\6.10.0\mingw_64\bin\qmake.exe --dst C:\Qt\6.10.0\mingw_64\bin
 mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.10.0\mingw_64\bin
 mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.10.0\mingw_64\bin
+rem libclang.dll is huge
+rem mugideploy copy-dep --bin C:\Qt\6.10.0\mingw_64\bin\qdoc.exe --dst C:\Qt\6.10.0\mingw_64\bin
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
 set LLVM_INSTALL_DIR=C:\llvm19
