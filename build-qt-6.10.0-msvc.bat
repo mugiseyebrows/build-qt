@@ -24,322 +24,34 @@ if exist "C:\Program Files\OpenSSL" move /y "C:\Program Files\OpenSSL" "C:\Progr
 if exist C:\Strawberry move /y C:\Strawberry C:\Strawberry_
 if exist C:\tools\php move /y C:\tools\php C:\tools\php_
 if exist "C:\Program Files\LLVM" move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
-if exist qt-everywhere-src-6.10.0 goto get_source_end
+if exist src goto source_end
 if not exist qt-everywhere-src-6.10.0.zip (
     echo downloading qt-everywhere-src-6.10.0.zip
     curl -L -o qt-everywhere-src-6.10.0.zip https://download.qt.io/official_releases/qt/6.10/6.10.0/single/qt-everywhere-src-6.10.0.zip
 )
-if not exist qt-everywhere-src-6.10.0 7z x -y qt-everywhere-src-6.10.0.zip
-:get_source_end
+7z rn qt-everywhere-src-6.10.0.zip qt-everywhere-src-6.10.0 src
+if not exist src 7z x -y qt-everywhere-src-6.10.0.zip
+:source_end
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
 set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
-pushd qt-everywhere-src-6.10.0
-    if not exist build mkdir build
-    pushd build
-        call ..\configure -prefix C:\Qt\6.10.0\msvc2020_64 -platform win32-msvc -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
-        type config.summary
-    popd
+pushd src
+    call configure -prefix C:\Qt\6.10.0\msvc2020_64 -platform win32-msvc -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
+    type config.summary
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
 set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
+pushd src
     ninja qtbase/all || exit /b
 popd
 where mugideploy > NUL 2>&1 || pip install mugideploy
 where ninja > NUL 2>&1 || pip install ninja
 set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtactiveqt/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtcoap/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtimageformats/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtlanguageserver/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtnetworkauth/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtserialport/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtserialbus/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtshadertools/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtsvg/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
+pushd src
     ninja qtdeclarative/all || exit /b
 popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qt5compat/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtconnectivity/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtgrpc/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtlottie/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtmqtt/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtopcua/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtpositioning/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtlocation/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtquicktimeline/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtquick3d/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtgraphs/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtmultimedia/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qt3d/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtcharts/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtdatavis3d/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtquick3dphysics/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtquickeffectmaker/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtremoteobjects/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtscxml/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtsensors/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtspeech/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qttools/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qttranslations/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtvirtualkeyboard/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtwayland/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtwebsockets/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qthttpserver/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtwebchannel/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtdoc/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja qtwebview/all || exit /b
-popd
-where mugideploy > NUL 2>&1 || pip install mugideploy
-where ninja > NUL 2>&1 || pip install ninja
-set LLVM_INSTALL_DIR=C:\llvm19
-call vcvars64.bat
-pushd qt-everywhere-src-6.10.0\build
-    ninja install
-popd
-mugideploy copy-dep --bin C:\Qt\6.10.0\msvc2020_64\bin\qmake.exe --dst C:\Qt\6.10.0\msvc2020_64\bin
-mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.10.0\msvc2020_64\bin
-mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.10.0\msvc2020_64\bin
-rem libclang.dll is huge
-rem mugideploy copy-dep --bin C:\Qt\6.10.0\msvc2020_64\bin\qdoc.exe --dst C:\Qt\6.10.0\msvc2020_64\bin
-copy /y qt-everywhere-src-6.10.0\build\config.summary C:\Qt\6.10.0\msvc2020_64
 7z a -y Qt-6.10.0-msvc2020.7z C:\Qt\6.10.0\msvc2020_64

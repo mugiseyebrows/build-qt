@@ -3,6 +3,7 @@
 {% set host = "download.qt.io" %}
 {% set modules = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
 {% set modules1 = ['qtshadertools', 'qtimageformats', 'qtlanguageserver', 'qtsvg', 'qtserialport', 'qtactiveqt', 'qtdeclarative', 'qtwebsockets', 'qtsensors', 'qttools', 'qtpositioning', 'qtlocation', 'qtquicktimeline', 'qthttpserver', 'qtquick3d', 'qtmultimedia', 'qtquick3dphysics', 'qtgraphs', 'qtdoc'] %}
+{% set modules = ["qtbase", "qtdeclarative"] %}
 
 {% if mkspec == "win32-g++" %}
 {% set subdir = "mingw_64" %}
@@ -50,20 +51,18 @@ def prepare
     if exist C:\tools\php move /y C:\tools\php C:\tools\php_
     if exist "C:\Program Files\LLVM" move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
 
-def get_source
-    if_exist_return(qt-everywhere-src-{{ver}})
+def source
+    if_exist_return(src)
     download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/single/qt-everywhere-src-{{ver}}.zip, :cache, :v)
-    unzip(qt-everywhere-src-{{ver}}.zip, :t=qt-everywhere-src-{{ver}})
+    7z rn qt-everywhere-src-{{ver}}.zip qt-everywhere-src-{{ver}} src
+    unzip(qt-everywhere-src-{{ver}}.zip, :t=src)
 
 def configure
     {{ env() }}
-    pushd qt-everywhere-src-{{ver}}
-        mkdir(build)
-        pushd build
-            # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
-            call ..\configure -prefix C:\Qt\{{ver}}\{{subdir}} -platform {{mkspec}} -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
-            type config.summary
-        popd
+    pushd src
+        # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
+        call configure -prefix C:\Qt\{{ver}}\{{subdir}} -platform {{mkspec}} -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
+        type config.summary
     popd
 
 def llvm
@@ -114,31 +113,31 @@ def protobuf
 {% for module in modules %}
 def {{module}}
     {{ env() }}
-    pushd qt-everywhere-src-{{ver}}\build
+    pushd src
         ninja {{module}}/all || exit /b
     popd
 {% endfor %}
 
 def install
     {{ env() }}
-    pushd qt-everywhere-src-{{ver}}\build
+    pushd src
         ninja install
     popd
     mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qmake.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
     mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
     mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
-    rem libclang.dll is huge
-    rem mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
+    # libclang.dll is huge
+    # mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
 
 def docs
     {{ env() }}
-    pushd qt-everywhere-src-{{ver}}\build
+    pushd src
         ninja docs
         ninja install_docs
     popd
 
-def main depends on mingw mysql postgresql prepare get_source configure {{ modules | join(' ') }} install
-    copy(qt-everywhere-src-{{ver}}\build\config.summary, C:\Qt\{{ver}}\{{subdir}})
+def main depends on mingw mysql postgresql prepare source configure {{ modules | join(' ') }}
+    #copy(src\config.summary, C:\Qt\{{ver}}\{{subdir}})
     zip(Qt-{{ver}}-{{compiler}}.7z, C:\Qt\{{ver}}\{{subdir}})
     #zip(libclang-{{compiler}}.7z, C:\llvm19\bin\libclang.dll)
     github_upload(C:\Qt\{{ver}}\{{subdir}}, :n=Qt-{{ver}}-{{compiler}})
