@@ -112,6 +112,222 @@ def qtbase
         ninja qtbase/all || exit /b
     popd
 
+def qtactiveqt
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtactiveqt/all || exit /b
+    popd
+
+def qtcoap
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtcoap/all || exit /b
+    popd
+
+def qtimageformats
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtimageformats/all || exit /b
+    popd
+
+def qtlanguageserver
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtlanguageserver/all || exit /b
+    popd
+
+def qtnetworkauth
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtnetworkauth/all || exit /b
+    popd
+
+def qtserialport
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtserialport/all || exit /b
+    popd
+
+def qtserialbus
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtserialbus/all || exit /b
+    popd
+
+def qtshadertools
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtshadertools/all || exit /b
+    popd
+
+def qtsvg
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtsvg/all || exit /b
+    popd
+
 def qtdeclarative
     
     # call pull-mysql
@@ -134,6 +350,726 @@ def qtdeclarative
 
     pushd src
         ninja qtdeclarative/all || exit /b
+    popd
+
+def qt5compat
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qt5compat/all || exit /b
+    popd
+
+def qtconnectivity
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtconnectivity/all || exit /b
+    popd
+
+def qtgrpc
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtgrpc/all || exit /b
+    popd
+
+def qtlottie
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtlottie/all || exit /b
+    popd
+
+def qtmqtt
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtmqtt/all || exit /b
+    popd
+
+def qtopcua
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtopcua/all || exit /b
+    popd
+
+def qtpositioning
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtpositioning/all || exit /b
+    popd
+
+def qtlocation
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtlocation/all || exit /b
+    popd
+
+def qtquicktimeline
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtquicktimeline/all || exit /b
+    popd
+
+def qtquick3d
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtquick3d/all || exit /b
+    popd
+
+def qtgraphs
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtgraphs/all || exit /b
+    popd
+
+def qtmultimedia
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtmultimedia/all || exit /b
+    popd
+
+def qt3d
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qt3d/all || exit /b
+    popd
+
+def qtcharts
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtcharts/all || exit /b
+    popd
+
+def qtdatavis3d
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtdatavis3d/all || exit /b
+    popd
+
+def qtquick3dphysics
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtquick3dphysics/all || exit /b
+    popd
+
+def qtquickeffectmaker
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtquickeffectmaker/all || exit /b
+    popd
+
+def qtremoteobjects
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtremoteobjects/all || exit /b
+    popd
+
+def qtscxml
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtscxml/all || exit /b
+    popd
+
+def qtsensors
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtsensors/all || exit /b
+    popd
+
+def qtspeech
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtspeech/all || exit /b
+    popd
+
+def qttools
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qttools/all || exit /b
+    popd
+
+def qttranslations
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qttranslations/all || exit /b
+    popd
+
+def qtvirtualkeyboard
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtvirtualkeyboard/all || exit /b
+    popd
+
+def qtwayland
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtwayland/all || exit /b
+    popd
+
+def qtwebsockets
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtwebsockets/all || exit /b
+    popd
+
+def qthttpserver
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qthttpserver/all || exit /b
+    popd
+
+def qtwebchannel
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtwebchannel/all || exit /b
+    popd
+
+def qtdoc
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtdoc/all || exit /b
+    popd
+
+def qtwebview
+    
+    # call pull-mysql
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\6.10.0\msvc2020_64\bin)
+    use(python, 3.13)
+    use(conda)
+    use(cmake)
+    # where python
+    install(mugideploy)
+    install(ninja)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    
+    call_vcvars()
+    
+    add_path(C:\llvm19\bin)
+    add_path(C:\protoc\bin)
+
+    pushd src
+        ninja qtwebview/all || exit /b
     popd
 
 
@@ -191,13 +1127,13 @@ def docs
         ninja install_docs
     popd
 
-def main depends on mingw mysql postgresql prepare source configure qtbase qtdeclarative
-    #copy(src\config.summary, C:\Qt\6.10.0\msvc2020_64)
+def main depends on mingw llvm mysql postgresql prepare source configure qtbase qtactiveqt qtcoap qtimageformats qtlanguageserver qtnetworkauth qtserialport qtserialbus qtshadertools qtsvg qtdeclarative qt5compat qtconnectivity qtgrpc qtlottie qtmqtt qtopcua qtpositioning qtlocation qtquicktimeline qtquick3d qtgraphs qtmultimedia qt3d qtcharts qtdatavis3d qtquick3dphysics qtquickeffectmaker qtremoteobjects qtscxml qtsensors qtspeech qttools qttranslations qtvirtualkeyboard qtwayland qtwebsockets qthttpserver qtwebchannel qtdoc qtwebview install
+    copy(src\config.summary, C:\Qt\6.10.0\msvc2020_64)
     zip(Qt-6.10.0-msvc2020.7z, C:\Qt\6.10.0\msvc2020_64)
-    #zip(libclang-msvc2020.7z, C:\llvm19\bin\libclang.dll)
+    zip(libclang-msvc2020.7z, C:\llvm19\bin\libclang.dll)
     github_upload(C:\Qt\6.10.0\msvc2020_64, :n=Qt-6.10.0-msvc2020)
-    #github_upload(qt-everywhere-src-6.10.0\build\config.summary, :n=config.summary)
     github_release(Qt-6.10.0-msvc2020.7z)
+    github_release(libclang-msvc2020.7z)
 
 github-workflow 1
 workflow-name build-msvc2020

@@ -3,7 +3,7 @@
 {% set host = "download.qt.io" %}
 {% set modules = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
 {% set modules1 = ['qtshadertools', 'qtimageformats', 'qtlanguageserver', 'qtsvg', 'qtserialport', 'qtactiveqt', 'qtdeclarative', 'qtwebsockets', 'qtsensors', 'qttools', 'qtpositioning', 'qtlocation', 'qtquicktimeline', 'qthttpserver', 'qtquick3d', 'qtmultimedia', 'qtquick3dphysics', 'qtgraphs', 'qtdoc'] %}
-{% set modules = ["qtbase", "qtdeclarative"] %}
+{% set modules2 = ["qtbase", "qtdeclarative"] %}
 
 {% if mkspec == "win32-g++" %}
 {% set subdir = "mingw_64" %}
@@ -136,13 +136,13 @@ def docs
         ninja install_docs
     popd
 
-def main depends on mingw mysql postgresql prepare source configure {{ modules | join(' ') }}
-    #copy(src\config.summary, C:\Qt\{{ver}}\{{subdir}})
+def main depends on mingw llvm mysql postgresql prepare source configure {{ modules | join(' ') }} install
+    copy(src\config.summary, C:\Qt\{{ver}}\{{subdir}})
     zip(Qt-{{ver}}-{{compiler}}.7z, C:\Qt\{{ver}}\{{subdir}})
-    #zip(libclang-{{compiler}}.7z, C:\llvm19\bin\libclang.dll)
+    zip(libclang-{{compiler}}.7z, C:\llvm19\bin\libclang.dll)
     github_upload(C:\Qt\{{ver}}\{{subdir}}, :n=Qt-{{ver}}-{{compiler}})
-    #github_upload(qt-everywhere-src-{{ver}}\build\config.summary, :n=config.summary)
     github_release(Qt-{{ver}}-{{compiler}}.7z)
+    github_release(libclang-{{compiler}}.7z)
 
 github-workflow 1
 workflow-name build-{{compiler}}
