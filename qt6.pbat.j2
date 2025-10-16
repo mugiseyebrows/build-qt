@@ -98,18 +98,6 @@ def postgresql
     7z rn postgresql-14.12-2-windows-x64-binaries.zip pgsql postgresql-14
     unzip(postgresql-14.12-2-windows-x64-binaries.zip, :o=C:\)
 
-def protobuf
-    if_exist_return(C:\protoc\bin\protoc.exe)
-    {% if mkspec == "win32-g++" %}
-    download(https://github.com/mugiseyebrows/build-protobuf/releases/download/v32.1/protobuf-mingw13.7z, :cache, :v)
-    7z rn protobuf-mingw13.7z protobuf-mingw13 protobuf
-    unzip(protobuf-mingw13.7z, :o=C:\)
-    {% else %}
-    download(https://github.com/mugiseyebrows/build-protobuf/releases/download/v32.1/protobuf-msvc2020.7z, :cache, :v)
-    7z rn protobuf-msvc2020.7z protobuf-msvc2020 protobuf
-    unzip(protobuf-msvc2020.7z, :o=C:\)
-    {% endif %}
-
 {% for module in modules %}
 def {{module}}
     {{ env() }}
@@ -128,13 +116,6 @@ def install
     mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
     # libclang.dll is huge
     # mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
-
-def docs
-    {{ env() }}
-    pushd src
-        ninja docs
-        ninja install_docs
-    popd
 
 def main depends on mingw llvm mysql postgresql prepare source configure {{ modules | join(' ') }} install
     copy(src\config.summary, C:\Qt\{{ver}}\{{subdir}})
