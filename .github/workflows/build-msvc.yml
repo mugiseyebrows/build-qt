@@ -1,0 +1,478 @@
+name: build-msvc2020
+on: push
+jobs:
+  main:
+    runs-on: windows-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4
+    - name: mingw
+      shell: cmd
+      run: echo 1
+    - name: llvm
+      shell: cmd
+      run: |
+        set PATH=C:\Windows\System32;C:\Program Files\7-Zip;%PATH%
+        if exist C:\llvm19\bin\clang.exe goto llvm_end
+        if not exist llvm19-msvc2020.7z (
+            echo downloading llvm19-msvc2020.7z
+            curl -L -o llvm19-msvc2020.7z https://github.com/mugiseyebrows/build-clang/releases/download/19.1.7/llvm19-msvc2020.7z
+        )
+        7z x -y -oC:\ llvm19-msvc2020.7z
+        :llvm_end
+    - name: mysql
+      shell: cmd
+      run: |
+        set PATH=C:\Windows\System32;C:\Program Files\7-Zip;%PATH%
+        if exist C:\mysql-8.2.0-winx64\bin\mysql.exe goto mysql_end
+        if not exist mysql-8.2.0-winx64.zip (
+            echo downloading mysql-8.2.0-winx64.zip
+            curl -L -o mysql-8.2.0-winx64.zip https://cdn.mysql.com/Downloads/MySQL-8.2/mysql-8.2.0-winx64.zip
+        )
+        7z x -y -oC:\ mysql-8.2.0-winx64.zip
+        :mysql_end
+    - name: postgresql
+      shell: cmd
+      run: |
+        set PATH=C:\Windows\System32;C:\Program Files\7-Zip;%PATH%
+        if exist C:\postgresql-14\bin\psql.exe goto postgresql_end
+        if not exist postgresql-14.12-2-windows-x64-binaries.zip (
+            echo downloading postgresql-14.12-2-windows-x64-binaries.zip
+            curl -L -o postgresql-14.12-2-windows-x64-binaries.zip https://get.enterprisedb.com/postgresql/postgresql-14.12-2-windows-x64-binaries.zip
+        )
+        7z rn postgresql-14.12-2-windows-x64-binaries.zip pgsql postgresql-14
+        7z x -y -oC:\ postgresql-14.12-2-windows-x64-binaries.zip
+        :postgresql_end
+    - name: prepare
+      shell: cmd
+      run: |
+        if exist C:\mingw64 move /y C:\mingw64 C:\mingw64_
+        if exist "C:\Program Files\PostgreSQL" move /y "C:\Program Files\PostgreSQL" "C:\Program Files\PostgreSQL_"
+        if exist "C:\Program Files\MySQL" move /y "C:\Program Files\MySQL" "C:\Program Files\MySQL_"
+        if exist "C:\Program Files\OpenSSL" move /y "C:\Program Files\OpenSSL" "C:\Program Files\OpenSSL_"
+        if exist C:\Strawberry move /y C:\Strawberry C:\Strawberry_
+        if exist C:\tools\php move /y C:\tools\php C:\tools\php_
+        if exist "C:\Program Files\LLVM" move /y "C:\Program Files\LLVM" "C:\Program Files\LLVM_"
+    - name: source
+      shell: cmd
+      run: |
+        set PATH=C:\Windows\System32;C:\Program Files\7-Zip;%PATH%
+        if exist src goto source_end
+        if not exist qt-everywhere-src-6.10.0.zip (
+            echo downloading qt-everywhere-src-6.10.0.zip
+            curl -L -o qt-everywhere-src-6.10.0.zip https://download.qt.io/official_releases/qt/6.10/6.10.0/single/qt-everywhere-src-6.10.0.zip
+        )
+        7z rn qt-everywhere-src-6.10.0.zip qt-everywhere-src-6.10.0 src
+        if not exist src 7z x -y qt-everywhere-src-6.10.0.zip
+        :source_end
+    - name: configure
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            call configure -prefix C:\Qt\6.10.0\msvc2020_64 -platform win32-msvc -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
+            type config.summary
+        popd
+    - name: qtbase
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtbase/all || exit /b
+        popd
+    - name: qtactiveqt
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtactiveqt/all || exit /b
+        popd
+    - name: qtcoap
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtcoap/all || exit /b
+        popd
+    - name: qtimageformats
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtimageformats/all || exit /b
+        popd
+    - name: qtlanguageserver
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtlanguageserver/all || exit /b
+        popd
+    - name: qtnetworkauth
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtnetworkauth/all || exit /b
+        popd
+    - name: qtserialport
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtserialport/all || exit /b
+        popd
+    - name: qtserialbus
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtserialbus/all || exit /b
+        popd
+    - name: qtshadertools
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtshadertools/all || exit /b
+        popd
+    - name: qtsvg
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtsvg/all || exit /b
+        popd
+    - name: qtdeclarative
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtdeclarative/all || exit /b
+        popd
+    - name: qt5compat
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qt5compat/all || exit /b
+        popd
+    - name: qtconnectivity
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtconnectivity/all || exit /b
+        popd
+    - name: qtgrpc
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtgrpc/all || exit /b
+        popd
+    - name: qtlottie
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtlottie/all || exit /b
+        popd
+    - name: qtmqtt
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtmqtt/all || exit /b
+        popd
+    - name: qtopcua
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtopcua/all || exit /b
+        popd
+    - name: qtpositioning
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtpositioning/all || exit /b
+        popd
+    - name: qtlocation
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtlocation/all || exit /b
+        popd
+    - name: qtquicktimeline
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtquicktimeline/all || exit /b
+        popd
+    - name: qtquick3d
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtquick3d/all || exit /b
+        popd
+    - name: qtgraphs
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtgraphs/all || exit /b
+        popd
+    - name: qtmultimedia
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtmultimedia/all || exit /b
+        popd
+    - name: qt3d
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qt3d/all || exit /b
+        popd
+    - name: qtcharts
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtcharts/all || exit /b
+        popd
+    - name: qtdatavis3d
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtdatavis3d/all || exit /b
+        popd
+    - name: qtquick3dphysics
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtquick3dphysics/all || exit /b
+        popd
+    - name: qtquickeffectmaker
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtquickeffectmaker/all || exit /b
+        popd
+    - name: qtremoteobjects
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtremoteobjects/all || exit /b
+        popd
+    - name: qtscxml
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtscxml/all || exit /b
+        popd
+    - name: qtsensors
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtsensors/all || exit /b
+        popd
+    - name: qtspeech
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtspeech/all || exit /b
+        popd
+    - name: qttools
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qttools/all || exit /b
+        popd
+    - name: qttranslations
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qttranslations/all || exit /b
+        popd
+    - name: qtvirtualkeyboard
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtvirtualkeyboard/all || exit /b
+        popd
+    - name: qtwayland
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtwayland/all || exit /b
+        popd
+    - name: qtwebsockets
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtwebsockets/all || exit /b
+        popd
+    - name: qthttpserver
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qthttpserver/all || exit /b
+        popd
+    - name: qtwebchannel
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtwebchannel/all || exit /b
+        popd
+    - name: qtdoc
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtdoc/all || exit /b
+        popd
+    - name: qtwebview
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja qtwebview/all || exit /b
+        popd
+    - name: install
+      shell: cmd
+      run: |
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build;C:\llvm19\bin;C:\protoc\bin;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Miniconda;C:\Miniconda\Scripts;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        call vcvars64.bat
+        pushd src
+            ninja install
+        popd
+        python -c "import mugideploy" || python -m pip install "mugideploy"
+        mugideploy copy-dep --bin C:\Qt\6.10.0\msvc2020_64\bin\qmake.exe --dst C:\Qt\6.10.0\msvc2020_64\bin
+        mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\6.10.0\msvc2020_64\bin
+        mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\6.10.0\msvc2020_64\bin
+    - name: main
+      shell: cmd
+      run: |
+        set PATH=C:\Program Files\7-Zip;%PATH%
+        copy /y src\config.summary C:\Qt\6.10.0\msvc2020_64
+        7z a -y Qt-6.10.0-msvc2020.7z C:\Qt\6.10.0\msvc2020_64
+        7z a -y libclang-msvc2020.7z C:\llvm19\bin\libclang.dll
+    - name: upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: Qt-6.10.0-msvc2020
+        path: C:\Qt\6.10.0\msvc2020_64
+    - name: release
+      uses: softprops/action-gh-release@v2
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: |
+          Qt-6.10.0-msvc2020.7z
+          libclang-msvc2020.7z

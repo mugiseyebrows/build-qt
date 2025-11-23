@@ -1,20 +1,16 @@
-{% set majmin = ver.rsplit(".", 1)[0] %}
+{% set majmin = version.rsplit(".", 1)[0] %}
 {% set host1 = "qt.mirror.constant.com" %}
 {% set host = "download.qt.io" %}
 {% set modules = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
 {% set modules1 = ['qtshadertools', 'qtimageformats', 'qtlanguageserver', 'qtsvg', 'qtserialport', 'qtactiveqt', 'qtdeclarative', 'qtwebsockets', 'qtsensors', 'qttools', 'qtpositioning', 'qtlocation', 'qtquicktimeline', 'qthttpserver', 'qtquick3d', 'qtmultimedia', 'qtquick3dphysics', 'qtgraphs', 'qtdoc'] %}
 {% set modules2 = ["qtbase", "qtdeclarative"] %}
 
-{% if mkspec == "win32-g++" %}
+{% if platform == "win32-g++" %}
 {% set subdir = "mingw_64" %}
 {% set compiler = "mingw13" %}
-{% set cc = "gcc" %}
-{% set cxx = "g++" %}
 {% else %}
 {% set subdir = "msvc2020_64" %}
 {% set compiler = "msvc2020" %}
-{% set cc = "cl" %}
-{% set cxx = "cl" %}
 {% endif %}
 
 {% macro env() %}
@@ -22,18 +18,12 @@
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\{{ver}}\{{subdir}}\bin)
-    use(python, 3.13)
-    use(conda)
-    use(cmake)
-    # where python
-    install(mugideploy)
-    install(ninja)
+    add_path(C:\Qt\{{version}}\{{subdir}}\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
-    {% if mkspec == "win32-g++" %}
+    {% if platform == "win32-g++" %}
     add_path(C:\mingw1310_64\bin)
-    set CC=C:\mingw1310_64\bin\gcc
-    set CXX=C:\mingw1310_64\bin\g++
+    #set CC=C:\mingw1310_64\bin\gcc
+    #set CXX=C:\mingw1310_64\bin\g++
     {% else %}
     call_vcvars()
     {% endif %}
@@ -53,20 +43,20 @@ def prepare
 
 def source
     if_exist_return(src)
-    download(https://{{host}}/official_releases/qt/{{majmin}}/{{ver}}/single/qt-everywhere-src-{{ver}}.zip, :cache, :v)
-    7z rn qt-everywhere-src-{{ver}}.zip qt-everywhere-src-{{ver}} src
-    unzip(qt-everywhere-src-{{ver}}.zip, :t=src)
+    download(https://{{host}}/official_releases/qt/{{majmin}}/{{version}}/single/qt-everywhere-src-{{version}}.zip, :cache, :v)
+    7z rn qt-everywhere-src-{{version}}.zip qt-everywhere-src-{{version}} src
+    unzip(qt-everywhere-src-{{version}}.zip, :t=src)
 
 def configure
     {{ env() }}
     pushd src
         # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
-        call configure -prefix C:\Qt\{{ver}}\{{subdir}} -platform {{mkspec}} -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
+        call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
         type config.summary
     popd
 
 def llvm
-    {% if mkspec == "win32-g++" %}
+    {% if platform == "win32-g++" %}
     if_exist_return(C:\llvm19\bin\clang.exe)
     download(https://github.com/mugiseyebrows/build-clang/releases/download/19.1.7/llvm19-mingw.7z, :cache, :v)
     unzip(llvm19-mingw.7z, :o=C:\)
@@ -77,7 +67,7 @@ def llvm
     {% endif %}
 
 def mingw
-    {% if mkspec == "win32-g++" %}
+    {% if platform == "win32-g++" %}
     add_path(C:\mingw1310_64\bin)
     if_exist_return(C:\mingw1310_64\bin\gcc.exe)
     download(https://github.com/brechtsanders/winlibs_mingw/releases/download/13.1.0-16.0.5-11.0.0-ucrt-r5/winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z, :cache, :v)
@@ -111,19 +101,25 @@ def install
     pushd src
         ninja install
     popd
-    mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qmake.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
-    mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
-    mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{ver}}\{{subdir}}\bin
+    use(python, 3.13)
+    use(conda)
+    pip_install(mugideploy)
+    mugideploy copy-dep --bin C:\Qt\{{version}}\{{subdir}}\bin\qmake.exe --dst C:\Qt\{{version}}\{{subdir}}\bin
+    mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\{{version}}\{{subdir}}\bin
+    mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{version}}\{{subdir}}\bin
     # libclang.dll is huge
-    # mugideploy copy-dep --bin C:\Qt\{{ver}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{ver}}\{{subdir}}\bin
+    # mugideploy copy-dep --bin C:\Qt\{{version}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{version}}\{{subdir}}\bin
 
 def main depends on mingw llvm mysql postgresql prepare source configure {{ modules | join(' ') }} install
-    copy(src\config.summary, C:\Qt\{{ver}}\{{subdir}})
-    zip(Qt-{{ver}}-{{compiler}}.7z, C:\Qt\{{ver}}\{{subdir}})
+    copy(src\config.summary, C:\Qt\{{version}}\{{subdir}})
+    zip(Qt-{{version}}-{{compiler}}.7z, C:\Qt\{{version}}\{{subdir}})
     zip(libclang-{{compiler}}.7z, C:\llvm19\bin\libclang.dll)
-    github_upload(C:\Qt\{{ver}}\{{subdir}}, :n=Qt-{{ver}}-{{compiler}})
-    github_release(Qt-{{ver}}-{{compiler}}.7z)
+    github_upload(C:\Qt\{{version}}\{{subdir}}, :n=Qt-{{version}}-{{compiler}})
+    github_release(Qt-{{version}}-{{compiler}}.7z)
     github_release(libclang-{{compiler}}.7z)
 
 github-workflow 1
 workflow-name build-{{compiler}}
+
+output(build-mingw, :platform=win32-g++, :version=6.10.0)
+output(build-msvc, :platform=win32-msvc, :version=6.10.0)
