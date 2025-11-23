@@ -1,3 +1,6 @@
+{% set majmin = version.rsplit(".", 1)[0] %}
+{% set host = "download.qt.io" %}
+
 {% if platform == "win32-g++" %}
 {% set subdir = "mingw_64" %}
 {% set compiler = "mingw13" %}
@@ -8,12 +11,12 @@
 
 {% macro env() %}
 set LLVM_INSTALL_DIR=C:\llvm19
-add_path(C:\Qt\{{version}}\{{subdir}}\bin)
 add_path(C:\llvm19\bin)
+add_path(C:\Qt\6.10.0\{{subdir}}\bin)
 {% if platform == "win32-g++" %}
 add_path(C:\mingw1310_64\bin)
 {% else %}
-
+call_vcvars()
 {% endif %}
 {% endmacro %}
 
@@ -41,9 +44,9 @@ def llvm
 
 def source
     if_exist_return(src)
-    download(https://download.qt.io/official_releases/qt/6.10/6.10.0/single/qt-everywhere-src-6.10.0.zip, :cache, :v)
-    7z rn qt-everywhere-src-6.10.0.zip qt-everywhere-src-6.10.0 src
-    unzip(qt-everywhere-src-6.10.0.zip, :t=src)
+    download(https://{{host}}/official_releases/qt/{{majmin}}/{{version}}/single/qt-everywhere-src-{{version}}.zip, :cache, :v)
+    7z rn qt-everywhere-src-{{version}}.zip qt-everywhere-src-{{version}} src
+    unzip(qt-everywhere-src-{{version}}.zip, :t=src)
 
 def host
     if_exist_return(C:\qt\6.10.0\mingw_64\bin\qmake.exe)
@@ -66,4 +69,4 @@ def main depends on mingw llvm source host build
 github-workflow 1
 workflow-name build-doc-{{compiler}}
 
-output(build-doc, :platform=win32-g++, :version=6.10.0)
+output(build-doc-mingw, :platform=win32-g++, :version=6.10.0)

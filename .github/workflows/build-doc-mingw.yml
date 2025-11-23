@@ -53,7 +53,7 @@ jobs:
     - name: build
       shell: cmd
       run: |
-        set PATH=C:\Qt\6.10.0\mingw_64\bin;C:\llvm19\bin;C:\mingw1310_64\bin;%PATH%
+        set PATH=C:\llvm19\bin;C:\Qt\6.10.0\mingw_64\bin;C:\mingw1310_64\bin;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
             cmake -G Ninja -DQT_HOST_PATH=C:\qt\6.10.0\mingw_64 -DQT_NO_PACKAGE_VERSION_CHECK=ON -DQT_NO_PACKAGE_VERSION_INCOMPATIBLE_WARNING=ON -DBUILD_qtwebengine=OFF -DCMAKE_INSTALL_PREFIX=C:/Qt/6.10.0/mingw_64 .
