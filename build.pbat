@@ -1,7 +1,8 @@
 {% set majmin = version.rsplit(".", 1)[0] %}
+{% set maj = version.split(".")[0] %}
 {% set host1 = "qt.mirror.constant.com" %}
 {% set host = "download.qt.io" %}
-{% set modules = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
+
 {% set modules1 = ['qtshadertools', 'qtimageformats', 'qtlanguageserver', 'qtsvg', 'qtserialport', 'qtactiveqt', 'qtdeclarative', 'qtwebsockets', 'qtsensors', 'qttools', 'qtpositioning', 'qtlocation', 'qtquicktimeline', 'qthttpserver', 'qtquick3d', 'qtmultimedia', 'qtquick3dphysics', 'qtgraphs', 'qtdoc'] %}
 {% set modules2 = ["qtbase", "qtdeclarative"] %}
 
@@ -11,6 +12,12 @@
 {% else %}
 {% set subdir = "msvc2020_64" %}
 {% set compiler = "msvc2020" %}
+{% endif %}
+
+{% if maj == "6" %}
+{% set modules = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
+{% else %}
+{% set modules = ['qtbase', 'qtactiveqt', 'qtimageformats', 'qtnetworkauth', 'qtserialport', 'qtserialbus', 'qtsvg', 'qtdeclarative', 'qtconnectivity', 'qtlottie', 'qtlocation', 'qtquicktimeline', 'qtquick3d', 'qtmultimedia', 'qt3d', 'qtcharts', 'qtdatavis3d', 'qtremoteobjects', 'qtscxml', 'qtsensors', 'qtspeech', 'qttools', 'qttranslations', 'qtvirtualkeyboard', 'qtwayland', 'qtwebsockets', 'qtwebchannel', 'qtdoc', 'qtwebview'] %}
 {% endif %}
 
 {% macro env() %}
@@ -29,6 +36,11 @@
     {% endif %}
     add_path(C:\llvm19\bin)
     add_path(C:\protoc\bin)
+    {% if maj == "5" %}
+    use(conda)
+    use(python, 3.13)
+    add_path(C:\Windows\System32\WindowsPowerShell\v1.0)
+    {% endif %}
 {% endmacro %}
 
 def prepare
@@ -43,15 +55,27 @@ def prepare
 
 def source
     if_exist_return(src)
+    {% if maj == "6" %}
     download(https://{{host}}/official_releases/qt/{{majmin}}/{{version}}/single/qt-everywhere-src-{{version}}.zip, :cache, :v)
     7z rn qt-everywhere-src-{{version}}.zip qt-everywhere-src-{{version}} src
     unzip(qt-everywhere-src-{{version}}.zip, :t=src)
+    {% else %}
+    download(https://download.qt.io/archive/qt/5.15/5.15.18/single/qt-everywhere-opensource-src-{{version}}.zip, :cache, :v)
+    #7z rn qt-everywhere-opensource-src-5.15.18.zip qt-everywhere-src-5.15.18 src
+    unzip(qt-everywhere-opensource-src-5.15.18.zip, :t=src)
+    move(qt-everywhere-src-5.15.18, src)
+    {% endif %}
 
 def configure
     {{ env() }}
     pushd src
         # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
+        {% if maj == "6" %}
         call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
+        {% else %}
+        # -plugin-sql-mysql -IC:/mysql-8.2.0-winx64/include -LC:/mysql-8.2.0-winx64/bin
+        call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} -release -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc
+        {% endif %}
         type config.summary
     popd
 
@@ -92,14 +116,30 @@ def postgresql
 def {{module}}
     {{ env() }}
     pushd src
+        {% if maj == "6" %}
         ninja {{module}}/all || exit /b
+        {% else %}
+            {% if platform == "win32-g++" %}
+                mingw32-make module-{{module}}-all -j6
+            {% else %}
+
+            {% endif %}
+        {% endif %}
     popd
 {% endfor %}
 
 def install
     {{ env() }}
     pushd src
+        {% if maj == "6" %}
         ninja install
+        {% else %}
+            {% if platform == "win32-g++" %}
+                mingw32-make install
+            {% else %}
+
+            {% endif %}
+        {% endif %}
     popd
     use(python, 3.13)
     use(conda)
@@ -119,7 +159,9 @@ def main depends on mingw llvm mysql postgresql prepare source configure {{ modu
     github_release(libclang-{{compiler}}.7z)
 
 github-workflow 1
-workflow-name build-{{compiler}}
+workflow-name build-{{compiler}}-{{version}}
 
-output(build-mingw, :platform=win32-g++, :version=6.10.0)
-output(build-msvc, :platform=win32-msvc, :version=6.10.0)
+output(build-mingw-6.10.0, :platform=win32-g++, :version=6.10.0)
+output(build-msvc-6.10.0, :platform=win32-msvc, :version=6.10.0)
+output(build-mingw-5.15.18, :platform=win32-g++, :version=5.15.18)
+output(build-msvc-5.15.18, :platform=win32-msvc, :version=5.15.18)
