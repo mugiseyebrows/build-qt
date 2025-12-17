@@ -19,11 +19,6 @@
 
 {% macro env() %}
     # call pull-mysql
-    add_path(C:\mysql-8.2.0-winx64\bin)
-    add_path(C:\mysql-8.2.0-winx64\lib)
-    add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\{{version}}\{{subdir}}\bin)
-    set LLVM_INSTALL_DIR=C:\llvm19
     {% if platform == "win32-g++" %}
         {% if maj == "6" %}
         add_path(C:\mingw1310_64\bin)
@@ -33,13 +28,18 @@
     {% else %}
         call_vcvars()
     {% endif %}
-    add_path(C:\llvm19\bin)
-    add_path(C:\protoc\bin)
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\postgresql-14\bin)
+    add_path(C:\Qt\{{version}}\{{subdir}}\bin)
+    set LLVM_INSTALL_DIR=C:\llvm19
+    #add_path(C:\protoc\bin)
     {% if maj == "5" %}
         use(conda)
         use(python, 3.13)
         add_path(C:\Windows\System32\WindowsPowerShell\v1.0)
     {% endif %}
+    add_path(C:\llvm19\bin)
 {% endmacro %}
 
 def prepare
@@ -72,21 +72,25 @@ def configure
         {% if maj == "6" %}
         call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
         {% else %}
-        # -plugin-sql-mysql -IC:/mysql-8.2.0-winx64/include -LC:/mysql-8.2.0-winx64/bin
-        call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} -release -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc
+        # -plugin-sql-mysql -IC:/mysql-8.2.0-winx64/include -LC:/mysql-8.2.0-winx64/lib
+        call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} -release -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc -plugin-sql-mysql -LC:/mysql-8.2.0-winx64/lib -IC:/mysql-8.2.0-winx64/include
         {% endif %}
         type config.summary
     popd
 
 def llvm
-    {% if platform == "win32-g++" %}
-    if_exist_return(C:\llvm19\bin\clang.exe)
-    download(https://github.com/mugiseyebrows/build-clang/releases/download/19.1.7/llvm19-mingw.7z, :cache, :v)
-    unzip(llvm19-mingw.7z, :o=C:\)
+    {% if maj == "6" %}
+        {% if platform == "win32-g++" %}
+        if_exist_return(C:\llvm19\bin\clang.exe)
+        download(https://github.com/mugiseyebrows/build-clang/releases/download/19.1.7/llvm19-mingw.7z, :cache, :v)
+        unzip(llvm19-mingw.7z, :o=C:\)
+        {% else %}
+        if_exist_return(C:\llvm19\bin\clang.exe)
+        download(https://github.com/mugiseyebrows/build-clang/releases/download/19.1.7/llvm19-msvc2020.7z, :cache, :v)
+        unzip(llvm19-msvc2020.7z, :o=C:\)
+        {% endif %}
     {% else %}
-    if_exist_return(C:\llvm19\bin\clang.exe)
-    download(https://github.com/mugiseyebrows/build-clang/releases/download/19.1.7/llvm19-msvc2020.7z, :cache, :v)
-    unzip(llvm19-msvc2020.7z, :o=C:\)
+        echo 1
     {% endif %}
 
 def mingw
@@ -131,7 +135,6 @@ def {{module}}
             {% endif %}
         {% endif %}
     popd
-    exit /b
 {% endfor %}
 
 def install
@@ -157,6 +160,7 @@ def install
     # mugideploy copy-dep --bin C:\Qt\{{version}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{version}}\{{subdir}}\bin
 
 def main depends on mingw llvm mysql postgresql prepare source configure {{ modules | join(' ') }} install
+    github_checkout()
     copy(src\config.summary, C:\Qt\{{version}}\{{subdir}})
     zip(Qt-{{version}}-{{compiler}}.7z, C:\Qt\{{version}}\{{subdir}})
     zip(libclang-{{compiler}}.7z, C:\llvm19\bin\libclang.dll)
