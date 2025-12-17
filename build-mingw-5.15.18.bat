@@ -47,119 +47,119 @@ pushd src
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtbase
+            mingw32-make module-qtbase -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtactiveqt
+            mingw32-make module-qtactiveqt -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtimageformats
+            mingw32-make module-qtimageformats -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtnetworkauth
+            mingw32-make module-qtnetworkauth -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtserialport
+            mingw32-make module-qtserialport -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtserialbus
+            mingw32-make module-qtserialbus -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtsvg
+            mingw32-make module-qtsvg -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtdeclarative
+            mingw32-make module-qtdeclarative -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtconnectivity
+            mingw32-make module-qtconnectivity -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtlottie
+            mingw32-make module-qtlottie -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtlocation
+            mingw32-make module-qtlocation -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtquicktimeline
+            mingw32-make module-qtquicktimeline -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtquick3d
+            mingw32-make module-qtquick3d -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtmultimedia
+            mingw32-make module-qtmultimedia -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qt3d
+            mingw32-make module-qt3d -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtcharts
+            mingw32-make module-qtcharts -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtdatavis3d
+            mingw32-make module-qtdatavis3d -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtremoteobjects
+            mingw32-make module-qtremoteobjects -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtscxml
+            mingw32-make module-qtscxml -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtsensors
+            mingw32-make module-qtsensors -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtspeech
+            mingw32-make module-qtspeech -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qttools
+            mingw32-make module-qttools -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qttranslations
+            mingw32-make module-qttranslations -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtvirtualkeyboard
+            mingw32-make module-qtvirtualkeyboard -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtwayland
+            mingw32-make module-qtwayland -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtwebsockets
+            mingw32-make module-qtwebsockets -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtwebchannel
+            mingw32-make module-qtwebchannel -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtdoc
+            mingw32-make module-qtdoc -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtwebview
+            mingw32-make module-qtwebview -j4 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
