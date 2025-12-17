@@ -17,7 +17,7 @@
 {% if maj == "6" %}
 {% set modules = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
 {% else %}
-{% set modules = ['qtbase', 'qtactiveqt', 'qtimageformats', 'qtnetworkauth', 'qtserialport', 'qtserialbus', 'qtsvg', 'qtdeclarative', 'qtconnectivity', 'qtlottie', 'qtlocation', 'qtquicktimeline', 'qtquick3d', 'qtmultimedia', 'qt3d', 'qtcharts', 'qtdatavis3d', 'qtremoteobjects', 'qtscxml', 'qtsensors', 'qtspeech', 'qttools', 'qttranslations', 'qtvirtualkeyboard', 'qtwayland', 'qtwebsockets', 'qtwebchannel', 'qtdoc', 'qtwebview'] %}
+{% set modules1 = ['qtbase', 'qtactiveqt', 'qtimageformats', 'qtnetworkauth', 'qtserialport', 'qtserialbus', 'qtsvg', 'qtdeclarative', 'qtconnectivity', 'qtlottie', 'qtlocation', 'qtquicktimeline', 'qtquick3d', 'qtmultimedia', 'qt3d', 'qtcharts', 'qtdatavis3d', 'qtremoteobjects', 'qtscxml', 'qtsensors', 'qtspeech', 'qttools', 'qttranslations', 'qtvirtualkeyboard', 'qtwayland', 'qtwebsockets', 'qtwebchannel', 'qtdoc', 'qtwebview'] %}
 {% endif %}
 
 {% macro env() %}
@@ -60,10 +60,10 @@ def source
     7z rn qt-everywhere-src-{{version}}.zip qt-everywhere-src-{{version}} src
     unzip(qt-everywhere-src-{{version}}.zip, :t=src)
     {% else %}
-    download(https://download.qt.io/archive/qt/5.15/5.15.18/single/qt-everywhere-opensource-src-{{version}}.zip, :cache, :v)
-    #7z rn qt-everywhere-opensource-src-5.15.18.zip qt-everywhere-src-5.15.18 src
-    unzip(qt-everywhere-opensource-src-5.15.18.zip, :t=src)
-    move(qt-everywhere-src-5.15.18, src)
+    download(https://download.qt.io/archive/qt/{{majmin}}/{{version}}/single/qt-everywhere-opensource-src-{{version}}.zip, :cache, :v)
+    #7z rn qt-everywhere-opensource-src-{{version}}.zip qt-everywhere-src-{{version}} src
+    unzip(qt-everywhere-opensource-src-{{version}}.zip, :t=src)
+    move(qt-everywhere-src-{{version}}, src)
     {% endif %}
 
 def configure
@@ -120,12 +120,13 @@ def {{module}}
         ninja {{module}}/all || exit /b
         {% else %}
             {% if platform == "win32-g++" %}
-                mingw32-make module-{{module}}-all -j6
+                mingw32-make module-{{module}}-all
             {% else %}
 
             {% endif %}
         {% endif %}
     popd
+    exit /b
 {% endfor %}
 
 def install
@@ -161,7 +162,7 @@ def main depends on mingw llvm mysql postgresql prepare source configure {{ modu
 github-workflow 1
 workflow-name build-{{compiler}}-{{version}}
 
-output(build-mingw-6.10.0, :platform=win32-g++, :version=6.10.0)
-output(build-msvc-6.10.0, :platform=win32-msvc, :version=6.10.0)
+#output(build-mingw-6.10.0, :platform=win32-g++, :version=6.10.0)
+#output(build-msvc-6.10.0, :platform=win32-msvc, :version=6.10.0)
 output(build-mingw-5.15.18, :platform=win32-g++, :version=5.15.18)
-output(build-msvc-5.15.18, :platform=win32-msvc, :version=5.15.18)
+#output(build-msvc-5.15.18, :platform=win32-msvc, :version=5.15.18)
