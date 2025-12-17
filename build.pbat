@@ -129,7 +129,7 @@ def {{module}}
             ninja {{module}}/all || exit /b
         {% else %}
             {% if platform == "win32-g++" %}
-                mingw32-make module-{{module}} -j4 || exit /b
+                mingw32-make module-{{module}} || exit /b
             {% else %}
 
             {% endif %}
