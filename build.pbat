@@ -3,9 +3,6 @@
 {% set host1 = "qt.mirror.constant.com" %}
 {% set host = "download.qt.io" %}
 
-{% set modules1 = ['qtshadertools', 'qtimageformats', 'qtlanguageserver', 'qtsvg', 'qtserialport', 'qtactiveqt', 'qtdeclarative', 'qtwebsockets', 'qtsensors', 'qttools', 'qtpositioning', 'qtlocation', 'qtquicktimeline', 'qthttpserver', 'qtquick3d', 'qtmultimedia', 'qtquick3dphysics', 'qtgraphs', 'qtdoc'] %}
-{% set modules2 = ["qtbase", "qtdeclarative"] %}
-
 {% if platform == "win32-g++" %}
 {% set subdir = "mingw_64" %}
 {% set compiler = "mingw13" %}
@@ -17,7 +14,7 @@
 {% if maj == "6" %}
 {% set modules = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
 {% else %}
-{% set modules1 = ['qtbase', 'qtactiveqt', 'qtimageformats', 'qtnetworkauth', 'qtserialport', 'qtserialbus', 'qtsvg', 'qtdeclarative', 'qtconnectivity', 'qtlottie', 'qtlocation', 'qtquicktimeline', 'qtquick3d', 'qtmultimedia', 'qt3d', 'qtcharts', 'qtdatavis3d', 'qtremoteobjects', 'qtscxml', 'qtsensors', 'qtspeech', 'qttools', 'qttranslations', 'qtvirtualkeyboard', 'qtwayland', 'qtwebsockets', 'qtwebchannel', 'qtdoc', 'qtwebview'] %}
+{% set modules = ['qtbase', 'qtactiveqt', 'qtimageformats', 'qtnetworkauth', 'qtserialport', 'qtserialbus', 'qtsvg', 'qtdeclarative', 'qtconnectivity', 'qtlottie', 'qtlocation', 'qtquicktimeline', 'qtquick3d', 'qtmultimedia', 'qt3d', 'qtcharts', 'qtdatavis3d', 'qtremoteobjects', 'qtscxml', 'qtsensors', 'qtspeech', 'qttools', 'qttranslations', 'qtvirtualkeyboard', 'qtwayland', 'qtwebsockets', 'qtwebchannel', 'qtdoc', 'qtwebview'] %}
 {% endif %}
 
 {% macro env() %}
