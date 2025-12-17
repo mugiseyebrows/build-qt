@@ -42,7 +42,7 @@ move /y qt-everywhere-src-5.15.18 src
 :source_end
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-    call configure -prefix C:\Qt\5.15.18\mingw_64 -platform win32-g++ -release -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc -plugin-sql-mysql -LC:/mysql-8.2.0-winx64/lib -IC:/mysql-8.2.0-winx64/include
+    call configure -prefix C:\Qt\5.15.18\mingw_64 -platform win32-g++ -release -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc -plugin-sql-mysql -no-feature-d3d12 -LC:/mysql-8.2.0-winx64/lib -IC:/mysql-8.2.0-winx64/include
     type config.summary
 popd
 set LLVM_INSTALL_DIR=C:\llvm19

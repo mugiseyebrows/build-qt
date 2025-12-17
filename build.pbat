@@ -73,7 +73,7 @@ def configure
         call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
         {% else %}
         # -plugin-sql-mysql -IC:/mysql-8.2.0-winx64/include -LC:/mysql-8.2.0-winx64/lib
-        call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} -release -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc -plugin-sql-mysql -LC:/mysql-8.2.0-winx64/lib -IC:/mysql-8.2.0-winx64/include
+        call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} -release -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc -plugin-sql-mysql -no-feature-d3d12 -LC:/mysql-8.2.0-winx64/lib -IC:/mysql-8.2.0-winx64/include
         {% endif %}
         type config.summary
     popd
