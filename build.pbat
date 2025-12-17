@@ -25,18 +25,20 @@
     add_path(C:\Qt\{{version}}\{{subdir}}\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     {% if platform == "win32-g++" %}
-    add_path(C:\mingw1310_64\bin)
-    #set CC=C:\mingw1310_64\bin\gcc
-    #set CXX=C:\mingw1310_64\bin\g++
+        {% if maj == "6" %}
+        add_path(C:\mingw1310_64\bin)
+        {% else %}
+        add_path(C:\mingw1520_64\bin)
+        {% endif %}
     {% else %}
-    call_vcvars()
+        call_vcvars()
     {% endif %}
     add_path(C:\llvm19\bin)
     add_path(C:\protoc\bin)
     {% if maj == "5" %}
-    use(conda)
-    use(python, 3.13)
-    add_path(C:\Windows\System32\WindowsPowerShell\v1.0)
+        use(conda)
+        use(python, 3.13)
+        add_path(C:\Windows\System32\WindowsPowerShell\v1.0)
     {% endif %}
 {% endmacro %}
 
@@ -89,11 +91,17 @@ def llvm
 
 def mingw
     {% if platform == "win32-g++" %}
-    add_path(C:\mingw1310_64\bin)
-    if_exist_return(C:\mingw1310_64\bin\gcc.exe)
-    download(https://github.com/brechtsanders/winlibs_mingw/releases/download/13.1.0-16.0.5-11.0.0-ucrt-r5/winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z, :cache, :v)
-    7z rn winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z mingw64 mingw1310_64
-    unzip(winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z, :t=C:\mingw1310_64\bin\gcc.exe, :o=C:\)
+        {% if maj == "6" %}
+            if_exist_return(C:\mingw1310_64\bin\gcc.exe)
+            download(https://github.com/brechtsanders/winlibs_mingw/releases/download/13.1.0-16.0.5-11.0.0-ucrt-r5/winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z, :cache, :v)
+            7z rn winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z mingw64 mingw1310_64
+            unzip(winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z, :t=C:\mingw1310_64\bin\gcc.exe, :o=C:\)
+        {% else %}
+            if_exist_return(C:\mingw1520_64\bin\gcc.exe)
+            download(https://github.com/brechtsanders/winlibs_mingw/releases/download/15.2.0posix-13.0.0-msvcrt-r4/winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z, :cache, :v)
+            7z rn winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z mingw64 mingw1520_64
+            unzip(winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z, :o=C:\)
+        {% endif %}
     {% else %}
     echo 1
     {% endif %}
@@ -114,10 +122,10 @@ def {{module}}
     {{ env() }}
     pushd src
         {% if maj == "6" %}
-        ninja {{module}}/all || exit /b
+            ninja {{module}}/all || exit /b
         {% else %}
             {% if platform == "win32-g++" %}
-                mingw32-make module-{{module}}-all
+                mingw32-make module-{{module}}
             {% else %}
 
             {% endif %}

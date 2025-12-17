@@ -9,14 +9,14 @@ jobs:
     - name: mingw
       shell: cmd
       run: |
-        set PATH=C:\mingw1310_64\bin;C:\Windows\System32;C:\Program Files\7-Zip;%PATH%
-        if exist C:\mingw1310_64\bin\gcc.exe goto mingw_end
-        if not exist winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z (
-            echo downloading winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z
-            curl -L -o winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z https://github.com/brechtsanders/winlibs_mingw/releases/download/13.1.0-16.0.5-11.0.0-ucrt-r5/winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z
-        )
-        7z rn winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z mingw64 mingw1310_64
-        if not exist C:\mingw1310_64\bin\gcc.exe 7z x -y -oC:\ winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z
+        set PATH=C:\Windows\System32;C:\Program Files\7-Zip;%PATH%
+                if exist C:\mingw1520_64\bin\gcc.exe goto mingw_end
+                if not exist winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z (
+                    echo downloading winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z
+                    curl -L -o winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z https://github.com/brechtsanders/winlibs_mingw/releases/download/15.2.0posix-13.0.0-msvcrt-r4/winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z
+                )
+                7z rn winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z mingw64 mingw1520_64
+                7z x -y -oC:\ winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z
         :mingw_end
     - name: llvm
       shell: cmd
@@ -77,7 +77,7 @@ jobs:
     - name: configure
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
             call configure -prefix C:\Qt\5.15.18\mingw_64 -platform win32-g++ -release -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc
@@ -86,268 +86,268 @@ jobs:
     - name: qtbase
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtbase-all
+                    mingw32-make module-qtbase
         popd
         exit /b
     - name: qtactiveqt
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtactiveqt-all
+                    mingw32-make module-qtactiveqt
         popd
         exit /b
     - name: qtimageformats
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtimageformats-all
+                    mingw32-make module-qtimageformats
         popd
         exit /b
     - name: qtnetworkauth
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtnetworkauth-all
+                    mingw32-make module-qtnetworkauth
         popd
         exit /b
     - name: qtserialport
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtserialport-all
+                    mingw32-make module-qtserialport
         popd
         exit /b
     - name: qtserialbus
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtserialbus-all
+                    mingw32-make module-qtserialbus
         popd
         exit /b
     - name: qtsvg
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtsvg-all
+                    mingw32-make module-qtsvg
         popd
         exit /b
     - name: qtdeclarative
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtdeclarative-all
+                    mingw32-make module-qtdeclarative
         popd
         exit /b
     - name: qtconnectivity
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtconnectivity-all
+                    mingw32-make module-qtconnectivity
         popd
         exit /b
     - name: qtlottie
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtlottie-all
+                    mingw32-make module-qtlottie
         popd
         exit /b
     - name: qtlocation
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtlocation-all
+                    mingw32-make module-qtlocation
         popd
         exit /b
     - name: qtquicktimeline
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtquicktimeline-all
+                    mingw32-make module-qtquicktimeline
         popd
         exit /b
     - name: qtquick3d
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtquick3d-all
+                    mingw32-make module-qtquick3d
         popd
         exit /b
     - name: qtmultimedia
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtmultimedia-all
+                    mingw32-make module-qtmultimedia
         popd
         exit /b
     - name: qt3d
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qt3d-all
+                    mingw32-make module-qt3d
         popd
         exit /b
     - name: qtcharts
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtcharts-all
+                    mingw32-make module-qtcharts
         popd
         exit /b
     - name: qtdatavis3d
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtdatavis3d-all
+                    mingw32-make module-qtdatavis3d
         popd
         exit /b
     - name: qtremoteobjects
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtremoteobjects-all
+                    mingw32-make module-qtremoteobjects
         popd
         exit /b
     - name: qtscxml
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtscxml-all
+                    mingw32-make module-qtscxml
         popd
         exit /b
     - name: qtsensors
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtsensors-all
+                    mingw32-make module-qtsensors
         popd
         exit /b
     - name: qtspeech
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtspeech-all
+                    mingw32-make module-qtspeech
         popd
         exit /b
     - name: qttools
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qttools-all
+                    mingw32-make module-qttools
         popd
         exit /b
     - name: qttranslations
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qttranslations-all
+                    mingw32-make module-qttranslations
         popd
         exit /b
     - name: qtvirtualkeyboard
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtvirtualkeyboard-all
+                    mingw32-make module-qtvirtualkeyboard
         popd
         exit /b
     - name: qtwayland
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtwayland-all
+                    mingw32-make module-qtwayland
         popd
         exit /b
     - name: qtwebsockets
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtwebsockets-all
+                    mingw32-make module-qtwebsockets
         popd
         exit /b
     - name: qtwebchannel
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtwebchannel-all
+                    mingw32-make module-qtwebchannel
         popd
         exit /b
     - name: qtdoc
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtdoc-all
+                    mingw32-make module-qtdoc
         popd
         exit /b
     - name: qtwebview
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
-                    mingw32-make module-qtwebview-all
+                    mingw32-make module-qtwebview
         popd
         exit /b
     - name: install
       shell: cmd
       run: |
-        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1310_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        set PATH=C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
                     mingw32-make install

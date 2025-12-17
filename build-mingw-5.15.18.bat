@@ -1,13 +1,13 @@
 @echo off
 rem This file is generated from build.pbat, all edits will be lost
-set PATH=C:\mingw1310_64\bin;C:\Windows\System32;C:\Program Files\7-Zip;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda3;C:\Miniconda3\Scripts;%USERPROFILE%\Miniconda3;%USERPROFILE%\Miniconda3\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
-if exist C:\mingw1310_64\bin\gcc.exe goto mingw_end
-if not exist winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z (
-    echo downloading winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z
-    curl -L -o winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z https://github.com/brechtsanders/winlibs_mingw/releases/download/13.1.0-16.0.5-11.0.0-ucrt-r5/winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z
-)
-7z rn winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z mingw64 mingw1310_64
-if not exist C:\mingw1310_64\bin\gcc.exe 7z x -y -oC:\ winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z
+set PATH=C:\Windows\System32;C:\Program Files\7-Zip;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\mingw1520_64\bin;C:\llvm19\bin;C:\protoc\bin;C:\Miniconda3;C:\Miniconda3\Scripts;%USERPROFILE%\Miniconda3;%USERPROFILE%\Miniconda3\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;%PATH%
+        if exist C:\mingw1520_64\bin\gcc.exe goto mingw_end
+        if not exist winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z (
+            echo downloading winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z
+            curl -L -o winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z https://github.com/brechtsanders/winlibs_mingw/releases/download/15.2.0posix-13.0.0-msvcrt-r4/winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z
+        )
+        7z rn winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z mingw64 mingw1520_64
+        7z x -y -oC:\ winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z
 :mingw_end
 if exist C:\llvm19\bin\clang.exe goto llvm_end
 if not exist llvm19-mingw.7z (
@@ -53,147 +53,147 @@ pushd src
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtbase-all
+            mingw32-make module-qtbase
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtactiveqt-all
+            mingw32-make module-qtactiveqt
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtimageformats-all
+            mingw32-make module-qtimageformats
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtnetworkauth-all
+            mingw32-make module-qtnetworkauth
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtserialport-all
+            mingw32-make module-qtserialport
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtserialbus-all
+            mingw32-make module-qtserialbus
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtsvg-all
+            mingw32-make module-qtsvg
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtdeclarative-all
+            mingw32-make module-qtdeclarative
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtconnectivity-all
+            mingw32-make module-qtconnectivity
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtlottie-all
+            mingw32-make module-qtlottie
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtlocation-all
+            mingw32-make module-qtlocation
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtquicktimeline-all
+            mingw32-make module-qtquicktimeline
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtquick3d-all
+            mingw32-make module-qtquick3d
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtmultimedia-all
+            mingw32-make module-qtmultimedia
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qt3d-all
+            mingw32-make module-qt3d
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtcharts-all
+            mingw32-make module-qtcharts
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtdatavis3d-all
+            mingw32-make module-qtdatavis3d
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtremoteobjects-all
+            mingw32-make module-qtremoteobjects
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtscxml-all
+            mingw32-make module-qtscxml
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtsensors-all
+            mingw32-make module-qtsensors
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtspeech-all
+            mingw32-make module-qtspeech
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qttools-all
+            mingw32-make module-qttools
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qttranslations-all
+            mingw32-make module-qttranslations
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtvirtualkeyboard-all
+            mingw32-make module-qtvirtualkeyboard
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtwayland-all
+            mingw32-make module-qtwayland
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtwebsockets-all
+            mingw32-make module-qtwebsockets
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtwebchannel-all
+            mingw32-make module-qtwebchannel
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtdoc-all
+            mingw32-make module-qtdoc
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtwebview-all
+            mingw32-make module-qtwebview
 popd
 exit /b
 set LLVM_INSTALL_DIR=C:\llvm19
