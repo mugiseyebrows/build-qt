@@ -1,6 +1,11 @@
 @echo off
 rem This file is generated from build.pbat, all edits will be lost
 set PATH=C:\Windows\System32;C:\Program Files\7-Zip;C:\mingw1520_64\bin;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\Miniconda3;C:\Miniconda3\Scripts;%USERPROFILE%\Miniconda3;%USERPROFILE%\Miniconda3\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;C:\llvm19\bin;%PATH%
+if exist "C:\Program Files\Git\usr\bin\patch.exe" set PATCH=C:\Program Files\Git\usr\bin\patch.exe
+if not defined PATCH (
+echo PATCH not found
+exit /b
+)
         if exist C:\mingw1520_64\bin\gcc.exe goto mingw_end
         if not exist winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z (
             echo downloading winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z
@@ -41,6 +46,10 @@ if not exist src 7z x -y qt-everywhere-opensource-src-5.15.18.zip
 move /y qt-everywhere-src-5.15.18 src
 :source_end
 set LLVM_INSTALL_DIR=C:\llvm19
+pushd src\qtmultimedia
+    "%PATCH%" -N -p1 -i ../../0001-fix-wmf-plugin.patch
+popd
+exit /b
 pushd src
     call configure -prefix C:\Qt\5.15.18\mingw_64 -platform win32-g++ -release -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc -plugin-sql-mysql -no-feature-d3d12 -LC:/mysql-8.2.0-winx64/lib -IC:/mysql-8.2.0-winx64/include
     type config.summary
@@ -48,6 +57,10 @@ popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
             mingw32-make module-qtbase || exit /b
+popd
+set LLVM_INSTALL_DIR=C:\llvm19
+pushd src
+            mingw32-make module-qtmultimedia || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
@@ -92,10 +105,6 @@ popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
             mingw32-make module-qtquick3d || exit /b
-popd
-set LLVM_INSTALL_DIR=C:\llvm19
-pushd src
-            mingw32-make module-qtmultimedia || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src

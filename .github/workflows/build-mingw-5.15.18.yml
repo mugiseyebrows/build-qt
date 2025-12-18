@@ -70,7 +70,16 @@ jobs:
       shell: cmd
       run: |
         set PATH=C:\mingw1520_64\bin;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;C:\llvm19\bin;%PATH%
+        if exist "C:\Program Files\Git\usr\bin\patch.exe" set PATCH=C:\Program Files\Git\usr\bin\patch.exe
+        if not defined PATCH (
+        echo PATCH not found
+        exit /b
+        )
         set LLVM_INSTALL_DIR=C:\llvm19
+        pushd src\qtmultimedia
+            "%PATCH%" -N -p1 -i ../../0001-fix-wmf-plugin.patch
+        popd
+        exit /b
         pushd src
             call configure -prefix C:\Qt\5.15.18\mingw_64 -platform win32-g++ -release -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc -plugin-sql-mysql -no-feature-d3d12 -LC:/mysql-8.2.0-winx64/lib -IC:/mysql-8.2.0-winx64/include
             type config.summary
@@ -82,6 +91,14 @@ jobs:
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
                     mingw32-make module-qtbase || exit /b
+        popd
+    - name: qtmultimedia
+      shell: cmd
+      run: |
+        set PATH=C:\mingw1520_64\bin;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;C:\llvm19\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        pushd src
+                    mingw32-make module-qtmultimedia || exit /b
         popd
     - name: qtactiveqt
       shell: cmd
@@ -170,14 +187,6 @@ jobs:
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
                     mingw32-make module-qtquick3d || exit /b
-        popd
-    - name: qtmultimedia
-      shell: cmd
-      run: |
-        set PATH=C:\mingw1520_64\bin;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;C:\llvm19\bin;%PATH%
-        set LLVM_INSTALL_DIR=C:\llvm19
-        pushd src
-                    mingw32-make module-qtmultimedia || exit /b
         popd
     - name: qt3d
       shell: cmd

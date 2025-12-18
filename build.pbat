@@ -14,7 +14,7 @@
 {% if maj == "6" %}
 {% set modules = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
 {% else %}
-{% set modules = ['qtbase', 'qtactiveqt', 'qtimageformats', 'qtnetworkauth', 'qtserialport', 'qtserialbus', 'qtsvg', 'qtdeclarative', 'qtconnectivity', 'qtlottie', 'qtquicktimeline', 'qtquick3d', 'qtmultimedia', 'qt3d', 'qtcharts', 'qtdatavis3d', 'qtremoteobjects', 'qtscxml', 'qtsensors', 'qtspeech', 'qttools', 'qttranslations', 'qtvirtualkeyboard', 'qtwayland', 'qtwebsockets', 'qtwebchannel', 'qtdoc', 'qtwebview'] %}
+{% set modules = ['qtbase', 'qtmultimedia', 'qtactiveqt', 'qtimageformats', 'qtnetworkauth', 'qtserialport', 'qtserialbus', 'qtsvg', 'qtdeclarative', 'qtconnectivity', 'qtlottie', 'qtquicktimeline', 'qtquick3d', 'qt3d', 'qtcharts', 'qtdatavis3d', 'qtremoteobjects', 'qtscxml', 'qtsensors', 'qtspeech', 'qttools', 'qttranslations', 'qtvirtualkeyboard', 'qtwayland', 'qtwebsockets', 'qtwebchannel', 'qtdoc', 'qtwebview'] %}
 {% endif %}
 
 {% macro env() %}
@@ -67,6 +67,12 @@ def source
 
 def configure
     {{ env() }}
+    {% if maj == "5" %}
+    pushd src\qtmultimedia
+        patch(../../0001-fix-wmf-plugin.patch, :N, :p1)
+    popd
+    exit /b
+    {% endif %}
     pushd src
         # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
         {% if maj == "6" %}
@@ -169,6 +175,7 @@ def main depends on mingw llvm mysql postgresql prepare source configure {{ modu
     github_release(libclang-{{compiler}}.7z)
 
 github-workflow 1
+env-policy 1
 workflow-name build-{{compiler}}-{{version}}
 
 #output(build-mingw-6.10.0, :platform=win32-g++, :version=6.10.0)
