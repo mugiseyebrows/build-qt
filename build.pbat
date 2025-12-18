@@ -71,7 +71,6 @@ def configure
     pushd src\qtmultimedia
         patch(../../0001-fix-wmf-plugin.patch, :N, :p1)
     popd
-    exit /b
     {% endif %}
     pushd src
         # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
