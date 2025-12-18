@@ -87,10 +87,6 @@ pushd src
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtlocation || exit /b
-popd
-set LLVM_INSTALL_DIR=C:\llvm19
-pushd src
             mingw32-make module-qtquicktimeline || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
