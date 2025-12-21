@@ -71,6 +71,9 @@ def configure
     pushd src\qtmultimedia
         patch(../../0001-fix-wmf-plugin.patch, :N, :p1)
     popd
+    pushd src\qttools
+        patch(../../004-fix-build-with-gcc-14.patch, :N, :p1)
+    popd
     {% endif %}
     pushd src
         # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON

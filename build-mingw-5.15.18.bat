@@ -49,6 +49,9 @@ set LLVM_INSTALL_DIR=C:\llvm19
 pushd src\qtmultimedia
     "%PATCH%" -N -p1 -i ../../0001-fix-wmf-plugin.patch
 popd
+pushd src\qttools
+    "%PATCH%" -N -p1 -i ../../004-fix-build-with-gcc-14.patch
+popd
 pushd src
     call configure -prefix C:\Qt\5.15.18\mingw_64 -platform win32-g++ -release -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc -plugin-sql-mysql -no-feature-d3d12 -LC:/mysql-8.2.0-winx64/lib -IC:/mysql-8.2.0-winx64/include
     type config.summary
