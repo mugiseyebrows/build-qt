@@ -62,6 +62,10 @@ pushd src
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
+            mingw32-make module-qttools || exit /b
+popd
+set LLVM_INSTALL_DIR=C:\llvm19
+pushd src
             mingw32-make module-qtmultimedia || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
@@ -135,10 +139,6 @@ popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
             mingw32-make module-qtspeech || exit /b
-popd
-set LLVM_INSTALL_DIR=C:\llvm19
-pushd src
-            mingw32-make module-qttools || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src

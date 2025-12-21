@@ -14,7 +14,7 @@
 {% if maj == "6" %}
 {% set modules = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
 {% else %}
-{% set modules = ['qtbase', 'qtmultimedia', 'qtactiveqt', 'qtimageformats', 'qtnetworkauth', 'qtserialport', 'qtserialbus', 'qtsvg', 'qtdeclarative', 'qtconnectivity', 'qtlottie', 'qtquicktimeline', 'qtquick3d', 'qt3d', 'qtcharts', 'qtdatavis3d', 'qtremoteobjects', 'qtscxml', 'qtsensors', 'qtspeech', 'qttools', 'qttranslations', 'qtvirtualkeyboard', 'qtwayland', 'qtwebsockets', 'qtwebchannel', 'qtdoc', 'qtwebview'] %}
+{% set modules = ['qtbase', 'qttools', 'qtmultimedia', 'qtactiveqt', 'qtimageformats', 'qtnetworkauth', 'qtserialport', 'qtserialbus', 'qtsvg', 'qtdeclarative', 'qtconnectivity', 'qtlottie', 'qtquicktimeline', 'qtquick3d', 'qt3d', 'qtcharts', 'qtdatavis3d', 'qtremoteobjects', 'qtscxml', 'qtsensors', 'qtspeech', 'qttranslations', 'qtvirtualkeyboard', 'qtwayland', 'qtwebsockets', 'qtwebchannel', 'qtdoc', 'qtwebview'] %}
 {% endif %}
 
 {% macro env() %}

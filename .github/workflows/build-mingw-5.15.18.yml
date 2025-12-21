@@ -94,6 +94,14 @@ jobs:
         pushd src
                     mingw32-make module-qtbase || exit /b
         popd
+    - name: qttools
+      shell: cmd
+      run: |
+        set PATH=C:\mingw1520_64\bin;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;C:\llvm19\bin;%PATH%
+        set LLVM_INSTALL_DIR=C:\llvm19
+        pushd src
+                    mingw32-make module-qttools || exit /b
+        popd
     - name: qtmultimedia
       shell: cmd
       run: |
@@ -245,14 +253,6 @@ jobs:
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
                     mingw32-make module-qtspeech || exit /b
-        popd
-    - name: qttools
-      shell: cmd
-      run: |
-        set PATH=C:\mingw1520_64\bin;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\5.15.18\mingw_64\bin;C:\Miniconda;C:\Miniconda\Scripts;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\Windows\System32\WindowsPowerShell\v1.0;C:\llvm19\bin;%PATH%
-        set LLVM_INSTALL_DIR=C:\llvm19
-        pushd src
-                    mingw32-make module-qttools || exit /b
         popd
     - name: qttranslations
       shell: cmd
