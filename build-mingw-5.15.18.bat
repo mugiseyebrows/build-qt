@@ -58,115 +58,115 @@ pushd src
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtbase || exit /b
+            mingw32-make module-qtbase -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qttools || exit /b
+            mingw32-make module-qttools -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtmultimedia || exit /b
+            mingw32-make module-qtmultimedia -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtactiveqt || exit /b
+            mingw32-make module-qtactiveqt -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtimageformats || exit /b
+            mingw32-make module-qtimageformats -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtnetworkauth || exit /b
+            mingw32-make module-qtnetworkauth -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtserialport || exit /b
+            mingw32-make module-qtserialport -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtserialbus || exit /b
+            mingw32-make module-qtserialbus -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtsvg || exit /b
+            mingw32-make module-qtsvg -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtdeclarative || exit /b
+            mingw32-make module-qtdeclarative -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtconnectivity || exit /b
+            mingw32-make module-qtconnectivity -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtlottie || exit /b
+            mingw32-make module-qtlottie -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtquicktimeline || exit /b
+            mingw32-make module-qtquicktimeline -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtquick3d || exit /b
+            mingw32-make module-qtquick3d -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qt3d || exit /b
+            mingw32-make module-qt3d -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtcharts || exit /b
+            mingw32-make module-qtcharts -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtdatavis3d || exit /b
+            mingw32-make module-qtdatavis3d -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtremoteobjects || exit /b
+            mingw32-make module-qtremoteobjects -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtscxml || exit /b
+            mingw32-make module-qtscxml -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtsensors || exit /b
+            mingw32-make module-qtsensors -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtspeech || exit /b
+            mingw32-make module-qtspeech -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qttranslations || exit /b
+            mingw32-make module-qttranslations -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtvirtualkeyboard || exit /b
+            mingw32-make module-qtvirtualkeyboard -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtwayland || exit /b
+            mingw32-make module-qtwayland -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtwebsockets || exit /b
+            mingw32-make module-qtwebsockets -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtwebchannel || exit /b
+            mingw32-make module-qtwebchannel -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtdoc || exit /b
+            mingw32-make module-qtdoc -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
-            mingw32-make module-qtwebview || exit /b
+            mingw32-make module-qtwebview -j5 || exit /b
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
@@ -178,4 +178,3 @@ mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\5.1
 mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\5.15.18\mingw_64\bin
 copy /y src\config.summary C:\Qt\5.15.18\mingw_64
 7z a -y Qt-5.15.18-mingw13.7z C:\Qt\5.15.18\mingw_64
-7z a -y libclang-mingw13.7z C:\llvm19\bin\libclang.dll

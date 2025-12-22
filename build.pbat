@@ -137,7 +137,7 @@ def {{module}}
             ninja {{module}}/all || exit /b
         {% else %}
             {% if platform == "win32-g++" %}
-                mingw32-make module-{{module}} || exit /b
+                mingw32-make module-{{module}} -j5 || exit /b
             {% else %}
 
             {% endif %}
@@ -171,10 +171,16 @@ def main depends on mingw llvm mysql postgresql prepare source configure {{ modu
     github_checkout()
     copy(src\config.summary, C:\Qt\{{version}}\{{subdir}})
     zip(Qt-{{version}}-{{compiler}}.7z, C:\Qt\{{version}}\{{subdir}})
-    zip(libclang-{{compiler}}.7z, C:\llvm19\bin\libclang.dll)
     github_upload(C:\Qt\{{version}}\{{subdir}}, :n=Qt-{{version}}-{{compiler}})
     github_release(Qt-{{version}}-{{compiler}}.7z)
+    {% if maj == "6" %}
+    zip(libclang-{{compiler}}.7z, C:\llvm19\bin\libclang.dll)
     github_release(libclang-{{compiler}}.7z)
+    {% else %}
+
+    {% endif %}
+
+
 
 github-workflow 1
 env-policy 1
