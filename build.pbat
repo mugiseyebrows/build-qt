@@ -2,6 +2,7 @@
 {% set maj = version.split(".")[0] %}
 {% set host1 = "qt.mirror.constant.com" %}
 {% set host = "download.qt.io" %}
+{% set mode = "-debug" %}
 
 {% if platform == "win32-g++" %}
 {% set subdir = "mingw_64" %}
@@ -11,14 +12,13 @@
 {% set compiler = "msvc2020" %}
 {% endif %}
 
-{% if maj == "6" %}
-{% set modules = ["qtbase", "qtactiveqt", "qtcoap", "qtimageformats", "qtlanguageserver", "qtnetworkauth", "qtserialport", "qtserialbus", "qtshadertools", "qtsvg", "qtdeclarative", "qt5compat", "qtconnectivity", "qtgrpc", "qtlottie", "qtmqtt", "qtopcua", "qtpositioning", "qtlocation", "qtquicktimeline", "qtquick3d", "qtgraphs", "qtmultimedia", "qt3d", "qtcharts", "qtdatavis3d", "qtquick3dphysics", "qtquickeffectmaker", "qtremoteobjects", "qtscxml", "qtsensors", "qtspeech", "qttools", "qttranslations", "qtvirtualkeyboard", "qtwayland", "qtwebsockets", "qthttpserver", "qtwebchannel", "qtdoc", "qtwebview"] %}
-{% else %}
-{% set modules = ['qtbase', 'qttools', 'qtmultimedia', 'qtactiveqt', 'qtimageformats', 'qtnetworkauth', 'qtserialport', 'qtserialbus', 'qtsvg', 'qtdeclarative', 'qtconnectivity', 'qtlottie', 'qtquicktimeline', 'qtquick3d', 'qt3d', 'qtcharts', 'qtdatavis3d', 'qtremoteobjects', 'qtscxml', 'qtsensors', 'qtspeech', 'qttranslations', 'qtvirtualkeyboard', 'qtwayland', 'qtwebsockets', 'qtwebchannel', 'qtdoc', 'qtwebview'] %}
-{% endif %}
+{% set qtdir = "C:\\Qt\\" + version + "\\" + subdir %}
 
 {% macro env() %}
     # call pull-mysql
+    clear_path()
+    use(git)
+    use(7z)
     {% if platform == "win32-g++" %}
         {% if maj == "6" %}
         add_path(C:\mingw1310_64\bin)
@@ -26,7 +26,8 @@
         add_path(C:\mingw1520_64\bin)
         {% endif %}
     {% else %}
-        call_vcvars()
+        #where cl || call vcvars64.bat
+        use(python, 3.13)
     {% endif %}
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
@@ -65,8 +66,9 @@ def source
     move(qt-everywhere-src-{{version}}, src)
     {% endif %}
 
-def configure
+def build
     {{ env() }}
+    call_vcvars()
     {% if maj == "5" %}
     pushd src\qtmultimedia
         patch(../../0001-fix-wmf-plugin.patch, :N, :p1)
@@ -78,12 +80,30 @@ def configure
     pushd src
         # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
         {% if maj == "6" %}
-        call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} -release -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
+        patch(../0001-missin-min-and-max-def.patch, :N, :p1)
+        # call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} {{mode}} -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
+
+        call configure -prefix C:\Qt\{{version}}\{{subdir}} -opensource -confirm-license -shared -platform {{ platform }} -opengl desktop {{ mode }} -submodules qtbase -nomake tests -nomake examples -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
+        
         {% else %}
         # -plugin-sql-mysql -IC:/mysql-8.2.0-winx64/include -LC:/mysql-8.2.0-winx64/lib
-        call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} -release -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc -plugin-sql-mysql -no-feature-d3d12 -LC:/mysql-8.2.0-winx64/lib -IC:/mysql-8.2.0-winx64/include
+        call configure -prefix {{qtdir}} -platform {{platform}} {{mode}} -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc -plugin-sql-mysql -no-feature-d3d12 -LC:/mysql-8.2.0-winx64/lib -IC:/mysql-8.2.0-winx64/include
         {% endif %}
         type config.summary
+
+        {% if maj == "6" %}
+            cmake --build .
+            #cmake --install .
+        {% else %}
+            {% if platform == "win32-g++" %}
+                mingw32-make -j4 || exit /b
+                #mingw32-make docs || exit /b
+            {% else %}
+                nmake || exit /b
+                #nmake docs || exit /b
+                #nmake install || exit /b
+            {% endif %}
+        {% endif %}
     popd
 
 def llvm
@@ -129,32 +149,16 @@ def postgresql
     7z rn postgresql-14.12-2-windows-x64-binaries.zip pgsql postgresql-14
     unzip(postgresql-14.12-2-windows-x64-binaries.zip, :o=C:\)
 
-{% for module in modules %}
-def {{module}}
-    {{ env() }}
-    pushd src
-        {% if maj == "6" %}
-            ninja {{module}}/all || exit /b
-        {% else %}
-            {% if platform == "win32-g++" %}
-                mingw32-make module-{{module}} -j5 || exit /b
-            {% else %}
-
-            {% endif %}
-        {% endif %}
-    popd
-{% endfor %}
-
 def install
     {{ env() }}
     pushd src
         {% if maj == "6" %}
-        ninja install
+            cmake --install .
         {% else %}
             {% if platform == "win32-g++" %}
                 mingw32-make install
             {% else %}
-
+                nmake install
             {% endif %}
         {% endif %}
     popd
@@ -167,11 +171,11 @@ def install
     # libclang.dll is huge
     # mugideploy copy-dep --bin C:\Qt\{{version}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{version}}\{{subdir}}\bin
 
-def main depends on mingw llvm mysql postgresql prepare source configure {{ modules | join(' ') }} install
+def main depends on mingw llvm mysql postgresql prepare source build install
     github_checkout()
-    copy(src\config.summary, C:\Qt\{{version}}\{{subdir}})
-    zip(Qt-{{version}}-{{compiler}}.7z, C:\Qt\{{version}}\{{subdir}})
-    github_upload(C:\Qt\{{version}}\{{subdir}}, :n=Qt-{{version}}-{{compiler}})
+    copy(src\config.summary, {{qtdir}})
+    zip(Qt-{{version}}-{{compiler}}.7z, {{qtdir}})
+    github_upload({{qtdir}}, :n=Qt-{{version}}-{{compiler}})
     github_release(Qt-{{version}}-{{compiler}}.7z)
     {% if maj == "6" %}
     zip(libclang-{{compiler}}.7z, C:\llvm19\bin\libclang.dll)
@@ -187,6 +191,6 @@ env-policy 1
 workflow-name build-{{compiler}}-{{version}}
 
 #output(build-mingw-6.10.0, :platform=win32-g++, :version=6.10.0)
-#output(build-msvc-6.10.0, :platform=win32-msvc, :version=6.10.0)
+output(build-msvc-6.10.0, :platform=win32-msvc, :version=6.10.0)
 output(build-mingw-5.15.18, :platform=win32-g++, :version=5.15.18)
 #output(build-msvc-5.15.18, :platform=win32-msvc, :version=5.15.18)
