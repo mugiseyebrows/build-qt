@@ -2,7 +2,7 @@
 {% set maj = version.split(".")[0] %}
 {% set host1 = "qt.mirror.constant.com" %}
 {% set host = "download.qt.io" %}
-{% set mode = "-debug" %}
+{% set mode = "-release" %}
 
 {% if platform == "win32-g++" %}
 {% set subdir = "mingw_64" %}
@@ -32,7 +32,8 @@
     add_path(C:\mysql-8.2.0-winx64\bin)
     add_path(C:\mysql-8.2.0-winx64\lib)
     add_path(C:\postgresql-14\bin)
-    add_path(C:\Qt\{{version}}\{{subdir}}\bin)
+    add_path({{qtdir}}\bin)
+    add_path(C:\icu\bin)
     set LLVM_INSTALL_DIR=C:\llvm19
     #add_path(C:\protoc\bin)
     {% if maj == "5" %}
@@ -61,14 +62,20 @@ def source
     unzip(qt-everywhere-src-{{version}}.zip, :t=src)
     {% else %}
     download(https://download.qt.io/archive/qt/{{majmin}}/{{version}}/single/qt-everywhere-opensource-src-{{version}}.zip, :cache, :v)
-    #7z rn qt-everywhere-opensource-src-{{version}}.zip qt-everywhere-src-{{version}} src
+    7z rn qt-everywhere-opensource-src-{{version}}.zip qt-everywhere-src-{{version}} src
     unzip(qt-everywhere-opensource-src-{{version}}.zip, :t=src)
     move(qt-everywhere-src-{{version}}, src)
     {% endif %}
 
 def build
     {{ env() }}
+
+    {% if platform == "win32-g++" %}
+
+    {% else %}
     call_vcvars()
+    {% endif %}
+
     {% if maj == "5" %}
     pushd src\qtmultimedia
         patch(../../0001-fix-wmf-plugin.patch, :N, :p1)
@@ -83,7 +90,10 @@ def build
         patch(../0001-missin-min-and-max-def.patch, :N, :p1)
         # call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} {{mode}} -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
 
-        call configure -prefix C:\Qt\{{version}}\{{subdir}} -opensource -confirm-license -shared -platform {{ platform }} -opengl desktop {{ mode }} -submodules qtbase -nomake tests -nomake examples -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
+        # tiny
+        call configure -prefix {{qtdir}} -opensource -confirm-license -shared -platform {{ platform }} -opengl desktop {{ mode }} -submodules qtbase,qtimageformats -nomake tests -nomake examples -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -DICU_ROOT=C:/icu
+        # full
+        
         
         {% else %}
         # -plugin-sql-mysql -IC:/mysql-8.2.0-winx64/include -LC:/mysql-8.2.0-winx64/lib
@@ -92,8 +102,7 @@ def build
         type config.summary
 
         {% if maj == "6" %}
-            cmake --build .
-            #cmake --install .
+            cmake --build . || exit /b
         {% else %}
             {% if platform == "win32-g++" %}
                 mingw32-make -j4 || exit /b
@@ -171,7 +180,7 @@ def install
     # libclang.dll is huge
     # mugideploy copy-dep --bin C:\Qt\{{version}}\{{subdir}}\bin\qdoc.exe --dst C:\Qt\{{version}}\{{subdir}}\bin
 
-def main depends on mingw llvm mysql postgresql prepare source build install
+def main depends on mingw mysql postgresql prepare source build install
     github_checkout()
     copy(src\config.summary, {{qtdir}})
     zip(Qt-{{version}}-{{compiler}}.7z, {{qtdir}})
@@ -190,6 +199,7 @@ github-workflow 1
 env-policy 1
 workflow-name build-{{compiler}}-{{version}}
 
+output(build-mingw-6.11.0, :platform=win32-g++, :version=6.11.0)
 #output(build-mingw-6.10.0, :platform=win32-g++, :version=6.10.0)
 output(build-msvc-6.10.0, :platform=win32-msvc, :version=6.10.0)
 output(build-mingw-5.15.18, :platform=win32-g++, :version=5.15.18)
