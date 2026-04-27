@@ -47,6 +47,7 @@ pushd src
 popd
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src
+        cmake --install .
 popd
 python -c "import mugideploy" || python -m pip install "mugideploy"
 mugideploy copy-dep --bin C:\Qt\6.10.0\msvc2020_64\bin\qmake.exe --dst C:\Qt\6.10.0\msvc2020_64\bin

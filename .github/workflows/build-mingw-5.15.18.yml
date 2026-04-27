@@ -1,5 +1,8 @@
 name: build-mingw13-5.15.18
-on: push
+on:
+  release:
+    types:
+    - created
 jobs:
   main:
     runs-on: windows-latest

@@ -196,6 +196,7 @@ def main depends on mingw mysql postgresql prepare source build install
 
 
 github-workflow 1
+github-on release
 env-policy 1
 workflow-name build-{{compiler}}-{{version}}
 

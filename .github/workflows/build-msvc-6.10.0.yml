@@ -1,5 +1,8 @@
 name: build-msvc2020-6.10.0
-on: push
+on:
+  release:
+    types:
+    - created
 jobs:
   main:
     runs-on: windows-latest
@@ -77,6 +80,7 @@ jobs:
         set PATH=C:\Program Files\Git\cmd;C:\Program Files\7-Zip;%LOCALAPPDATA%\Programs\Python\Python313;%LOCALAPPDATA%\Programs\Python\Python313\Scripts;C:\Python313;C:\Python313\Scripts;C:\mysql-8.2.0-winx64\bin;C:\mysql-8.2.0-winx64\lib;C:\postgresql-14\bin;C:\Qt\6.10.0\msvc2020_64\bin;C:\icu\bin;C:\llvm19\bin;C:\Miniconda;C:\Miniconda\Scripts;C:\Windows;C:\Windows\System32
         set LLVM_INSTALL_DIR=C:\llvm19
         pushd src
+                cmake --install .
         popd
         python -c "import mugideploy" || python -m pip install "mugideploy"
         mugideploy copy-dep --bin C:\Qt\6.10.0\msvc2020_64\bin\qmake.exe --dst C:\Qt\6.10.0\msvc2020_64\bin
