@@ -1,0 +1,98 @@
+{% set majmin = version.rsplit(".", 1)[0] %}
+{% set maj = version.split(".")[0] %}
+{% set host1 = "qt.mirror.constant.com" %}
+{% set host = "download.qt.io" %}
+{% set mode = "-release" %}
+
+{% if platform == "win32-g++" %}
+{% set subdir = "mingw_64" %}
+{% else %}
+{% set subdir = "msvc2020_64" %}
+{% endif %}
+
+{% set qtdir = "C:\\Qt\\" + version + "\\" + subdir %}
+
+{% macro env() %}
+    clear_path()
+    use(git)
+    use(7z)
+    {% if platform == "win32-g++" %}
+        #set CC=C:\mingw13\mingw64\bin\gcc.exe
+        #set CXX=C:\mingw13\mingw64\bin\g++.exe
+        add_path(C:\mingw13\mingw64\bin)
+    {% else %}
+        call_vcvars()
+    {% endif %}
+    add_path(C:\mysql-8.2.0-winx64\bin)
+    add_path(C:\mysql-8.2.0-winx64\lib)
+    add_path(C:\pgsql\bin)
+    add_path({{qtdir}}\bin)
+    add_path(C:\icu\bin)
+{% endmacro %}
+
+def source
+    if_exist_return(qt-everywhere-src-{{version}})
+    download(https://{{host}}/official_releases/qt/{{majmin}}/{{version}}/single/qt-everywhere-src-{{version}}.zip, :cache, :v)
+    unzip(qt-everywhere-src-{{version}}.zip)
+    
+def build
+    mkdir(build)
+    {{ env() }}
+    pushd build
+        # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
+        # no qml
+        # -DBUILD_qtdeclarative=OFF -DBUILD_qtquicktimeline=OFF -DBUILD_qtquick3d=OFF -DBUILD_qtcanvaspainter=OFF -DBUILD_qtgraphs=OFF -DBUILD_qtlocation=OFF -DBUILD_qtquick3dphysics=OFF -DBUILD_qtdoc=OFF -DBUILD_qtlottie=OFF -DBUILD_qtmqtt=OFF -DBUILD_qtopcua=OFF -DBUILD_qtquickeffectmaker=OFF -DBUILD_qtvirtualkeyboard=OFF -DBUILD_qtwebview=OFF
+        # tiny
+        # -submodules qtbase,qtimageformats,qtactiveqt,qtserialport,qtsvg
+        call ..\qt-everywhere-src-{{version}}\configure -prefix {{qtdir}} -opensource -confirm-license -shared -platform {{ platform }} -opengl desktop {{ mode }} -icu -submodules qtbase,qtimageformats,qtactiveqt,qtserialport,qtsvg -nomake tests -nomake examples -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/pgsql -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -DICU_ROOT=C:/icu -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
+        cmake --build . || exit /b
+    popd
+
+def mingw
+    {% if platform == "win32-g++" %}
+    if_exist_return(C:\mingw13\mingw64\bin\gcc.exe)
+    download(https://github.com/brechtsanders/winlibs_mingw/releases/download/13.1.0-16.0.5-11.0.0-ucrt-r5/winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z, :cache, :v)
+    unzip(winlibs-x86_64-posix-seh-gcc-13.1.0-mingw-w64ucrt-11.0.0-r5.7z, :t=C:\mingw13\mingw64\bin\gcc.exe, :o=C:\mingw13)
+    {% else %} 
+    echo 1
+    {% endif %}
+
+def mysql
+    if_exist_return(C:\mysql-8.2.0-winx64\bin\mysql.exe)
+    download(https://cdn.mysql.com/Downloads/MySQL-8.2/mysql-8.2.0-winx64.zip, :cache, :v)
+    unzip(mysql-8.2.0-winx64.zip, :o=C:\)
+
+def postgresql
+    if_exist_return(C:\pgsql\bin\psql.exe)
+    download(https://get.enterprisedb.com/postgresql/postgresql-14.12-2-windows-x64-binaries.zip, :cache, :v)
+    unzip(postgresql-14.12-2-windows-x64-binaries.zip, :o=C:\)
+
+def install
+    {{ env() }}
+    pushd build
+        cmake --install .
+    popd
+    use(python, 3.13)
+    pip_install(mugideploy)
+    mugideploy copy-dep --bin C:\Qt\{{version}}\{{subdir}}\bin\qmake.exe --dst C:\Qt\{{version}}\{{subdir}}\bin
+    mugideploy copy-dep --bin C:\mysql-8.2.0-winx64\lib\libmysql.dll --dst C:\Qt\{{version}}\{{subdir}}\bin
+    mugideploy copy-dep --bin C:\postgresql-14\lib\libpq.dll --dst C:\Qt\{{version}}\{{subdir}}\bin
+
+def main depends on mingw mysql postgresql source build install
+    github_checkout()
+    copy(src\config.summary, {{qtdir}})
+    zip(Qt-{{version}}-{{subdir}}.7z, {{qtdir}})
+    github_upload({{qtdir}}, :n=Qt-{{version}}-{{subdir}})
+    github_release(Qt-{{version}}-{{subdir}}.7z)
+    zip(libclang-{{subdir}}.7z, C:\llvm19\bin\libclang.dll)
+    github_release(libclang-{{subdir}}.7z)
+    
+github-workflow 0
+github-on release
+env-policy 1
+workflow-name build-{{subdir}}-{{version}}
+
+output(build-mingw-6.11.0, :platform=win32-g++, :version=6.11.0)
+#output(build-mingw-6.10.0, :platform=win32-g++, :version=6.10.0)
+#output(build-msvc-6.10.0, :platform=win32-msvc, :version=6.10.0)
+

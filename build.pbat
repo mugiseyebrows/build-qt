@@ -58,16 +58,16 @@ def source
     if_exist_return(src)
     {% if maj == "6" %}
     download(https://{{host}}/official_releases/qt/{{majmin}}/{{version}}/single/qt-everywhere-src-{{version}}.zip, :cache, :v)
-    7z rn qt-everywhere-src-{{version}}.zip qt-everywhere-src-{{version}} src
-    unzip(qt-everywhere-src-{{version}}.zip, :t=src)
+    #7z rn qt-everywhere-src-{{version}}.zip qt-everywhere-src-{{version}} src
+    unzip(qt-everywhere-src-{{version}}.zip, :t=qt-everywhere-src-{{version}})
     {% else %}
     download(https://download.qt.io/archive/qt/{{majmin}}/{{version}}/single/qt-everywhere-opensource-src-{{version}}.zip, :cache, :v)
-    7z rn qt-everywhere-opensource-src-{{version}}.zip qt-everywhere-src-{{version}} src
-    unzip(qt-everywhere-opensource-src-{{version}}.zip, :t=src)
-    move(qt-everywhere-src-{{version}}, src)
+    #7z rn qt-everywhere-opensource-src-{{version}}.zip qt-everywhere-src-{{version}} src
+    #unzip(qt-everywhere-opensource-src-{{version}}.zip, :t=src)
     {% endif %}
 
 def build
+    mkdir(build)
     {{ env() }}
 
     {% if platform == "win32-g++" %}
@@ -83,17 +83,22 @@ def build
     pushd src\qttools
         patch(../../004-fix-build-with-gcc-14.patch, :N, :p1)
     popd
+
+    {% else %}
+    pushd qt-everywhere-opensource-src-{{version}}
+        patch(../0001-missin-min-and-max-def.patch, :N, :p1)
+    popd
+
     {% endif %}
-    pushd src
+    pushd build
         # -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
         {% if maj == "6" %}
-        patch(../0001-missin-min-and-max-def.patch, :N, :p1)
-        # call configure -prefix C:\Qt\{{version}}\{{subdir}} -platform {{platform}} {{mode}} -skip qtwebengine -nomake examples -nomake tests -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64
-
-        # tiny
-        call configure -prefix {{qtdir}} -opensource -confirm-license -shared -platform {{ platform }} -opengl desktop {{ mode }} -submodules qtbase,qtimageformats -nomake tests -nomake examples -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -DICU_ROOT=C:/icu
-        # full
         
+        # tiny
+        # -submodules qtbase,qtimageformats
+        # full
+        # -skip qtwebengine
+        call ..\qt-everywhere-src-{{version}}\configure -prefix {{qtdir}} -opensource -confirm-license -shared -platform {{ platform }} -opengl desktop {{ mode }} -icu -skip qtwebengine -nomake tests -nomake examples -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -DICU_ROOT=C:/icu -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
         
         {% else %}
         # -plugin-sql-mysql -IC:/mysql-8.2.0-winx64/include -LC:/mysql-8.2.0-winx64/lib
@@ -143,7 +148,7 @@ def mingw
             7z rn winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z mingw64 mingw1520_64
             unzip(winlibs-x86_64-posix-seh-gcc-15.2.0-mingw-w64msvcrt-13.0.0-r4.7z, :o=C:\)
         {% endif %}
-    {% else %}
+    {% else %} 
     echo 1
     {% endif %}
 
@@ -195,13 +200,13 @@ def main depends on mingw mysql postgresql prepare source build install
 
 
 
-github-workflow 1
+github-workflow 0
 github-on release
 env-policy 1
 workflow-name build-{{compiler}}-{{version}}
 
-output(build-mingw-6.11.0, :platform=win32-g++, :version=6.11.0)
+#output(build-mingw-6.11.0, :platform=win32-g++, :version=6.11.0)
 #output(build-mingw-6.10.0, :platform=win32-g++, :version=6.10.0)
-output(build-msvc-6.10.0, :platform=win32-msvc, :version=6.10.0)
+#output(build-msvc-6.10.0, :platform=win32-msvc, :version=6.10.0)
 output(build-mingw-5.15.18, :platform=win32-g++, :version=5.15.18)
 #output(build-msvc-5.15.18, :platform=win32-msvc, :version=5.15.18)

@@ -34,14 +34,16 @@ if not exist qt-everywhere-src-6.10.0.zip (
     echo downloading qt-everywhere-src-6.10.0.zip
     curl -L -o qt-everywhere-src-6.10.0.zip https://download.qt.io/official_releases/qt/6.10/6.10.0/single/qt-everywhere-src-6.10.0.zip
 )
-7z rn qt-everywhere-src-6.10.0.zip qt-everywhere-src-6.10.0 src
-if not exist src 7z x -y qt-everywhere-src-6.10.0.zip
+if not exist qt-everywhere-src-6.10.0 7z x -y qt-everywhere-src-6.10.0.zip
 :source_end
+if not exist build mkdir build
 set LLVM_INSTALL_DIR=C:\llvm19
 call vcvars64.bat
-pushd src
+pushd qt-everywhere-opensource-src-6.10.0
     "%PATCH%" -N -p1 -i ../0001-missin-min-and-max-def.patch
-    call configure -prefix C:\Qt\6.10.0\msvc2020_64 -opensource -confirm-license -shared -platform win32-msvc -opengl desktop -release -submodules qtbase,qtimageformats -nomake tests -nomake examples -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -DICU_ROOT=C:/icu
+popd
+pushd build
+    call ..\qt-everywhere-src-6.10.0\configure -prefix C:\Qt\6.10.0\msvc2020_64 -opensource -confirm-license -shared -platform win32-msvc -opengl desktop -release -icu -skip qtwebengine -nomake tests -nomake examples -- -DFEATURE_system_zlib=OFF -DFEATURE_sql_mysql=ON -DFEATURE_sql_psql=ON -DPostgreSQL_ROOT=C:/postgresql-14 -DMySQL_ROOT=C:/mysql-8.2.0-winx64 -DICU_ROOT=C:/icu -DCMAKE_DISABLE_PRECOMPILE_HEADERS=ON
     type config.summary
         cmake --build . || exit /b
 popd

@@ -41,10 +41,8 @@ if not exist qt-everywhere-opensource-src-5.15.18.zip (
     echo downloading qt-everywhere-opensource-src-5.15.18.zip
     curl -L -o qt-everywhere-opensource-src-5.15.18.zip https://download.qt.io/archive/qt/5.15/5.15.18/single/qt-everywhere-opensource-src-5.15.18.zip
 )
-7z rn qt-everywhere-opensource-src-5.15.18.zip qt-everywhere-src-5.15.18 src
-if not exist src 7z x -y qt-everywhere-opensource-src-5.15.18.zip
-move /y qt-everywhere-src-5.15.18 src
 :source_end
+if not exist build mkdir build
 set LLVM_INSTALL_DIR=C:\llvm19
 pushd src\qtmultimedia
     "%PATCH%" -N -p1 -i ../../0001-fix-wmf-plugin.patch
@@ -52,7 +50,7 @@ popd
 pushd src\qttools
     "%PATCH%" -N -p1 -i ../../004-fix-build-with-gcc-14.patch
 popd
-pushd src
+pushd build
     call configure -prefix C:\Qt\5.15.18\mingw_64 -platform win32-g++ -release -skip qtwebengine -nomake examples -nomake tests -opensource -confirm-license -shared -opengl desktop -plugin-sql-odbc -plugin-sql-mysql -no-feature-d3d12 -LC:/mysql-8.2.0-winx64/lib -IC:/mysql-8.2.0-winx64/include
     type config.summary
             mingw32-make -j4 || exit /b
